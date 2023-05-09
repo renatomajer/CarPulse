@@ -1,11 +1,16 @@
 package hr.fer.carpulse.ui.screens
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
@@ -17,10 +22,36 @@ import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun ConnectScreen(
+    applicationContext: Context,
     navController: NavController
 ) {
 
     val connectScreenViewModel = getViewModel<ConnectScreenViewModel>()
+
+    val isConnecting by connectScreenViewModel.isConnecting().collectAsState()
+    val isConnected by connectScreenViewModel.isConnected().collectAsState()
+    val errorMessage by connectScreenViewModel.errorMessage().collectAsState()
+
+    LaunchedEffect(key1 = errorMessage) {
+        errorMessage?.let { message ->
+            Toast.makeText(
+                applicationContext,
+                message,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    LaunchedEffect(key1 = isConnected) {
+
+        if (isConnected) {
+            Toast.makeText(
+                applicationContext,
+                "You're connected!",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
 
     ScreenTopBar(
         onBackArrowClick = {
@@ -28,42 +59,63 @@ fun ConnectScreen(
         }
     ) { paddingValues ->
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
+        when {
+            isConnecting -> {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator()
+                    Text(text = "Connecting...")
+                }
+            }
 
-            val pairedDevices by connectScreenViewModel.getPairedDevices()
-                .collectAsState(initial = emptyList())
+            else -> {
 
-            val scannedDevices by connectScreenViewModel.getScannedDevices()
-                .collectAsState(initial = emptyList())
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                ) {
 
-            val isScanning by connectScreenViewModel.isScanning().collectAsState()
+                    val pairedDevices by connectScreenViewModel.getPairedDevices()
+                        .collectAsState(initial = emptyList())
 
-            BluetoothDeviceList(
-                pairedDevices = pairedDevices,
-                scannedDevices = scannedDevices,
-                onClick = { /* TODO */ },
-                isScanning = isScanning,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            )
+                    val scannedDevices by connectScreenViewModel.getScannedDevices()
+                        .collectAsState(initial = emptyList())
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
+                    val isScanning by connectScreenViewModel.isScanning().collectAsState()
 
-                Button(onClick = { connectScreenViewModel.startScan() }) {
-                    Text(text = stringResource(id = R.string.start_scan))
+                    BluetoothDeviceList(
+                        pairedDevices = pairedDevices,
+                        scannedDevices = scannedDevices,
+                        onClick = connectScreenViewModel::connectToDevice,
+                        isScanning = isScanning,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+
+                        Button(onClick = { connectScreenViewModel.startScan() }) {
+                            Text(text = stringResource(id = R.string.start_scan))
+                        }
+
+                        Button(onClick = { connectScreenViewModel.stopScan() }) {
+                            Text(text = stringResource(id = R.string.stop_scan))
+                        }
+
+                        Button(onClick = connectScreenViewModel::waitForIncomingConnections) {
+                            Text(text = "Start Server")
+                        }
+                    }
                 }
 
-                Button(onClick = { connectScreenViewModel.stopScan() }) {
-                    Text(text = stringResource(id = R.string.stop_scan))
-                }
             }
         }
     }

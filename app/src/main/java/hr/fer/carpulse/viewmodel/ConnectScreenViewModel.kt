@@ -1,10 +1,12 @@
 package hr.fer.carpulse.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import hr.fer.carpulse.domain.common.BluetoothController
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import hr.fer.carpulse.domain.common.BluetoothDevice
+import hr.fer.carpulse.domain.common.ConnectionResult
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.*
 
 class ConnectScreenViewModel(
     private val bluetoothController: BluetoothController
@@ -12,9 +14,45 @@ class ConnectScreenViewModel(
 
     private val isScanning = MutableStateFlow(false)
 
+    private val isConnecting = MutableStateFlow(false)
+    private val isConnected = MutableStateFlow(false)
+
+    private val errorMessage = MutableStateFlow<String?>(null)
+
+    private var deviceConnectionJob: Job? = null
+
+    init {
+        bluetoothController.isConnected.onEach { connected ->
+            isConnected.update { connected }
+        }.launchIn(viewModelScope)
+
+        bluetoothController.errors.onEach { error ->
+            errorMessage.update { error }
+        }.launchIn(viewModelScope)
+    }
+
     fun getScannedDevices() = bluetoothController.scannedDevices
 
     fun getPairedDevices() = bluetoothController.pairedDevices
+
+    fun connectToDevice(device: BluetoothDevice) {
+        isScanning.update { false }
+        isConnecting.update { true }
+        deviceConnectionJob = bluetoothController.connectToDevice(device).listen()
+
+    }
+
+    fun disconnectFromDevice() {
+        deviceConnectionJob?.cancel()
+        bluetoothController.closeConnection()
+        isConnecting.update { false }
+        isConnected.update { false }
+    }
+
+    fun waitForIncomingConnections() {
+        isConnecting.update { true }
+        deviceConnectionJob = bluetoothController.startBluetoothServer().listen()
+    }
 
     fun startScan() {
         bluetoothController.startDiscovery()
@@ -27,4 +65,36 @@ class ConnectScreenViewModel(
     }
 
     fun isScanning() = isScanning.asStateFlow()
+
+    fun isConnecting() = isConnecting.asStateFlow()
+    fun isConnected() = isConnected.asStateFlow()
+
+    fun errorMessage() = errorMessage.asStateFlow()
+
+    private fun Flow<ConnectionResult>.listen(): Job {
+        return onEach { result ->
+            when (result) {
+                ConnectionResult.ConnectionEstablished -> {
+                    isConnected.update { true }
+                    isConnecting.update { false }
+                    errorMessage.update { null }
+                }
+                is ConnectionResult.Error -> {
+                    isConnected.update { false }
+                    isConnecting.update { false }
+                    errorMessage.update { result.message }
+                }
+            }
+        }.catch { throwable ->
+            bluetoothController.closeConnection()
+            isConnected.update { false }
+            isConnecting.update { false }
+
+        }.launchIn(viewModelScope)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        bluetoothController.release()
+    }
 }

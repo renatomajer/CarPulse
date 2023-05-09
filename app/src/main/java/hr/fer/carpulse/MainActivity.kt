@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             CarPulseTheme {
                 // A surface container using the 'background' color from the theme
-                Navigation()
+                Navigation(applicationContext)
             }
         }
     }

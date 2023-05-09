@@ -62,7 +62,7 @@ fun BluetoothDeviceList(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { /* TODO */ }
+                    .clickable { onClick(device) }
                     .padding(smallPadding)
             ) {
 

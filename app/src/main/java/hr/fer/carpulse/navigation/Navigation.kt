@@ -1,5 +1,6 @@
 package hr.fer.carpulse.navigation
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,7 +11,9 @@ import hr.fer.carpulse.ui.screens.MeasurementsScreen
 import hr.fer.carpulse.ui.screens.SettingsScreen
 
 @Composable
-fun Navigation() {
+fun Navigation(
+    applicationContext: Context
+) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Screens.HomeScreen.route) {
@@ -20,7 +23,7 @@ fun Navigation() {
         }
 
         composable(route = Screens.ConnectScreen.route) {
-            ConnectScreen(navController = navController)
+            ConnectScreen(navController = navController, applicationContext = applicationContext)
         }
 
         composable(route = Screens.SettingsScreen.route) {
