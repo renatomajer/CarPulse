@@ -31,6 +31,8 @@ fun ConnectScreen(
     val isConnecting by connectScreenViewModel.isConnecting().collectAsState()
     val isConnected by connectScreenViewModel.isConnected().collectAsState()
     val errorMessage by connectScreenViewModel.errorMessage().collectAsState()
+    val connectedDeviceAddress by connectScreenViewModel.getConnectedDeviceAddress()
+        .collectAsState()
 
     LaunchedEffect(key1 = errorMessage) {
         errorMessage?.let { message ->
@@ -67,7 +69,7 @@ fun ConnectScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     CircularProgressIndicator()
-                    Text(text = "Connecting...")
+                    Text(text = stringResource(id = R.string.connecting))
                 }
             }
 
@@ -90,7 +92,9 @@ fun ConnectScreen(
                     BluetoothDeviceList(
                         pairedDevices = pairedDevices,
                         scannedDevices = scannedDevices,
-                        onClick = connectScreenViewModel::connectToDevice,
+                        connectedDeviceAddress = connectedDeviceAddress,
+                        onClickConnect = connectScreenViewModel::connectToDevice,
+                        onClickDisconnect = connectScreenViewModel::disconnectFromDevice,
                         isScanning = isScanning,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -110,8 +114,10 @@ fun ConnectScreen(
                             Text(text = stringResource(id = R.string.stop_scan))
                         }
 
-                        Button(onClick = connectScreenViewModel::waitForIncomingConnections) {
-                            Text(text = "Start Server")
+                        if (isConnected) {
+                            Button(onClick = connectScreenViewModel::disconnectFromDevice) {
+                                Text(text = stringResource(id = R.string.disconnect))
+                            }
                         }
                     }
                 }

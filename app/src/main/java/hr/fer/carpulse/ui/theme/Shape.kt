@@ -10,4 +10,8 @@ val Shapes = Shapes(
     large = RoundedCornerShape(0.dp)
 )
 
-val smallPadding = 16.dp
+val smallPadding = 15.dp
+
+val readingsBoxInnerPadding = 8.dp
+
+val measurementButtonsTopBottomPadding = 20.dp

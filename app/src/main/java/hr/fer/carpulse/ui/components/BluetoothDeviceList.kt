@@ -1,7 +1,6 @@
 package hr.fer.carpulse.ui.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,8 +19,10 @@ import hr.fer.carpulse.ui.theme.smallPadding
 fun BluetoothDeviceList(
     pairedDevices: List<BluetoothDevice>,
     scannedDevices: List<BluetoothDevice>,
+    connectedDeviceAddress: String?,
     isScanning: Boolean,
-    onClick: (BluetoothDevice) -> Unit,
+    onClickConnect: (BluetoothDevice) -> Unit,
+    onClickDisconnect: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -35,13 +36,25 @@ fun BluetoothDeviceList(
         }
 
         items(pairedDevices) { device ->
-            Text(
-                text = device.name ?: stringResource(id = R.string.no_name),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onClick(device) }
-                    .padding(smallPadding)
-            )
+            // connected device
+            if (device.address == connectedDeviceAddress) {
+                BluetoothDeviceComponent(
+                    onClickConnect = onClickConnect,
+                    onClickDisconnect = onClickDisconnect,
+                    device = device,
+                    isConnectedTo = true
+                )
+
+            } else {
+                // only paired device
+                Text(
+                    text = device.name ?: stringResource(id = R.string.no_name),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onClickConnect(device) }
+                        .padding(smallPadding)
+                )
+            }
         }
 
         item {
@@ -58,25 +71,16 @@ fun BluetoothDeviceList(
             }
         }
 
-        items(scannedDevices) { device ->
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onClick(device) }
-                    .padding(smallPadding)
-            ) {
-
-                Text(
-                    text = device.name ?: stringResource(id = R.string.no_name),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Text(
-                    text = device.address,
-                    style = Typography.body2,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+        items(scannedDevices.filter { scannedDevice ->
+            !pairedDevices.map { it.address }.contains(scannedDevice.address)
+        }) { device ->
+            // scanned device
+            BluetoothDeviceComponent(
+                onClickConnect = onClickConnect,
+                onClickDisconnect = onClickDisconnect,
+                device = device,
+                isConnectedTo = false
+            )
         }
     }
 }

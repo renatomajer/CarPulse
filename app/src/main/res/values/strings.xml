@@ -12,4 +12,19 @@
     <string name="paired_devices">Paired devices</string>
     <string name="no_name">No name</string>
     <string name="scanned_devices">Scanned devices</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="connecting">Connecting…</string>
+    <string name="connected">Connected</string>
+    <string name="start_measurement">Start measurement</string>
+    <string name="stop_measurement">Stop measurement</string>
+    <string name="obd_device_status">"OBD Device Status: "</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="rpm">RPM</string>
+    <string name="speed">Speed</string>
+    <string name="relative_throttle_position">Relative throttle position</string>
+    <string name="absolute_throttle_position">Absolute throttle position</string>
+    <string name="throttle_position">Throttle position</string>
+    <string name="accelerator_pedal_position">Accelerator pedal position</string>
+    <string name="engine_load">Engine load</string>
+    <string name="timestamp">Timestamp</string>
 </resources>

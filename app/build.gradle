@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "hr.fer.carpulse"
-        minSdk 23
+        minSdk 24
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -86,5 +86,9 @@ dependencies {
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-process:$lifecycle_process_version"
     implementation "androidx.appcompat:appcompat:$appcompat_version"
+
+//    implementation "com.pnuema.android:obd:$pnuema_android_obd_version"
+
+    implementation 'com.github.pires:obd-java-api:1.0'
 
 }

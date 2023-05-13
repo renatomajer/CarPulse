@@ -10,4 +10,6 @@ java {
 
 dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+
+    implementation 'com.github.pires:obd-java-api:1.0'
 }

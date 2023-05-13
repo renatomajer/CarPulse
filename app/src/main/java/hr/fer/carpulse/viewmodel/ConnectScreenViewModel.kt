@@ -1,8 +1,9 @@
 package hr.fer.carpulse.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import hr.fer.carpulse.domain.common.BluetoothController
+import hr.fer.carpulse.bluetooth.BluetoothController
 import hr.fer.carpulse.domain.common.BluetoothDevice
 import hr.fer.carpulse.domain.common.ConnectionResult
 import kotlinx.coroutines.Job
@@ -39,7 +40,6 @@ class ConnectScreenViewModel(
         isScanning.update { false }
         isConnecting.update { true }
         deviceConnectionJob = bluetoothController.connectToDevice(device).listen()
-
     }
 
     fun disconnectFromDevice() {
@@ -47,11 +47,6 @@ class ConnectScreenViewModel(
         bluetoothController.closeConnection()
         isConnecting.update { false }
         isConnected.update { false }
-    }
-
-    fun waitForIncomingConnections() {
-        isConnecting.update { true }
-        deviceConnectionJob = bluetoothController.startBluetoothServer().listen()
     }
 
     fun startScan() {
@@ -70,6 +65,8 @@ class ConnectScreenViewModel(
     fun isConnected() = isConnected.asStateFlow()
 
     fun errorMessage() = errorMessage.asStateFlow()
+
+    fun getConnectedDeviceAddress() = bluetoothController.getConnectedDeviceAddress()
 
     private fun Flow<ConnectionResult>.listen(): Job {
         return onEach { result ->
@@ -95,6 +92,8 @@ class ConnectScreenViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        bluetoothController.release()
+//        bluetoothController.release()
+        bluetoothController.stopDiscovery()
+        Log.d("debug_log", "ConnectScreenViewModel::onCleared()")
     }
 }

@@ -5,21 +5,18 @@ import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
-import android.bluetooth.BluetoothServerSocket
 import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.util.Log
-import hr.fer.carpulse.domain.common.BluetoothController
 import hr.fer.carpulse.domain.common.BluetoothDeviceDomain
 import hr.fer.carpulse.domain.common.ConnectionResult
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.*
+
 
 @SuppressLint("MissingPermission")
 class AndroidBluetoothController(
@@ -33,6 +30,8 @@ class AndroidBluetoothController(
     private val bluetoothAdapter by lazy {
         bluetoothManager?.adapter
     }
+
+    private val connectedDeviceAddress = MutableStateFlow<String?>(null)
 
     private val _isConnected = MutableStateFlow(false)
     override val isConnected: StateFlow<Boolean>
@@ -56,23 +55,35 @@ class AndroidBluetoothController(
             if (newDevice in devices) devices else devices + newDevice
         }
     }
+    private var isFoundDeviceReceiverRegistered = false
 
     private val bluetoothStateReceiver = BluetoothStateReceiver { isConnected, bluetoothDevice ->
 
         if (bluetoothAdapter?.bondedDevices?.contains(bluetoothDevice) == true) {
             _isConnected.update { isConnected }
-        } else {
-            CoroutineScope(Dispatchers.IO).launch {
-                _errors.emit("Can't connect to a non-paired device.")
-            }
+        }
+//       else {
+//            CoroutineScope(Dispatchers.IO).launch {
+//                _errors.emit("Can't connect to a non-paired device.")
+//            }
+//        }
+
+        // if the connected device has disconnected
+        if (!isConnected && connectedDeviceAddress.value == bluetoothDevice.address) {
+            _isConnected.update { isConnected }
+            connectedDeviceAddress.update { null }
+
+            Log.d("debug_log", "Disconnected from device: ${bluetoothDevice.address}")
         }
     }
+    private var isBluetoothStateReceiverRegistered = false
 
-    private var currentServerSocket: BluetoothServerSocket? = null
-    private var currentClientSocket: BluetoothSocket? = null
+    private var currentClientSocket = MutableStateFlow<BluetoothSocket?>(null)
 
     init {
         updatePairedDevices()
+
+        // listen for every bluetooth connection state change
         context.registerReceiver(
             bluetoothStateReceiver,
             IntentFilter().apply {
@@ -81,6 +92,7 @@ class AndroidBluetoothController(
                 addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
             }
         )
+        isBluetoothStateReceiverRegistered = true
     }
 
     override fun startDiscovery() {
@@ -90,6 +102,7 @@ class AndroidBluetoothController(
             foundDeviceReceiver,
             IntentFilter(BluetoothDevice.ACTION_FOUND)
         )
+        isFoundDeviceReceiverRegistered = true
 
         updatePairedDevices()
 
@@ -101,39 +114,12 @@ class AndroidBluetoothController(
 
         bluetoothAdapter?.cancelDiscovery()
 
+        if (isFoundDeviceReceiverRegistered) {
+            context.unregisterReceiver(foundDeviceReceiver)
+            isFoundDeviceReceiverRegistered = false
+        }
+
         _scannedDevices.update { emptyList() }
-    }
-
-    override fun startBluetoothServer(): Flow<ConnectionResult> {
-        return flow {
-            if (!hasPermission(Manifest.permission.BLUETOOTH_CONNECT)) {
-                throw SecurityException("No BLUETOOTH_CONNECT permission")
-            }
-
-            currentServerSocket = bluetoothAdapter?.listenUsingRfcommWithServiceRecord(
-                "data_service",
-                UUID.fromString(SERVICE_UUID)
-            )
-
-            var shouldLoop = true
-
-            while (shouldLoop) {
-                currentClientSocket = try {
-                    currentServerSocket?.accept()
-                } catch (e: IOException) {
-                    shouldLoop = false
-                    null
-                }
-
-                emit(ConnectionResult.ConnectionEstablished)
-
-                currentClientSocket?.let {
-                    currentServerSocket?.close()
-                }
-            }
-        }.onCompletion {
-            closeConnection()
-        }.flowOn(Dispatchers.IO)
     }
 
     override fun connectToDevice(device: BluetoothDeviceDomain): Flow<ConnectionResult> {
@@ -142,56 +128,56 @@ class AndroidBluetoothController(
                 throw SecurityException("No BLUETOOTH_CONNECT permission")
             }
 
-            val btd = bluetoothAdapter?.getRemoteDevice(device.address)
-            Log.d("debug_log", btd?.address ?: "none")
-
-            Log.d("debug_log", "UUID list:")
-            val uuids = btd?.uuids
-            if (uuids != null) {
-                for (uuid in uuids) {
-                    Log.d("debug_log", uuid.uuid.toString())
-                }
-            } else {
-                Log.d("debug_log", "None")
+            currentClientSocket.update {
+                bluetoothAdapter?.getRemoteDevice(device.address)
+                    ?.createRfcommSocketToServiceRecord(
+                        UUID.fromString(SERVICE_UUID)
+                    )
             }
-
-            currentClientSocket = bluetoothAdapter?.getRemoteDevice(device.address)
-                ?.createRfcommSocketToServiceRecord(
-                    UUID.fromString(SERVICE_UUID)
-                )
 
             stopDiscovery()
 
-            currentClientSocket?.let { socket ->
+            currentClientSocket.value?.let { socket ->
                 try {
                     socket.connect()
                     emit(ConnectionResult.ConnectionEstablished)
 
+                    // remember the address of the device we connected to (our OBD device)
+                    connectedDeviceAddress.update { device.address }
+                    Log.d("debug_log", "Connected to device: ${device.address}")
+
+//                    val obd = OBDCommunication(socket)
+//                    obd.readData()
+
                 } catch (e: IOException) {
                     Log.d("debug_log", e.toString())
                     socket.close()
-                    currentClientSocket = null
+                    currentClientSocket.value = null
                     emit(ConnectionResult.Error("Connection was interrupted"))
                 }
             }
 
             updatePairedDevices()
 
-        }.onCompletion {
-            closeConnection()
         }.flowOn(Dispatchers.IO)
     }
 
     override fun closeConnection() {
-        currentClientSocket?.close()
-        currentServerSocket?.close()
-        currentClientSocket = null
-        currentServerSocket = null
+        currentClientSocket.value?.close()
+        currentClientSocket.value = null
     }
 
+    // TODO: see where this function should be called, to unregister bluetoothStateReceiver
     override fun release() {
-        context.unregisterReceiver(foundDeviceReceiver)
-        context.unregisterReceiver(bluetoothStateReceiver)
+        if (isFoundDeviceReceiverRegistered) {
+            context.unregisterReceiver(foundDeviceReceiver)
+            isFoundDeviceReceiverRegistered = false
+        }
+
+        if (isBluetoothStateReceiverRegistered) {
+            context.unregisterReceiver(bluetoothStateReceiver)
+            isBluetoothStateReceiverRegistered = false
+        }
         closeConnection()
     }
 
@@ -204,6 +190,10 @@ class AndroidBluetoothController(
             _pairedDevices.update { devices }
         }
     }
+
+    override fun getConnectedDeviceAddress() = connectedDeviceAddress.asStateFlow()
+
+    override fun getCurrentClientSocket() = currentClientSocket.asStateFlow()
 
     private fun hasPermission(permission: String): Boolean {
         return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
