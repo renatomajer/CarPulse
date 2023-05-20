@@ -10,6 +10,7 @@ val Shapes = Shapes(
     large = RoundedCornerShape(0.dp)
 )
 
+val microPadding = 5.dp
 val smallPadding = 15.dp
 
 val readingsBoxInnerPadding = 8.dp

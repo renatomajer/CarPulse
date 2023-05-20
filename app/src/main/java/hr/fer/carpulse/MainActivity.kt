@@ -8,8 +8,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.getValue
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import hr.fer.carpulse.navigation.Navigation
 import hr.fer.carpulse.ui.theme.CarPulseTheme
+import hr.fer.carpulse.viewmodel.SplashScreenViewModel
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -26,6 +30,12 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val splashScreenViewModel = getViewModel<SplashScreenViewModel>()
+
+        installSplashScreen().setKeepOnScreenCondition {
+            !splashScreenViewModel.isLoading.value
+        }
 
         val enableBluetoothLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
@@ -56,8 +66,10 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             CarPulseTheme {
-                // A surface container using the 'background' color from the theme
-                Navigation(applicationContext)
+
+                val screen by splashScreenViewModel.startDestination
+
+                Navigation(applicationContext, startDestination = screen)
             }
         }
     }

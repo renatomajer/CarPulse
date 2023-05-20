@@ -3,12 +3,13 @@ package hr.fer.carpulse.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import hr.fer.carpulse.bluetooth.OBDCommunication
 import hr.fer.carpulse.bluetooth.BluetoothController
+import hr.fer.carpulse.bluetooth.OBDCommunication
 import hr.fer.carpulse.domain.common.obd.OBDReading
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
+// TODO: check if the bluetoothController should be used as api and accessed trough a separate repository class
 class HomeScreenViewModel(
     private val bluetoothController: BluetoothController
 ) : ViewModel() {
@@ -52,6 +53,7 @@ class HomeScreenViewModel(
 
         return if (socket != null) {
             val obd = OBDCommunication(socket)
+            // TODO: launch the coroutine with viewModelScope.launch(Dispatchers.IO) {}
             CoroutineScope(Dispatchers.IO).launch {
                 while (true) {
 

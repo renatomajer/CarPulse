@@ -29,5 +29,8 @@ ext {
     appcompat_version = '1.6.1'
     constraintlayout_version = '2.0.4'
 
+    preferences_datastore_version = '1.0.0'
+    splashscreen_version = '1.0.0-beta01'
+
 //    pnuema_android_obd_version = '1.2.0'
 }
