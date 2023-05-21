@@ -51,6 +51,7 @@ dependencies {
     implementation project(':domain:usecase')
     implementation project(':domain:repointerfaces')
     implementation project(':data:database')
+    implementation project(':data:api')
     implementation project(':data:repository')
 
     implementation "androidx.core:core-ktx:$core_version"

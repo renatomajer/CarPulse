@@ -1,5 +1,8 @@
 package hr.fer.carpulse.domain.common.driver
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class DriverData(
     val email: String = "",
     val age: Int = 0,

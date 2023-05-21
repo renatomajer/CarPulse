@@ -8,4 +8,6 @@ interface DriverDataRepository {
     fun getDriverData(): Flow<DriverData>
 
     suspend fun insertDriverData(driverData: DriverData)
+
+    fun sendDriverData(driverData: DriverData)
 }

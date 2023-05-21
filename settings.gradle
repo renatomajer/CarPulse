@@ -19,3 +19,4 @@ include ':app',
         ':domain:usecase',
         ':data:database',
         ':data:repository'
+include ':data:api'

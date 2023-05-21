@@ -392,6 +392,7 @@ fun UserDataScreen(
         item {
             Button(onClick = {
                 userDataScreenViewModel.saveDriverData()
+                userDataScreenViewModel.sendDriverData()
 
                 if (isOnboarding) {
                     userDataScreenViewModel.saveOnBoardingState(completed = true)

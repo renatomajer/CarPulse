@@ -8,6 +8,7 @@ import hr.fer.carpulse.domain.common.driver.Gender
 import hr.fer.carpulse.domain.repointerfaces.DataStoreRepository
 import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SaveDriverDataUseCase
+import hr.fer.carpulse.domain.usecase.driver.SendDriverDataUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +18,8 @@ import kotlinx.coroutines.launch
 class UserDataScreenViewModel(
     private val dataStoreRepository: DataStoreRepository,
     private val saveDriverDataUseCase: SaveDriverDataUseCase,
-    private val getDriverDataUseCase: GetDriverDataUseCase
+    private val getDriverDataUseCase: GetDriverDataUseCase,
+    private val sendDriverDataUseCase: SendDriverDataUseCase
 ) : ViewModel() {
 
     private val _driverData = MutableStateFlow(DriverData())
@@ -248,5 +250,9 @@ class UserDataScreenViewModel(
                 Log.d("debug_log", "Data stored: " + it.toString())
             }
         }
+    }
+
+    fun sendDriverData() {
+        sendDriverDataUseCase(_driverData.value)
     }
 }

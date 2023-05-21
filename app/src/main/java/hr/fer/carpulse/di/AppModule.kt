@@ -7,12 +7,15 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import hr.fer.carpulse.bluetooth.AndroidBluetoothController
 import hr.fer.carpulse.bluetooth.BluetoothController
+import hr.fer.carpulse.data.api.Api
+import hr.fer.carpulse.data.api.MockedApi
 import hr.fer.carpulse.data.repository.DataStoreRepositoryImpl
 import hr.fer.carpulse.data.repository.DriverDataRepositoryImpl
 import hr.fer.carpulse.domain.repointerfaces.DataStoreRepository
 import hr.fer.carpulse.domain.repointerfaces.DriverDataRepository
 import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SaveDriverDataUseCase
+import hr.fer.carpulse.domain.usecase.driver.SendDriverDataUseCase
 import hr.fer.carpulse.viewmodel.ConnectScreenViewModel
 import hr.fer.carpulse.viewmodel.HomeScreenViewModel
 import hr.fer.carpulse.viewmodel.SplashScreenViewModel
@@ -30,8 +33,12 @@ val appModule = module {
         AndroidBluetoothController(context = androidApplication())
     }
 
+    single<Api> {
+        MockedApi()
+    }
+
     single<DriverDataRepository> {
-        DriverDataRepositoryImpl(driverDataDao = get(), mapper = get())
+        DriverDataRepositoryImpl(driverDataDao = get(), mapper = get(), api = get())
     }
 
     single {
@@ -40,6 +47,10 @@ val appModule = module {
 
     single {
         SaveDriverDataUseCase(driverDataRepository = get())
+    }
+
+    single {
+        SendDriverDataUseCase(driverDataRepository = get())
     }
 
     viewModel {
@@ -54,7 +65,8 @@ val appModule = module {
         UserDataScreenViewModel(
             dataStoreRepository = get(),
             saveDriverDataUseCase = get(),
-            getDriverDataUseCase = get()
+            getDriverDataUseCase = get(),
+            sendDriverDataUseCase = get()
         )
     }
 

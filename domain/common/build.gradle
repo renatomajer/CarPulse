@@ -1,6 +1,7 @@
 plugins {
     id 'java-library'
     id 'org.jetbrains.kotlin.jvm'
+    id 'org.jetbrains.kotlin.plugin.serialization'
 }
 
 java {
@@ -12,4 +13,6 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
 
     implementation 'com.github.pires:obd-java-api:1.0'
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3'
 }
