@@ -4,6 +4,7 @@ import hr.fer.carpulse.data.api.Api
 import hr.fer.carpulse.data.database.IDriverDataDao
 import hr.fer.carpulse.data.database.mapper.DriverDataMapper
 import hr.fer.carpulse.domain.common.driver.DriverData
+import hr.fer.carpulse.domain.common.trip.TripReview
 import hr.fer.carpulse.domain.repointerfaces.DriverDataRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -27,5 +28,9 @@ class DriverDataRepositoryImpl(
 
     override fun sendDriverData(driverData: DriverData) {
         api.sendDriverData(driverData)
+    }
+
+    override fun sendTripReview(tripReview: TripReview) {
+        api.sendTripReview(tripReview)
     }
 }

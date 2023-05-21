@@ -135,13 +135,15 @@ fun HomeScreen(
                     Text(text = stringResource(id = R.string.start_measurement))
                 }
 
+                // TODO: uncomment the line below
                 Button(
                     modifier = Modifier
                         .width(150.dp)
                         .height(50.dp),
-                    enabled = isMeasuring,
+//                    enabled = isMeasuring,
                     onClick = {
                         homeScreenViewModel.stopMeasuring()
+                        navController.navigate(Screens.TripReviewScreen.route + "/${homeScreenViewModel.tripUUID}")
                     }) {
                     Text(text = stringResource(id = R.string.stop_measurement))
                 }

@@ -135,7 +135,10 @@ fun UserDataScreen(
         }
 
         item {
-            Text(text = stringResource(id = R.string.gender) + ":")
+            Text(
+                text = stringResource(id = R.string.gender) + ":",
+                color = MaterialTheme.colors.onBackground
+            )
         }
 
         item {
@@ -239,7 +242,10 @@ fun UserDataScreen(
         }
 
         item {
-            Text(text = stringResource(id = R.string.start_stop_system) + ":")
+            Text(
+                text = stringResource(id = R.string.start_stop_system) + ":",
+                color = MaterialTheme.colors.onBackground
+            )
         }
 
         item {

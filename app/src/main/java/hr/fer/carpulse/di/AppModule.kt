@@ -16,10 +16,8 @@ import hr.fer.carpulse.domain.repointerfaces.DriverDataRepository
 import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SaveDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendDriverDataUseCase
-import hr.fer.carpulse.viewmodel.ConnectScreenViewModel
-import hr.fer.carpulse.viewmodel.HomeScreenViewModel
-import hr.fer.carpulse.viewmodel.SplashScreenViewModel
-import hr.fer.carpulse.viewmodel.UserDataScreenViewModel
+import hr.fer.carpulse.domain.usecase.driver.SendTripReviewUseCase
+import hr.fer.carpulse.viewmodel.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -53,6 +51,10 @@ val appModule = module {
         SendDriverDataUseCase(driverDataRepository = get())
     }
 
+    single {
+        SendTripReviewUseCase(driverDataRepository = get())
+    }
+
     viewModel {
         ConnectScreenViewModel(bluetoothController = get())
     }
@@ -72,6 +74,10 @@ val appModule = module {
 
     viewModel {
         SplashScreenViewModel(dataStoreRepository = get())
+    }
+
+    viewModel {
+        TripReviewScreenViewModel(sendTripReviewUseCase = get(), getDriverDataUseCase = get())
     }
 
     single<DataStoreRepository> {

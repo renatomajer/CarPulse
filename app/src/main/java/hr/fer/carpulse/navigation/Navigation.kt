@@ -2,9 +2,11 @@ package hr.fer.carpulse.navigation
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import hr.fer.carpulse.ui.screens.*
 
 @Composable
@@ -47,6 +49,17 @@ fun Navigation(
 
         composable(route = Screens.MeasurementsScreen.route) {
             MeasurementsScreen(navController = navController)
+        }
+
+        composable(
+            route = Screens.TripReviewScreen.route + "/{tripUUID}",
+            arguments = listOf(navArgument(name = "tripUUID") { type = NavType.StringType })
+        ) { entry ->
+            entry.arguments?.let {
+                val tripUUID = it.getString("tripUUID")
+                TripReviewScreen(navController = navController, tripUUID = tripUUID)
+
+            }
         }
     }
 

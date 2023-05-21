@@ -8,6 +8,7 @@ import hr.fer.carpulse.bluetooth.OBDCommunication
 import hr.fer.carpulse.domain.common.obd.OBDReading
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import java.util.*
 
 // TODO: check if the bluetoothController should be used as api and accessed trough a separate repository class
 class HomeScreenViewModel(
@@ -22,12 +23,18 @@ class HomeScreenViewModel(
 
     private val obdReadingData = MutableSharedFlow<OBDReading>()
 
+    var tripUUID: UUID? = null
+
     fun startMeasuring() {
+        // TODO remove the two lines below- added only for testing purposes
+        tripUUID = UUID.randomUUID()
 
         if (bluetoothController.isConnected.value) {
             isMeasuring.update { true }
 
-            readOBDDataJob = readOBDData()
+            // TODO: check if it is better to generate UUID with nameUUIDFromBytes and pass email and timestamp as parameter
+//            val uuid = UUID.randomUUID()
+//            tripUuid = uuid.toString()
 
         } else {
             errorMessage.update { "Device not connected!" }

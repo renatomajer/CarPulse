@@ -56,4 +56,12 @@
     <string name="driver_info">Driver info</string>
     <string name="basic_information">Basic information</string>
     <string name="driver_info_description">Basic information about the driver and the vehicle (e.g. driving age, vehicle type, etc.)</string>
+    <string name="trip_review">Trip review</string>
+    <string name="used">Used</string>
+    <string name="not_used">Not used</string>
+    <string name="sudden_acceleration">Sudden acceleration</string>
+    <string name="sudden_deceleration">Sudden deceleration</string>
+    <string name="efficiency_knowledge">Efficiency knowledge</string>
+    <string name="efficiency_estimation">Efficiency estimation</string>
+    <string name="comment">Comment</string>
 </resources>
