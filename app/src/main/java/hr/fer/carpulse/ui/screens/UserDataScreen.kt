@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -24,7 +25,7 @@ import hr.fer.carpulse.navigation.Screens
 import hr.fer.carpulse.ui.components.DataTextField
 import hr.fer.carpulse.ui.components.DropdownPicker
 import hr.fer.carpulse.ui.components.LabeledRadioButton
-import hr.fer.carpulse.ui.theme.Purple500
+import hr.fer.carpulse.ui.theme.Teal200
 import hr.fer.carpulse.ui.theme.Typography
 import hr.fer.carpulse.ui.theme.microPadding
 import hr.fer.carpulse.util.defaultKeyboardActions
@@ -51,6 +52,7 @@ fun UserDataScreen(
 
     LazyColumn(
         modifier = Modifier
+            .background(MaterialTheme.colors.background)
             .padding(start = microPadding, end = microPadding)
             .fillMaxSize()
     ) {
@@ -63,12 +65,16 @@ fun UserDataScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = microPadding, bottom = microPadding),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colors.onBackground
                 )
             }
 
             item {
-                Text(text = stringResource(id = R.string.enter_user_data_message))
+                Text(
+                    text = stringResource(id = R.string.enter_user_data_message),
+                    color = MaterialTheme.colors.onBackground
+                )
             }
         }
 
@@ -81,7 +87,7 @@ fun UserDataScreen(
                 Spacer(
                     modifier = Modifier
                         .height(2.dp)
-                        .background(Purple500)
+                        .background(Teal200)
                         .width(100.dp)
                 )
                 Text(
@@ -89,13 +95,13 @@ fun UserDataScreen(
                     modifier = Modifier
                         .width(90.dp)
                         .padding(start = 5.dp, end = 5.dp),
-                    color = Purple500,
+                    color = Teal200,
                     textAlign = TextAlign.Center
                 )
                 Spacer(
                     modifier = Modifier
                         .height(2.dp)
-                        .background(Purple500)
+                        .background(Teal200)
                         .width(100.dp)
                 )
             }
@@ -163,7 +169,7 @@ fun UserDataScreen(
                 Spacer(
                     modifier = Modifier
                         .height(2.dp)
-                        .background(Purple500)
+                        .background(Teal200)
                         .width(100.dp)
                 )
                 Text(
@@ -171,13 +177,13 @@ fun UserDataScreen(
                     modifier = Modifier
                         .width(90.dp)
                         .padding(start = 5.dp, end = 5.dp),
-                    color = Purple500,
+                    color = Teal200,
                     textAlign = TextAlign.Center
                 )
                 Spacer(
                     modifier = Modifier
                         .height(2.dp)
-                        .background(Purple500)
+                        .background(Teal200)
                         .width(100.dp)
                 )
             }

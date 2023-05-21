@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import hr.fer.carpulse.R
@@ -109,7 +110,8 @@ fun HomeScreen(
                     text = if (isConnected) stringResource(
                         id = R.string.connected
                     ) else stringResource(id = R.string.disconnected),
-                    color = if (isConnected) Purple200 else MaterialTheme.colors.onSurface
+                    color = if (isConnected) Purple200 else MaterialTheme.colors.onSurface,
+                    fontWeight = FontWeight.Medium
                 )
             }
 

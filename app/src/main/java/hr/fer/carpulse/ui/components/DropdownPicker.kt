@@ -41,11 +41,12 @@ fun DropdownPicker(
                 )
             },
             colors = ExposedDropdownMenuDefaults.textFieldColors(
+                textColor = MaterialTheme.colors.onBackground,
                 trailingIconColor = Color.Gray,
-                focusedTrailingIconColor = Color.Black,
-                focusedIndicatorColor = Color.Gray,
-                unfocusedIndicatorColor = Color.LightGray,
-                focusedLabelColor = Color.Black,
+                focusedTrailingIconColor = MaterialTheme.colors.onBackground,
+                focusedIndicatorColor = MaterialTheme.colors.onBackground,
+                unfocusedIndicatorColor = Color.Gray,
+                focusedLabelColor = Color.Gray,
                 unfocusedLabelColor = Color.Gray,
                 placeholderColor = Color.LightGray
             )

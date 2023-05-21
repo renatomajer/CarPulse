@@ -33,7 +33,7 @@ fun LabeledRadioButton(
             )
         )
 
-        Text(text = text)
+        Text(text = text, color = MaterialTheme.colors.onBackground)
     }
 }
 
