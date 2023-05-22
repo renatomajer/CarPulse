@@ -7,6 +7,9 @@ import com.github.pires.obd.commands.SpeedCommand
 import com.github.pires.obd.commands.engine.LoadCommand
 import com.github.pires.obd.commands.engine.RPMCommand
 import com.github.pires.obd.commands.engine.ThrottlePositionCommand
+import com.github.pires.obd.commands.protocol.AvailablePidsCommand_01_20
+import com.github.pires.obd.commands.protocol.AvailablePidsCommand_21_40
+import com.github.pires.obd.commands.protocol.AvailablePidsCommand_41_60
 import com.github.pires.obd.commands.protocol.EchoOffCommand
 import com.github.pires.obd.commands.protocol.LineFeedOffCommand
 import com.github.pires.obd.commands.protocol.SelectProtocolCommand
@@ -134,6 +137,22 @@ class OBDCommunication(
         }
 
         return data
+    }
+
+
+    fun getAvailablePids_01_20(): String {
+        val availablePidsCommand0120 = AvailablePidsCommand_01_20()
+        return getDataFromCommand(availablePidsCommand0120)
+    }
+
+    fun getAvailablePids_21_40(): String {
+        val availablePidsCommand2140 = AvailablePidsCommand_21_40()
+        return getDataFromCommand(availablePidsCommand2140)
+    }
+
+    fun getAvailablePids_41_60(): String {
+        val availablePidsCommand4160 = AvailablePidsCommand_41_60()
+        return getDataFromCommand(availablePidsCommand4160)
     }
 
 }

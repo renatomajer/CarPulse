@@ -9,6 +9,7 @@ import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendTripReviewUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -23,11 +24,10 @@ class TripReviewScreenViewModel(
 
     init {
         viewModelScope.launch {
-            getDriverDataUseCase().collect { driverData ->
-                _tripReview.value = _tripReview.value.copy(
-                    email = driverData.email
-                )
-            }
+            val driverData = getDriverDataUseCase().first()
+            _tripReview.value = _tripReview.value.copy(
+                email = driverData.email
+            )
         }
 
         val time = Calendar.getInstance().time

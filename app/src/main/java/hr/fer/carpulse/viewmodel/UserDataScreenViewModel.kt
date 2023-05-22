@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class UserDataScreenViewModel(
@@ -245,10 +246,9 @@ class UserDataScreenViewModel(
 
     fun getDriverData() {
         viewModelScope.launch {
-            getDriverDataUseCase().collect {
-                _driverData.value = it
-                Log.d("debug_log", "Data stored: " + it.toString())
-            }
+           val dd = getDriverDataUseCase().first()
+            _driverData.value = dd
+            Log.d("debug_log", "Data stored: " + dd.toString())
         }
     }
 

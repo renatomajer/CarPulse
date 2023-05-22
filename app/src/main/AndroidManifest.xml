@@ -12,6 +12,8 @@
 
     <uses-feature android:name="android.hardware.bluetooth" />
 
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
     <application
         android:name=".di.CarPulseApplication"
         android:allowBackup="true"

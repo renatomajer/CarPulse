@@ -11,12 +11,16 @@ import hr.fer.carpulse.data.api.Api
 import hr.fer.carpulse.data.api.MockedApi
 import hr.fer.carpulse.data.repository.DataStoreRepositoryImpl
 import hr.fer.carpulse.data.repository.DriverDataRepositoryImpl
+import hr.fer.carpulse.data.repository.TripsRepositoryImpl
 import hr.fer.carpulse.domain.repointerfaces.DataStoreRepository
 import hr.fer.carpulse.domain.repointerfaces.DriverDataRepository
+import hr.fer.carpulse.domain.repointerfaces.TripsRepository
 import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SaveDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendTripReviewUseCase
+import hr.fer.carpulse.domain.usecase.trip.SendTripStartInfoUseCase
+import hr.fer.carpulse.util.PhoneUtils
 import hr.fer.carpulse.viewmodel.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,12 +35,17 @@ val appModule = module {
         AndroidBluetoothController(context = androidApplication())
     }
 
+    // TODO put api creation in its own module
     single<Api> {
         MockedApi()
     }
 
     single<DriverDataRepository> {
         DriverDataRepositoryImpl(driverDataDao = get(), mapper = get(), api = get())
+    }
+
+    single<TripsRepository> {
+        TripsRepositoryImpl(api = get())
     }
 
     single {
@@ -55,12 +64,26 @@ val appModule = module {
         SendTripReviewUseCase(driverDataRepository = get())
     }
 
+    single {
+        SendTripStartInfoUseCase(tripsRepository = get())
+    }
+
+    single {
+        PhoneUtils(context = androidApplication())
+    }
+
+
     viewModel {
         ConnectScreenViewModel(bluetoothController = get())
     }
 
     viewModel {
-        HomeScreenViewModel(bluetoothController = get())
+        HomeScreenViewModel(
+            bluetoothController = get(),
+            phoneUtils = get(),
+            getDriverDataUseCase = get(),
+            sendTripStartInfoUseCase = get()
+        )
     }
 
     viewModel {
