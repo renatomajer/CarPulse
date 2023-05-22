@@ -64,4 +64,7 @@
     <string name="efficiency_knowledge">Efficiency knowledge</string>
     <string name="efficiency_estimation">Efficiency estimation</string>
     <string name="comment">Comment</string>
+    <string name="data_saving">Data saving</string>
+    <string name="save_data_locally">Save data locally</string>
+    <string name="save_data_locally_description">When ON, the data will be stored locally. When OFF, the data will be sent to server.</string>
 </resources>

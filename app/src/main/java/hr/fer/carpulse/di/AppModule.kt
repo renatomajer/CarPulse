@@ -19,6 +19,8 @@ import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SaveDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendTripReviewUseCase
+import hr.fer.carpulse.domain.usecase.preferences.ReadLocalStorageStateUseCase
+import hr.fer.carpulse.domain.usecase.preferences.SaveLocalStorageStateUseCase
 import hr.fer.carpulse.domain.usecase.trip.SendTripStartInfoUseCase
 import hr.fer.carpulse.util.PhoneUtils
 import hr.fer.carpulse.viewmodel.*
@@ -48,6 +50,10 @@ val appModule = module {
         TripsRepositoryImpl(api = get())
     }
 
+    single<DataStoreRepository> {
+        DataStoreRepositoryImpl(dataStore = get())
+    }
+
     single {
         GetDriverDataUseCase(driverDataRepository = get())
     }
@@ -66,6 +72,14 @@ val appModule = module {
 
     single {
         SendTripStartInfoUseCase(tripsRepository = get())
+    }
+
+    single {
+        ReadLocalStorageStateUseCase(dataStoreRepository = get())
+    }
+
+    single {
+        SaveLocalStorageStateUseCase(dataStoreRepository = get())
     }
 
     single {
@@ -103,8 +117,11 @@ val appModule = module {
         TripReviewScreenViewModel(sendTripReviewUseCase = get(), getDriverDataUseCase = get())
     }
 
-    single<DataStoreRepository> {
-        DataStoreRepositoryImpl(dataStore = get())
+    viewModel {
+        SettingsScreenViewModel(
+            saveLocalStorageStateUseCase = get(),
+            readLocalStorageStateUseCase = get()
+        )
     }
 }
 

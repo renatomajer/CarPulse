@@ -18,6 +18,7 @@ class DataStoreRepositoryImpl(
 
     private object PreferencesKey {
         val onBoardingKey = booleanPreferencesKey(name = "on_boarding_complete")
+        val localStorageKey = booleanPreferencesKey(name = "store_locally")
     }
 
     override suspend fun saveOnBoardingState(completed: Boolean) {
@@ -38,6 +39,28 @@ class DataStoreRepositoryImpl(
             .map { preferences ->
                 val onBoardingState = preferences[PreferencesKey.onBoardingKey] ?: false
                 onBoardingState
+            }
+    }
+
+    override suspend fun saveLocalStorageState(storeLocally: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.localStorageKey] = storeLocally
+        }
+    }
+
+    // if true, the data should be saved locally
+    override fun readLocalStorageState(): Flow<Boolean> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                val localStorageState = preferences[PreferencesKey.localStorageKey] ?: false
+                localStorageState
             }
     }
 }
