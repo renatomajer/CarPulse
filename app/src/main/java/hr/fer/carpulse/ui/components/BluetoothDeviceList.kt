@@ -19,7 +19,7 @@ import hr.fer.carpulse.R
 import hr.fer.carpulse.domain.common.BluetoothDevice
 import hr.fer.carpulse.ui.theme.Teal200
 import hr.fer.carpulse.ui.theme.Typography
-import hr.fer.carpulse.ui.theme.smallPadding
+import hr.fer.carpulse.ui.theme.mediumPadding
 
 @Composable
 fun BluetoothDeviceList(
@@ -37,7 +37,7 @@ fun BluetoothDeviceList(
             Text(
                 text = stringResource(id = R.string.paired_devices),
                 style = Typography.h2,
-                modifier = Modifier.padding(smallPadding),
+                modifier = Modifier.padding(mediumPadding),
                 color = Teal200
             )
         }
@@ -59,7 +59,7 @@ fun BluetoothDeviceList(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onClickConnect(device) }
-                        .padding(smallPadding)
+                        .padding(mediumPadding)
                 )
             }
         }
@@ -77,7 +77,7 @@ fun BluetoothDeviceList(
             Text(
                 text = stringResource(id = R.string.scanned_devices),
                 style = Typography.h2,
-                modifier = Modifier.padding(smallPadding),
+                modifier = Modifier.padding(mediumPadding),
                 color = Teal200
             )
         }

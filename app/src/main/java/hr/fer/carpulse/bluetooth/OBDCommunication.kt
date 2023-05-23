@@ -132,7 +132,8 @@ class OBDCommunication(
             command.run(socket.inputStream, socket.outputStream)
             command.formattedResult
 
-        } catch (e: NoDataException) {
+//        } catch (e: NoDataException) {
+        } catch (e: Exception) {
             OBDReading.NO_DATA
         }
 

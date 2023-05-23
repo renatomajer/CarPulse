@@ -1,6 +1,6 @@
 package hr.fer.carpulse.data.database.mapper
 
-import hr.fer.carpulse.data.database.DriverDataEntity
+import hr.fer.carpulse.data.database.driver.DriverDataEntity
 import hr.fer.carpulse.domain.common.driver.DriverData
 
 class DriverDataMapper : EntityMapper<DriverData, DriverDataEntity> {

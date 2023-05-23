@@ -8,9 +8,14 @@ import hr.fer.carpulse.bluetooth.OBDCommunication
 import hr.fer.carpulse.domain.common.obd.OBDReading
 import hr.fer.carpulse.domain.common.trip.MobileDeviceInfo
 import hr.fer.carpulse.domain.common.trip.TripStartInfo
+import hr.fer.carpulse.domain.common.trip.TripSummary
 import hr.fer.carpulse.domain.common.trip.VehicleInfo
 import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
+import hr.fer.carpulse.domain.usecase.preferences.ReadLocalStorageStateUseCase
+import hr.fer.carpulse.domain.usecase.trip.SaveTripSummaryUseCase
 import hr.fer.carpulse.domain.usecase.trip.SendTripStartInfoUseCase
+import hr.fer.carpulse.domain.usecase.trip.obd.SaveOBDReadingUseCase
+import hr.fer.carpulse.domain.usecase.trip.obd.SendOBDReadingUseCase
 import hr.fer.carpulse.util.PhoneUtils
 import hr.fer.carpulse.util.getAppVersion
 import kotlinx.coroutines.*
@@ -23,7 +28,11 @@ class HomeScreenViewModel(
     private val bluetoothController: BluetoothController,
     private val phoneUtils: PhoneUtils,
     private val getDriverDataUseCase: GetDriverDataUseCase,
-    private val sendTripStartInfoUseCase: SendTripStartInfoUseCase
+    private val sendTripStartInfoUseCase: SendTripStartInfoUseCase,
+    private val readLocalStorageStateUseCase: ReadLocalStorageStateUseCase,
+    private val saveOBDReadingUseCase: SaveOBDReadingUseCase,
+    private val saveTripSummaryUseCase: SaveTripSummaryUseCase,
+    private val sendOBDReadingUseCase: SendOBDReadingUseCase
 ) : ViewModel() {
 
     private val isMeasuring = MutableStateFlow(false)
@@ -35,19 +44,32 @@ class HomeScreenViewModel(
     private val obdReadingData = MutableSharedFlow<OBDReading>()
 
     var tripUUID: UUID? = null
+    var tripStartTimestamp: Long = 0L
+
+    private var storeDataLocally: Boolean = false
+
+    // TODO: compare and store values according to obd readings
+    var maxTripRPM: Int = 0
+    var maxTripSpeed: Int = 0
 
     fun startMeasuring() {
         // TODO remove the lines below- added only for testing purposes
-        tripUUID = UUID.randomUUID()
-        sendTripStartInfo()
+//        generateAndSendTripStartInfo()
+//        // Read the value from DataStore
+//        viewModelScope.launch(Dispatchers.IO) {
+//            storeDataLocally = readLocalStorageStateUseCase().first()
+//        }
+        //TODO remove until here
 
         if (bluetoothController.isConnected.value) {
             isMeasuring.update { true }
 
-            // TODO: check if it is better to generate UUID with nameUUIDFromBytes and pass email and timestamp as parameter
-//           tripUUID = UUID.randomUUID()
+            // Read the value from DataStore
+            viewModelScope.launch(Dispatchers.IO) {
+                storeDataLocally = readLocalStorageStateUseCase().first()
+            }
 
-//            sendTripStartInfo()
+            generateAndSendTripStartInfo()
             readOBDDataJob = readOBDData()
 
         } else {
@@ -65,6 +87,22 @@ class HomeScreenViewModel(
         readOBDDataJob?.cancel()
         readOBDDataJob = null
 
+        // save summary only if the trip was previously started
+        if (tripStartTimestamp != 0L && tripUUID != null) {
+            viewModelScope.launch(Dispatchers.IO) {
+                val tripSummary = TripSummary(
+                    tripUUID = tripUUID.toString(),
+                    startTimestamp = tripStartTimestamp,
+                    endTimestamp = System.currentTimeMillis(),
+                    maxRPM = maxTripRPM,
+                    maxSpeed = maxTripSpeed,
+                    sent = !storeDataLocally
+                )
+
+                saveTripSummaryUseCase(tripSummary)
+            }
+        }
+
         isMeasuring.update { false }
     }
 
@@ -79,6 +117,10 @@ class HomeScreenViewModel(
                 while (true) {
 
                     val reading = obd.readData()
+
+                    checkAndUpdateMaxValues(reading)
+                    sendOrStoreReading(reading)
+
                     obdReadingData.emit(reading)
 
                     delay(5000L)
@@ -89,7 +131,10 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun sendTripStartInfo() {
+    private fun generateAndSendTripStartInfo() {
+        // TODO: check if it is better to generate UUID with nameUUIDFromBytes and pass email and timestamp as parameter
+        tripUUID = UUID.randomUUID()
+        tripStartTimestamp = System.currentTimeMillis()
 
         viewModelScope.launch(Dispatchers.IO) {
             val driverData = getDriverDataUseCase().first()
@@ -126,13 +171,61 @@ class HomeScreenViewModel(
                 vehicleInfo = vehicleInfo,
                 mobileDeviceInfo = mobileDeviceInfo,
                 tripId = tripUUID.toString(),
-                tripStartTimestamp = System.currentTimeMillis().toString()
+                tripStartTimestamp = tripStartTimestamp.toString()
             )
 
             Log.d("debug_log", "Sending trip start info...")
             sendTripStartInfoUseCase(tripStartInfo)
         }
 
+    }
+
+    /**
+     * Checks whether the local storage is turned on, and sends the reading to server via API, or stores the reading locally,
+     * depending on the value stored in DataStore.
+     */
+    private fun sendOrStoreReading(obdReading: OBDReading) {
+
+        viewModelScope.launch(Dispatchers.IO) {
+            if (storeDataLocally) {
+                // store to DB
+                saveOBDReadingUseCase(obdReading = obdReading, tripUUID = tripUUID.toString())
+            } else {
+                // send data to server
+                sendOBDReadingUseCase(obdReading = obdReading, tripUUID = tripUUID.toString())
+            }
+        }
+    }
+
+    private fun checkAndUpdateMaxValues(obdReading: OBDReading) {
+        var speed = obdReading.speed
+        var rpm = obdReading.rpm
+
+        if (rpm != OBDReading.NO_DATA) {
+            rpm = rpm.removeSuffix("RPM")
+            try {
+                val rpmValue = rpm.toInt()
+                if (rpmValue > maxTripRPM) {
+                    maxTripRPM = rpmValue
+                }
+
+            } catch (e: Exception) {
+                Log.d("debug_log", "Caught exception while parsing RPM: $e")
+            }
+        }
+
+        if (speed != OBDReading.NO_DATA) {
+            speed = speed.removeSuffix("km/h")
+            try {
+                val speedValue = speed.toInt()
+                if (speedValue > maxTripSpeed) {
+                    maxTripSpeed = speedValue
+                }
+
+            } catch (e: Exception) {
+                Log.d("debug_log", "Caught exception while parsing speed: $e")
+            }
+        }
     }
 
     fun getIsMeasuring() = isMeasuring.asStateFlow()

@@ -13,7 +13,7 @@ import hr.fer.carpulse.R
 import hr.fer.carpulse.domain.common.BluetoothDevice
 import hr.fer.carpulse.ui.theme.Purple200
 import hr.fer.carpulse.ui.theme.Typography
-import hr.fer.carpulse.ui.theme.smallPadding
+import hr.fer.carpulse.ui.theme.mediumPadding
 
 @Composable
 fun BluetoothDeviceComponent(
@@ -32,7 +32,7 @@ fun BluetoothDeviceComponent(
                     onClickDisconnect()
                 }
             }
-            .padding(smallPadding)
+            .padding(mediumPadding)
     ) {
 
         Text(

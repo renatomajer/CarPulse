@@ -47,8 +47,8 @@ fun Navigation(
             SettingsScreen(navController = navController)
         }
 
-        composable(route = Screens.MeasurementsScreen.route) {
-            MeasurementsScreen(navController = navController)
+        composable(route = Screens.TripsScreen.route) {
+            TripsScreen(navController = navController, context = applicationContext)
         }
 
         composable(

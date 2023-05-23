@@ -2,6 +2,7 @@ package hr.fer.carpulse.data.api
 
 import android.util.Log
 import hr.fer.carpulse.domain.common.driver.DriverData
+import hr.fer.carpulse.domain.common.obd.Reading
 import hr.fer.carpulse.domain.common.trip.TripReview
 import hr.fer.carpulse.domain.common.trip.TripStartInfo
 import kotlinx.serialization.encodeToString
@@ -23,6 +24,11 @@ class MockedApi() : Api {
 
     override fun sendTripStartInfo(tripStartInfo: TripStartInfo) {
         val jsonString = format.encodeToString(tripStartInfo)
+        Log.d("debug_log", jsonString)
+    }
+
+    override fun sendReading(reading: Reading) {
+        val jsonString = format.encodeToString(reading)
         Log.d("debug_log", jsonString)
     }
 

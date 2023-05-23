@@ -11,7 +11,8 @@ val Shapes = Shapes(
 )
 
 val microPadding = 5.dp
-val smallPadding = 15.dp
+val smallPadding = 10.dp
+val mediumPadding = 15.dp
 
 val readingsBoxInnerPadding = 8.dp
 

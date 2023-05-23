@@ -21,7 +21,10 @@ import hr.fer.carpulse.domain.usecase.driver.SendDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendTripReviewUseCase
 import hr.fer.carpulse.domain.usecase.preferences.ReadLocalStorageStateUseCase
 import hr.fer.carpulse.domain.usecase.preferences.SaveLocalStorageStateUseCase
+import hr.fer.carpulse.domain.usecase.trip.GetAllTripSummariesUseCase
+import hr.fer.carpulse.domain.usecase.trip.SaveTripSummaryUseCase
 import hr.fer.carpulse.domain.usecase.trip.SendTripStartInfoUseCase
+import hr.fer.carpulse.domain.usecase.trip.obd.*
 import hr.fer.carpulse.util.PhoneUtils
 import hr.fer.carpulse.viewmodel.*
 import kotlinx.coroutines.CoroutineScope
@@ -47,7 +50,13 @@ val appModule = module {
     }
 
     single<TripsRepository> {
-        TripsRepositoryImpl(api = get())
+        TripsRepositoryImpl(
+            api = get(),
+            tripSummaryMapper = get(),
+            tripSummaryDao = get(),
+            obdReadingMapper = get(),
+            obdReadingsDao = get()
+        )
     }
 
     single<DataStoreRepository> {
@@ -83,6 +92,38 @@ val appModule = module {
     }
 
     single {
+        SaveTripSummaryUseCase(tripsRepository = get())
+    }
+
+    single {
+        GetAllTripSummariesUseCase(tripsRepository = get())
+    }
+
+    single {
+        GetAllOBDReadingsUseCase(tripsRepository = get())
+    }
+
+    single {
+        GetOBDReadingsUseCase(tripsRepository = get())
+    }
+
+    single {
+        GetAllUnsentUUIDsUseCase(tripsRepository = get())
+    }
+
+    single {
+        SaveOBDReadingUseCase(tripsRepository = get())
+    }
+
+    single {
+        SendOBDReadingUseCase(tripsRepository = get())
+    }
+
+    single {
+        UpdateSummarySentStatusUseCase(tripsRepository = get())
+    }
+
+    single {
         PhoneUtils(context = androidApplication())
     }
 
@@ -96,7 +137,11 @@ val appModule = module {
             bluetoothController = get(),
             phoneUtils = get(),
             getDriverDataUseCase = get(),
-            sendTripStartInfoUseCase = get()
+            sendTripStartInfoUseCase = get(),
+            readLocalStorageStateUseCase = get(),
+            saveOBDReadingUseCase = get(),
+            saveTripSummaryUseCase = get(),
+            sendOBDReadingUseCase = get()
         )
     }
 
@@ -121,6 +166,16 @@ val appModule = module {
         SettingsScreenViewModel(
             saveLocalStorageStateUseCase = get(),
             readLocalStorageStateUseCase = get()
+        )
+    }
+
+    viewModel {
+        TripsScreenViewModel(
+            getAllTripSummariesUseCase = get(),
+            getAllUnsentUUIDsUseCase = get(),
+            getOBDReadingsUseCase = get(),
+            sendOBDReadingUseCase = get(),
+            updateSummarySentStatusUseCase = get()
         )
     }
 }

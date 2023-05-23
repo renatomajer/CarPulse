@@ -19,7 +19,7 @@ import hr.fer.carpulse.ui.components.ScreenTopBar
 import hr.fer.carpulse.ui.theme.Teal200
 import hr.fer.carpulse.ui.theme.Typography
 import hr.fer.carpulse.ui.theme.microPadding
-import hr.fer.carpulse.ui.theme.smallPadding
+import hr.fer.carpulse.ui.theme.mediumPadding
 import hr.fer.carpulse.viewmodel.SettingsScreenViewModel
 import org.koin.androidx.compose.getViewModel
 
@@ -44,7 +44,7 @@ fun SettingsScreen(
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = smallPadding, bottom = smallPadding, start = microPadding),
+                    .padding(top = mediumPadding, bottom = mediumPadding, start = microPadding),
                 text = stringResource(id = R.string.basic_information),
                 style = Typography.h6,
                 color = Teal200
@@ -52,7 +52,7 @@ fun SettingsScreen(
 
             Column(modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = microPadding, end = microPadding, bottom = smallPadding)
+                .padding(start = microPadding, end = microPadding, bottom = mediumPadding)
                 .clickable {
                     navController.navigate(Screens.UserDataScreen.route)
                 }) {
@@ -75,7 +75,7 @@ fun SettingsScreen(
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = smallPadding, bottom = smallPadding, start = microPadding),
+                    .padding(top = mediumPadding, bottom = mediumPadding, start = microPadding),
                 text = stringResource(id = R.string.data_saving),
                 style = Typography.h6,
                 color = Teal200
@@ -89,7 +89,7 @@ fun SettingsScreen(
 
                 Column(modifier = Modifier
                     .weight(1f)
-                    .padding(start = microPadding, end = microPadding, bottom = smallPadding)
+                    .padding(start = microPadding, end = microPadding, bottom = mediumPadding)
                     .clickable { }) {
                     Text(
                         text = stringResource(id = R.string.save_data_locally),

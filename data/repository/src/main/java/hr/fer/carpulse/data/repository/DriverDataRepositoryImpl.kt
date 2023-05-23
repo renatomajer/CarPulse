@@ -1,7 +1,7 @@
 package hr.fer.carpulse.data.repository
 
 import hr.fer.carpulse.data.api.Api
-import hr.fer.carpulse.data.database.IDriverDataDao
+import hr.fer.carpulse.data.database.driver.IDriverDataDao
 import hr.fer.carpulse.data.database.mapper.DriverDataMapper
 import hr.fer.carpulse.domain.common.driver.DriverData
 import hr.fer.carpulse.domain.common.trip.TripReview

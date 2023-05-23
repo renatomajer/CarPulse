@@ -19,7 +19,7 @@ import hr.fer.carpulse.navigation.Screens
 import hr.fer.carpulse.ui.components.OBDReadingDataComponent
 import hr.fer.carpulse.ui.theme.Purple200
 import hr.fer.carpulse.ui.theme.measurementButtonsTopBottomPadding
-import hr.fer.carpulse.ui.theme.smallPadding
+import hr.fer.carpulse.ui.theme.mediumPadding
 import hr.fer.carpulse.viewmodel.HomeScreenViewModel
 import org.koin.androidx.compose.getViewModel
 
@@ -71,9 +71,9 @@ fun HomeScreen(
                         }
 
                         DropdownMenuItem(onClick = {
-                            navController.navigate(Screens.MeasurementsScreen.route)
+                            navController.navigate(Screens.TripsScreen.route)
                         }) {
-                            Text(text = stringResource(id = R.string.show_measurements))
+                            Text(text = stringResource(id = R.string.show_trips))
                         }
 
                         DropdownMenuItem(onClick = {
@@ -100,7 +100,7 @@ fun HomeScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(smallPadding)
+                    .padding(mediumPadding)
             ) {
                 Text(
                     text = stringResource(id = R.string.obd_device_status)
@@ -140,7 +140,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .width(150.dp)
                         .height(50.dp),
-//                    enabled = isMeasuring,
+                    enabled = isMeasuring,
                     onClick = {
                         homeScreenViewModel.stopMeasuring()
                         navController.navigate(Screens.TripReviewScreen.route + "/${homeScreenViewModel.tripUUID}")

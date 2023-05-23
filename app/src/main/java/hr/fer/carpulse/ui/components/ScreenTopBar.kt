@@ -11,7 +11,8 @@ import hr.fer.carpulse.R
 @Composable
 fun ScreenTopBar(
     onBackArrowClick: () -> Unit = {},
-    content: @Composable (paddingValues: PaddingValues) -> Unit = {}
+    actions: @Composable () -> Unit = {},
+    content: @Composable (paddingValues: PaddingValues) -> Unit = {},
 ) {
 
     Scaffold(
@@ -29,6 +30,9 @@ fun ScreenTopBar(
                             )
                         )
                     }
+                },
+                actions = {
+                    actions()
                 }
             )
         }

@@ -1,4 +1,4 @@
-package hr.fer.carpulse.data.database
+package hr.fer.carpulse.data.database.driver
 
 import androidx.room.Dao
 import androidx.room.Insert
