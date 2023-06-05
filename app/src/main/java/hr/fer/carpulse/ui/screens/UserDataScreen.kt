@@ -122,7 +122,8 @@ fun UserDataScreen(
                 },
                 imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Email,
-                keyboardActions = keyboardActions
+                keyboardActions = keyboardActions,
+                readOnly = !isOnboarding
             )
         }
 
