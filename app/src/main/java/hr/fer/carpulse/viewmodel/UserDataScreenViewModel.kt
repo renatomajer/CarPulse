@@ -9,6 +9,8 @@ import hr.fer.carpulse.domain.repointerfaces.DataStoreRepository
 import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SaveDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendDriverDataUseCase
+import hr.fer.carpulse.domain.usecase.mqtt.ConnectToBrokerUseCase
+import hr.fer.carpulse.domain.usecase.mqtt.DisconnectFromBrokerUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,11 +22,17 @@ class UserDataScreenViewModel(
     private val dataStoreRepository: DataStoreRepository,
     private val saveDriverDataUseCase: SaveDriverDataUseCase,
     private val getDriverDataUseCase: GetDriverDataUseCase,
-    private val sendDriverDataUseCase: SendDriverDataUseCase
+    private val sendDriverDataUseCase: SendDriverDataUseCase,
+    private val connectToBrokerUseCase: ConnectToBrokerUseCase,
+    private val disconnectFromBrokerUseCase: DisconnectFromBrokerUseCase
 ) : ViewModel() {
 
     private val _driverData = MutableStateFlow(DriverData())
     val driverData: StateFlow<DriverData> = _driverData.asStateFlow()
+
+    init {
+        connectToBrokerUseCase()
+    }
 
     fun saveOnBoardingState(completed: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -246,7 +254,7 @@ class UserDataScreenViewModel(
 
     fun getDriverData() {
         viewModelScope.launch {
-           val dd = getDriverDataUseCase().first()
+            val dd = getDriverDataUseCase().first()
             _driverData.value = dd
             Log.d("debug_log", "Data stored: " + dd.toString())
         }
@@ -254,5 +262,10 @@ class UserDataScreenViewModel(
 
     fun sendDriverData() {
         sendDriverDataUseCase(_driverData.value)
+    }
+
+    override fun onCleared() {
+        disconnectFromBrokerUseCase()
+        super.onCleared()
     }
 }

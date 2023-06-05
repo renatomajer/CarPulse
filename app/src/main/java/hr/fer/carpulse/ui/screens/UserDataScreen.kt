@@ -4,8 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -16,7 +19,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import hr.fer.carpulse.R
 import hr.fer.carpulse.domain.common.driver.Gender
@@ -25,9 +27,7 @@ import hr.fer.carpulse.navigation.Screens
 import hr.fer.carpulse.ui.components.DataTextField
 import hr.fer.carpulse.ui.components.DropdownPicker
 import hr.fer.carpulse.ui.components.LabeledRadioButton
-import hr.fer.carpulse.ui.theme.Teal200
-import hr.fer.carpulse.ui.theme.Typography
-import hr.fer.carpulse.ui.theme.microPadding
+import hr.fer.carpulse.ui.theme.*
 import hr.fer.carpulse.util.defaultKeyboardActions
 import hr.fer.carpulse.viewmodel.UserDataScreenViewModel
 import org.koin.androidx.compose.getViewModel
@@ -53,7 +53,7 @@ fun UserDataScreen(
     LazyColumn(
         modifier = Modifier
             .background(MaterialTheme.colors.background)
-            .padding(start = microPadding, end = microPadding)
+            .padding(start = smallPadding, end = smallPadding)
             .fillMaxSize()
     ) {
 
@@ -64,7 +64,7 @@ fun UserDataScreen(
                     style = Typography.h2,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = microPadding, bottom = microPadding),
+                        .padding(top = bigPadding, bottom = bigPadding),
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colors.onBackground
                 )
@@ -73,36 +73,42 @@ fun UserDataScreen(
             item {
                 Text(
                     text = stringResource(id = R.string.enter_user_data_message),
-                    color = MaterialTheme.colors.onBackground
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = smallPadding, bottom = smallPadding),
+                    color = MaterialTheme.colors.onBackground,
+                    textAlign = TextAlign.Center
                 )
             }
         }
 
         item {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = bigPadding, bottom = bigPadding),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Spacer(
                     modifier = Modifier
-                        .height(2.dp)
+                        .height(userDataTitleSpacerHeight)
                         .background(Teal200)
-                        .width(100.dp)
+                        .width(userDataTitleSpacerWidth)
                 )
                 Text(
                     text = stringResource(id = R.string.driver_info).uppercase(Locale.getDefault()),
                     modifier = Modifier
-                        .width(90.dp)
-                        .padding(start = 5.dp, end = 5.dp),
+                        .width(userDataTitleTextWidth)
+                        .padding(start = microPadding, end = microPadding),
                     color = Teal200,
                     textAlign = TextAlign.Center
                 )
                 Spacer(
                     modifier = Modifier
-                        .height(2.dp)
+                        .height(userDataTitleSpacerHeight)
                         .background(Teal200)
-                        .width(100.dp)
+                        .width(userDataTitleSpacerWidth)
                 )
             }
         }
@@ -116,8 +122,7 @@ fun UserDataScreen(
                 },
                 imeAction = ImeAction.Next,
                 keyboardType = KeyboardType.Email,
-                keyboardActions = keyboardActions,
-                readOnly = !isOnboarding
+                keyboardActions = keyboardActions
             )
         }
 
@@ -136,14 +141,20 @@ fun UserDataScreen(
 
         item {
             Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = microPadding),
                 text = stringResource(id = R.string.gender) + ":",
-                color = MaterialTheme.colors.onBackground
+                color = MaterialTheme.colors.onBackground,
+                textAlign = TextAlign.Start
             )
         }
 
         item {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = bigPadding),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 LabeledRadioButton(
@@ -165,41 +176,51 @@ fun UserDataScreen(
 
         item {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = bigPadding, bottom = bigPadding),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Spacer(
                     modifier = Modifier
-                        .height(2.dp)
+                        .height(userDataTitleSpacerHeight)
                         .background(Teal200)
-                        .width(100.dp)
+                        .width(userDataTitleSpacerWidth)
                 )
                 Text(
                     text = stringResource(id = R.string.car_info).uppercase(Locale.getDefault()),
                     modifier = Modifier
-                        .width(90.dp)
-                        .padding(start = 5.dp, end = 5.dp),
+                        .width(userDataTitleTextWidth)
+                        .padding(start = microPadding, end = microPadding),
                     color = Teal200,
                     textAlign = TextAlign.Center
                 )
                 Spacer(
                     modifier = Modifier
-                        .height(2.dp)
+                        .height(userDataTitleSpacerHeight)
                         .background(Teal200)
-                        .width(100.dp)
+                        .width(userDataTitleSpacerWidth)
                 )
             }
         }
 
         item {
-            DropdownPicker(
-                values = getFuelTypeValues(),
-                onOptionSelected = {
-                    userDataScreenViewModel.updateFuelType(it)
-                },
-                selectedItem = if (driverData.fuelType == "") getFuelTypeValues().first() else driverData.fuelType
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = smallPadding, bottom = smallPadding),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                DropdownPicker(
+                    values = getFuelTypeValues(),
+                    onOptionSelected = {
+                        userDataScreenViewModel.updateFuelType(it)
+                    },
+                    selectedItem = if (driverData.fuelType == "") getFuelTypeValues().first() else driverData.fuelType
+                )
+            }
         }
 
         item {
@@ -243,14 +264,20 @@ fun UserDataScreen(
 
         item {
             Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = microPadding),
                 text = stringResource(id = R.string.start_stop_system) + ":",
-                color = MaterialTheme.colors.onBackground
+                color = MaterialTheme.colors.onBackground,
+                textAlign = TextAlign.Start
             )
         }
 
         item {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = microPadding),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 LabeledRadioButton(
@@ -402,21 +429,42 @@ fun UserDataScreen(
 
 
         item {
-            Button(onClick = {
-                userDataScreenViewModel.saveDriverData()
-                userDataScreenViewModel.sendDriverData()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Button(
+                    modifier = Modifier.padding(top = mediumPadding, bottom = doubleBigPadding),
+                    onClick = {
+                        userDataScreenViewModel.saveDriverData()
+                        userDataScreenViewModel.sendDriverData()
 
-                if (isOnboarding) {
-                    userDataScreenViewModel.saveOnBoardingState(completed = true)
+                        if (isOnboarding) {
+                            userDataScreenViewModel.saveOnBoardingState(completed = true)
+                        }
+
+                        navController.popBackStack()
+
+                        if (isOnboarding) {
+                            navController.navigate(Screens.HomeScreen.route)
+                        }
+                    }) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = Modifier.fillMaxHeight(),
+                            text = stringResource(id = R.string.done)
+                        )
+
+                        Icon(
+                            modifier = Modifier.fillMaxHeight(),
+                            imageVector = Icons.Filled.KeyboardArrowRight,
+                            contentDescription = null
+                        )
+                    }
                 }
-
-                navController.popBackStack()
-
-                if (isOnboarding) {
-                    navController.navigate(Screens.HomeScreen.route)
-                }
-            }) {
-                Text(text = stringResource(id = R.string.done))
             }
         }
 

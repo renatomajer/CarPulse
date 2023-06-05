@@ -1,6 +1,5 @@
 package hr.fer.carpulse.ui.components
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -11,6 +10,7 @@ import hr.fer.carpulse.R
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DropdownPicker(
+    modifier: Modifier = Modifier,
     values: Array<String>,
     selectedItem: String,
     onOptionSelected: (String) -> Unit
@@ -23,7 +23,7 @@ fun DropdownPicker(
 
     // box
     ExposedDropdownMenuBox(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         expanded = expanded,
         onExpandedChange = {
             expanded = !expanded

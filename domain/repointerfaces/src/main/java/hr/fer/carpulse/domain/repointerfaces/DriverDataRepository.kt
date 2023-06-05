@@ -11,5 +11,12 @@ interface DriverDataRepository {
     suspend fun insertDriverData(driverData: DriverData)
 
     fun sendDriverData(driverData: DriverData)
+
     fun sendTripReview(tripReview: TripReview)
+
+    fun getTripReview(tripUUID: String): Flow<TripReview>
+
+    suspend fun insertTripReview(tripReview: TripReview)
+
+    fun deleteTripReview(tripReview: TripReview)
 }

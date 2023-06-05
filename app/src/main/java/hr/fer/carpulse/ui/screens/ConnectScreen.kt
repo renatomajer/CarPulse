@@ -13,10 +13,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.intl.Locale.Companion.current
+import androidx.compose.ui.text.toUpperCase
 import androidx.navigation.NavController
 import hr.fer.carpulse.R
 import hr.fer.carpulse.ui.components.BluetoothDeviceList
 import hr.fer.carpulse.ui.components.ScreenTopBar
+import hr.fer.carpulse.ui.theme.bigPadding
 import hr.fer.carpulse.viewmodel.ConnectScreenViewModel
 import org.koin.androidx.compose.getViewModel
 
@@ -102,23 +105,31 @@ fun ConnectScreen(
                     )
 
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = bigPadding),
+                        horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
 
                         Button(onClick = { connectScreenViewModel.startScan() }) {
-                            Text(text = stringResource(id = R.string.start_scan))
+                            Text(text = stringResource(id = R.string.start_scan).toUpperCase(current))
                         }
 
-                        Button(onClick = { connectScreenViewModel.stopScan() }) {
-                            Text(text = stringResource(id = R.string.stop_scan))
+                        Button(
+                            onClick = { connectScreenViewModel.stopScan() },
+                        ) {
+                            Text(text = stringResource(id = R.string.stop_scan).toUpperCase(current))
                         }
 
-                        if (isConnected) {
-                            Button(onClick = connectScreenViewModel::disconnectFromDevice) {
-                                Text(text = stringResource(id = R.string.disconnect))
-                            }
-                        }
+//                        if (isConnected) {
+//                            Button(onClick = connectScreenViewModel::disconnectFromDevice) {
+//                                Text(
+//                                    text = stringResource(id = R.string.disconnect).toUpperCase(
+//                                        current
+//                                    )
+//                                )
+//                            }
+//                        }
                     }
                 }
 

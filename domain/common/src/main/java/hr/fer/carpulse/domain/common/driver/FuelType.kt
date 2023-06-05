@@ -2,7 +2,7 @@ package hr.fer.carpulse.domain.common.driver
 
 sealed class FuelType(val type: String) {
     object Diesel : FuelType("Diesel")
-    object Petrol : FuelType("Petrol")
+    object Petrol : FuelType("Petrol (Benzine)")
     object LPG : FuelType("LPG")
     object HybridDiesel : FuelType("Hybrid Diesel")
     object HybridPetrol : FuelType("Hybrid Petrol")

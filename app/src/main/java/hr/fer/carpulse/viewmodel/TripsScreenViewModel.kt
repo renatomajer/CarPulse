@@ -2,11 +2,22 @@ package hr.fer.carpulse.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import hr.fer.carpulse.domain.common.contextual.data.LocationData
+import hr.fer.carpulse.domain.usecase.driver.SendTripReviewUseCase
+import hr.fer.carpulse.domain.usecase.mqtt.ConnectToBrokerUseCase
+import hr.fer.carpulse.domain.usecase.mqtt.DisconnectFromBrokerUseCase
 import hr.fer.carpulse.domain.usecase.trip.GetAllTripSummariesUseCase
+import hr.fer.carpulse.domain.usecase.trip.SendTripStartInfoUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetSavedLocationDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetSavedWeatherDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.SendTripReadingDataUseCase
 import hr.fer.carpulse.domain.usecase.trip.obd.GetAllUnsentUUIDsUseCase
 import hr.fer.carpulse.domain.usecase.trip.obd.GetOBDReadingsUseCase
-import hr.fer.carpulse.domain.usecase.trip.obd.SendOBDReadingUseCase
 import hr.fer.carpulse.domain.usecase.trip.obd.UpdateSummarySentStatusUseCase
+import hr.fer.carpulse.domain.usecase.trip.review.DeleteTripReviewUseCase
+import hr.fer.carpulse.domain.usecase.trip.review.GetTripReviewUseCase
+import hr.fer.carpulse.domain.usecase.trip.startInfo.DeleteTripStartInfoUseCase
+import hr.fer.carpulse.domain.usecase.trip.startInfo.GetTripStartInfoUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -15,11 +26,25 @@ class TripsScreenViewModel(
     private val getAllTripSummariesUseCase: GetAllTripSummariesUseCase,
     private val getAllUnsentUUIDsUseCase: GetAllUnsentUUIDsUseCase,
     private val getOBDReadingsUseCase: GetOBDReadingsUseCase,
-    private val sendOBDReadingUseCase: SendOBDReadingUseCase,
-    private val updateSummarySentStatusUseCase: UpdateSummarySentStatusUseCase
+    private val sendTripStartInfoUseCase: SendTripStartInfoUseCase,
+    private val getTripStartInfoUseCase: GetTripStartInfoUseCase,
+    private val deleteTripStartInfoUseCase: DeleteTripStartInfoUseCase,
+    private val getTripReviewUseCase: GetTripReviewUseCase,
+    private val sendTripReviewUseCase: SendTripReviewUseCase,
+    private val deleteTripReviewUseCase: DeleteTripReviewUseCase,
+    private val getSavedLocationDataUseCase: GetSavedLocationDataUseCase,
+    private val updateSummarySentStatusUseCase: UpdateSummarySentStatusUseCase,
+    private val getSavedWeatherDataUseCase: GetSavedWeatherDataUseCase,
+    private val connectToBrokerUseCase: ConnectToBrokerUseCase,
+    private val disconnectFromBrokerUseCase: DisconnectFromBrokerUseCase,
+    private val sendTripReadingDataUseCase: SendTripReadingDataUseCase
 ) : ViewModel() {
 
     val tripSummaries = getAllTripSummariesUseCase()
+
+    init {
+        connectToBrokerUseCase()
+    }
 
     fun sendAll() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -27,18 +52,49 @@ class TripsScreenViewModel(
             val uuids = getAllUnsentUUIDsUseCase().first()
 
             uuids.forEach { uuid ->
+
+                // send trip start info and remove it from database
+                val tripStartInfo = getTripStartInfoUseCase(uuid).first()
+                sendTripStartInfoUseCase(tripStartInfo)
+                deleteTripStartInfoUseCase(tripStartInfo)
+
+                val weatherData = getSavedWeatherDataUseCase(uuid).first()
+
                 val readings =
                     getOBDReadingsUseCase(uuid).first() // get all the readings with the specified uuid
 
-                readings.forEach { obdReading ->
-                    // send reading to server and delete the entry from database
-                    sendOBDReadingUseCase(obdReading, uuid)
+                val locationDataList =
+                    getSavedLocationDataUseCase(uuid).first() // get all location data from the trip
+
+                // last known location data
+                var lastLocationData = locationDataList.firstOrNull() ?: LocationData()
+
+                readings.forEachIndexed { index, obdReading ->
+
+                    // every obdReading should have its location data
+                    val currentLocationData =
+                        locationDataList.getOrElse(index) { lastLocationData }
+
+                    // send location , weather and reading to server and delete the data from database
+                    sendTripReadingDataUseCase(currentLocationData, weatherData, uuid, obdReading)
+
+                    // update last known location data
+                    lastLocationData = currentLocationData
                 }
+
+                // send trip review and remove it from database
+                val tripReview = getTripReviewUseCase(uuid).first()
+                sendTripReviewUseCase(tripReview)
+                deleteTripReviewUseCase(tripReview)
 
                 // all the data is sent to the server - mark trip summary as sent
                 updateSummarySentStatusUseCase(uuid, true)
             }
-
         }
+    }
+
+    override fun onCleared() {
+        disconnectFromBrokerUseCase()
+        super.onCleared()
     }
 }

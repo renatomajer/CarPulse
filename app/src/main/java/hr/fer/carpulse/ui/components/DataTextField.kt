@@ -1,6 +1,7 @@
 package hr.fer.carpulse.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
@@ -14,6 +15,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import hr.fer.carpulse.ui.theme.Purple200
 import hr.fer.carpulse.ui.theme.Typography
+import hr.fer.carpulse.ui.theme.microPadding
 
 @Composable
 fun DataTextField(
@@ -30,7 +32,7 @@ fun DataTextField(
 ) {
 
     OutlinedTextField(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().padding(top = microPadding, bottom = microPadding),
         value = value,
         onValueChange = onChange,
         leadingIcon = leadingIcon,

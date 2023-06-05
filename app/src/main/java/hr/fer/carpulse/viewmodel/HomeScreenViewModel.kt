@@ -5,22 +5,28 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hr.fer.carpulse.bluetooth.BluetoothController
 import hr.fer.carpulse.bluetooth.OBDCommunication
+import hr.fer.carpulse.domain.common.contextual.data.LocationData
+import hr.fer.carpulse.domain.common.contextual.data.WeatherData
 import hr.fer.carpulse.domain.common.obd.OBDReading
 import hr.fer.carpulse.domain.common.trip.MobileDeviceInfo
 import hr.fer.carpulse.domain.common.trip.TripStartInfo
 import hr.fer.carpulse.domain.common.trip.TripSummary
 import hr.fer.carpulse.domain.common.trip.VehicleInfo
 import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
+import hr.fer.carpulse.domain.usecase.mqtt.ConnectToBrokerUseCase
+import hr.fer.carpulse.domain.usecase.mqtt.DisconnectFromBrokerUseCase
 import hr.fer.carpulse.domain.usecase.preferences.ReadLocalStorageStateUseCase
 import hr.fer.carpulse.domain.usecase.trip.SaveTripSummaryUseCase
 import hr.fer.carpulse.domain.usecase.trip.SendTripStartInfoUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.*
 import hr.fer.carpulse.domain.usecase.trip.obd.SaveOBDReadingUseCase
-import hr.fer.carpulse.domain.usecase.trip.obd.SendOBDReadingUseCase
+import hr.fer.carpulse.domain.usecase.trip.startInfo.SaveTripStartInfoUseCase
 import hr.fer.carpulse.util.PhoneUtils
 import hr.fer.carpulse.util.getAppVersion
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.util.*
+
 
 // TODO: check if the bluetoothController should be used as api and accessed trough a separate repository class
 // TODO: refactor the phone utils - containing context
@@ -29,10 +35,18 @@ class HomeScreenViewModel(
     private val phoneUtils: PhoneUtils,
     private val getDriverDataUseCase: GetDriverDataUseCase,
     private val sendTripStartInfoUseCase: SendTripStartInfoUseCase,
+    private val saveTripStartInfoUseCase: SaveTripStartInfoUseCase,
     private val readLocalStorageStateUseCase: ReadLocalStorageStateUseCase,
     private val saveOBDReadingUseCase: SaveOBDReadingUseCase,
     private val saveTripSummaryUseCase: SaveTripSummaryUseCase,
-    private val sendOBDReadingUseCase: SendOBDReadingUseCase
+    private val getLocationDataUseCase: GetLocationDataUseCase,
+    private val updateLocationDataUseCase: UpdateLocationDataUseCase,
+    private val getWeatherDataUseCase: GetWeatherDataUseCase,
+    private val saveLocationDataUseCase: SaveLocationDataUseCase,
+    private val saveWeatherDataUseCase: SaveWeatherDataUseCase,
+    private val connectToBrokerUseCase: ConnectToBrokerUseCase,
+    private val disconnectFromBrokerUseCase: DisconnectFromBrokerUseCase,
+    private val sendTripReadingDataUseCase: SendTripReadingDataUseCase
 ) : ViewModel() {
 
     private val isMeasuring = MutableStateFlow(false)
@@ -43,22 +57,35 @@ class HomeScreenViewModel(
 
     private val obdReadingData = MutableSharedFlow<OBDReading>()
 
+    private var locationDataFlow: StateFlow<LocationData>
+    private lateinit var weatherData: WeatherData
+
     var tripUUID: UUID? = null
     var tripStartTimestamp: Long = 0L
 
     private var storeDataLocally: Boolean = false
 
-    // TODO: compare and store values according to obd readings
     var maxTripRPM: Int = 0
     var maxTripSpeed: Int = 0
 
+    init {
+        updateLocationDataUseCase()
+        locationDataFlow = getLocationDataUseCase()
+    }
+
     fun startMeasuring() {
         // TODO remove the lines below- added only for testing purposes
-//        generateAndSendTripStartInfo()
-//        // Read the value from DataStore
+        // Read the value from DataStore
 //        viewModelScope.launch(Dispatchers.IO) {
 //            storeDataLocally = readLocalStorageStateUseCase().first()
+//
+//            if (!storeDataLocally) {
+//                connectToBrokerUseCase()
+//            }
+//            generateAndSendTripStartInfo()
+//            getApiWeatherData()
 //        }
+
         //TODO remove until here
 
         if (bluetoothController.isConnected.value) {
@@ -67,9 +94,15 @@ class HomeScreenViewModel(
             // Read the value from DataStore
             viewModelScope.launch(Dispatchers.IO) {
                 storeDataLocally = readLocalStorageStateUseCase().first()
+
+                if (!storeDataLocally) {
+                    connectToBrokerUseCase()
+                }
+
+                generateAndSendTripStartInfo()
+                getApiWeatherData()
             }
 
-            generateAndSendTripStartInfo()
             readOBDDataJob = readOBDData()
 
         } else {
@@ -103,6 +136,10 @@ class HomeScreenViewModel(
             }
         }
 
+//        if (!storeDataLocally) {
+//            disconnectFromBrokerUseCase()
+//        }
+
         isMeasuring.update { false }
     }
 
@@ -115,13 +152,15 @@ class HomeScreenViewModel(
             // TODO: launch the coroutine with viewModelScope.launch(Dispatchers.IO) {}
             CoroutineScope(Dispatchers.IO).launch {
                 while (true) {
+                    updateLocationDataUseCase()
 
                     val reading = obd.readData()
 
                     checkAndUpdateMaxValues(reading)
-                    sendOrStoreReading(reading)
 
                     obdReadingData.emit(reading)
+
+                    sendOrStoreTripReadingData(reading)
 
                     delay(5000L)
                 }
@@ -131,24 +170,24 @@ class HomeScreenViewModel(
         }
     }
 
+    // could be called inside the readOBDData coroutine
     private fun generateAndSendTripStartInfo() {
-        // TODO: check if it is better to generate UUID with nameUUIDFromBytes and pass email and timestamp as parameter
         tripUUID = UUID.randomUUID()
         tripStartTimestamp = System.currentTimeMillis()
 
         viewModelScope.launch(Dispatchers.IO) {
             val driverData = getDriverDataUseCase().first()
 
-            var pids0120: String = OBDReading.NO_DATA
-            var pids2140: String = OBDReading.NO_DATA
-            var pids4160: String = OBDReading.NO_DATA
+            var pids0120: String = OBDReading.NA
+            var pids2140: String = OBDReading.NA
+            var pids4160: String = OBDReading.NA
 
             val socket = bluetoothController.getCurrentClientSocket().value
             if (socket != null) {
                 val obd = OBDCommunication(socket)
-                pids0120 = obd.getAvailablePids_01_20()
-                pids2140 = obd.getAvailablePids_21_40()
-                pids4160 = obd.getAvailablePids_41_60()
+                pids0120 = obd.getAvailablePids0120()
+                pids2140 = obd.getAvailablePids2140()
+                pids4160 = obd.getAvailablePids4160()
             }
 
             val vehicleInfo = VehicleInfo(
@@ -174,25 +213,45 @@ class HomeScreenViewModel(
                 tripStartTimestamp = tripStartTimestamp.toString()
             )
 
-            Log.d("debug_log", "Sending trip start info...")
-            sendTripStartInfoUseCase(tripStartInfo)
+            if (storeDataLocally) {
+                Log.d("debug_log", "Saving trip start info...")
+                saveTripStartInfoUseCase(tripStartInfo)
+            } else {
+                Log.d("debug_log", "Sending trip start info...")
+                sendTripStartInfoUseCase(tripStartInfo)
+            }
         }
 
     }
 
     /**
-     * Checks whether the local storage is turned on, and sends the reading to server via API, or stores the reading locally,
+     * Checks whether the local storage is turned on, and sends the data to server via API, or stores the data locally,
      * depending on the value stored in DataStore.
      */
-    private fun sendOrStoreReading(obdReading: OBDReading) {
+    private fun sendOrStoreTripReadingData(obdReading: OBDReading) {
 
         viewModelScope.launch(Dispatchers.IO) {
             if (storeDataLocally) {
                 // store to DB
+
+                Log.d("debug_log", "Saving OBD reading and location...")
                 saveOBDReadingUseCase(obdReading = obdReading, tripUUID = tripUUID.toString())
+                saveLocationDataUseCase(
+                    locationData = locationDataFlow.value,
+                    tripUUID = tripUUID.toString()
+                )
+
             } else {
                 // send data to server
-                sendOBDReadingUseCase(obdReading = obdReading, tripUUID = tripUUID.toString())
+
+                Log.d("debug_log", "Sending data...")
+
+                sendTripReadingDataUseCase(
+                    locationDataFlow.value,
+                    weatherData,
+                    tripUUID.toString(),
+                    obdReading
+                )
             }
         }
     }
@@ -224,6 +283,29 @@ class HomeScreenViewModel(
 
             } catch (e: Exception) {
                 Log.d("debug_log", "Caught exception while parsing speed: $e")
+            }
+        }
+    }
+
+    private fun getApiWeatherData() {
+        updateLocationDataUseCase()
+
+        viewModelScope.launch(Dispatchers.IO) {
+
+            getWeatherDataUseCase(
+                latitude = locationDataFlow.value.latitude,
+                longitude = locationDataFlow.value.longitude
+
+            ).collect { weatherData ->
+
+                Log.d("debug_log", weatherData.toString())
+
+                this@HomeScreenViewModel.weatherData = weatherData
+
+                if (storeDataLocally) {
+                    Log.d("debug_log", "Saving weather data...")
+                    saveWeatherDataUseCase(weatherData, tripUUID.toString())
+                }
             }
         }
     }

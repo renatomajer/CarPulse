@@ -28,5 +28,20 @@ data class OBDReading(
 ) {
     companion object {
         const val NO_DATA = "No Data"
+        const val NA = "NA"
+
+        fun createPublishData(data: OBDReading): OBDReading {
+            return OBDReading(
+                rpm = data.rpm.removeSuffix("RPM"),
+                speed = data.speed.removeSuffix("km/h"),
+                relativeThrottlePosition = data.relativeThrottlePosition,
+                absoluteThrottlePositionB = data.absoluteThrottlePositionB,
+                throttlePosition = data.throttlePosition,
+                acceleratorPedalPositionE = data.acceleratorPedalPositionE,
+                engineLoad = data.engineLoad,
+                acceleratorPedalPositionD = data.acceleratorPedalPositionD,
+                timestamp = data.timestamp
+            )
+        }
     }
 }

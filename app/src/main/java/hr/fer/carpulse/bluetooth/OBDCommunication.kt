@@ -15,7 +15,6 @@ import com.github.pires.obd.commands.protocol.LineFeedOffCommand
 import com.github.pires.obd.commands.protocol.SelectProtocolCommand
 import com.github.pires.obd.commands.protocol.TimeoutCommand
 import com.github.pires.obd.enums.ObdProtocols
-import com.github.pires.obd.exceptions.NoDataException
 import hr.fer.carpulse.domain.common.obd.OBDReading
 import hr.fer.carpulse.domain.common.obd.commands.AbsoluteThrottlePositionBCommand
 import hr.fer.carpulse.domain.common.obd.commands.AcceleratorPedalPositionDCommand
@@ -140,20 +139,38 @@ class OBDCommunication(
         return data
     }
 
-
-    fun getAvailablePids_01_20(): String {
+    // for the pids maybe we should cal the run method and after that get the calculated result
+    fun getAvailablePids0120(): String {
         val availablePidsCommand0120 = AvailablePidsCommand_01_20()
-        return getDataFromCommand(availablePidsCommand0120)
+        val data = getDataFromCommand(availablePidsCommand0120)
+
+        return if (data == OBDReading.NO_DATA) {
+            OBDReading.NA
+        } else {
+            data
+        }
     }
 
-    fun getAvailablePids_21_40(): String {
+    fun getAvailablePids2140(): String {
         val availablePidsCommand2140 = AvailablePidsCommand_21_40()
-        return getDataFromCommand(availablePidsCommand2140)
+        val data = getDataFromCommand(availablePidsCommand2140)
+
+        return if (data == OBDReading.NO_DATA) {
+            OBDReading.NA
+        } else {
+            data
+        }
     }
 
-    fun getAvailablePids_41_60(): String {
+    fun getAvailablePids4160(): String {
         val availablePidsCommand4160 = AvailablePidsCommand_41_60()
-        return getDataFromCommand(availablePidsCommand4160)
+        val data = getDataFromCommand(availablePidsCommand4160)
+
+        return if (data == OBDReading.NO_DATA) {
+            OBDReading.NA
+        } else {
+            data
+        }
     }
 
 }

@@ -16,7 +16,7 @@ abstract class TripSummaryDao : ITripSummaryDao {
     abstract override fun getAllUnsentUUIDs(): Flow<List<String>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract override fun insert(tripSummaryEntity: TripSummaryEntity)
+    abstract override suspend fun insert(tripSummaryEntity: TripSummaryEntity)
 
     @Query("UPDATE trip_summary SET sent = :sent WHERE tripUUID = :tripUUID")
     abstract override fun updateSummarySentStatus(tripUUID: String, sent: Boolean)

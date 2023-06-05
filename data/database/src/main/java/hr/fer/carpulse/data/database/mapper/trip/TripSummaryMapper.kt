@@ -1,5 +1,6 @@
-package hr.fer.carpulse.data.database.mapper
+package hr.fer.carpulse.data.database.mapper.trip
 
+import hr.fer.carpulse.data.database.mapper.EntityMapper
 import hr.fer.carpulse.data.database.trip.TripSummaryEntity
 import hr.fer.carpulse.domain.common.trip.TripSummary
 

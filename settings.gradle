@@ -10,6 +10,10 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url "https://repo.eclipse.org/content/repositories/paho-snapshots/"
+        }
+        maven { url 'https://jitpack.io' }
     }
 }
 rootProject.name = "CarPulse"

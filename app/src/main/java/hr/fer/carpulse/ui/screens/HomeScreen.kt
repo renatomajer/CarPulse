@@ -11,15 +11,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toUpperCase
 import androidx.navigation.NavController
 import hr.fer.carpulse.R
 import hr.fer.carpulse.domain.common.obd.OBDReading
 import hr.fer.carpulse.navigation.Screens
 import hr.fer.carpulse.ui.components.OBDReadingDataComponent
-import hr.fer.carpulse.ui.theme.Purple200
-import hr.fer.carpulse.ui.theme.measurementButtonsTopBottomPadding
-import hr.fer.carpulse.ui.theme.mediumPadding
+import hr.fer.carpulse.ui.theme.*
 import hr.fer.carpulse.viewmodel.HomeScreenViewModel
 import org.koin.androidx.compose.getViewModel
 
@@ -126,26 +126,32 @@ fun HomeScreen(
             ) {
                 Button(
                     modifier = Modifier
-                        .width(150.dp)
-                        .height(50.dp),
+                        .width(measurementButtonWidth)
+                        .height(measurementButtonHeight),
                     enabled = !isMeasuring,
                     onClick = {
                         homeScreenViewModel.startMeasuring()
                     }) {
-                    Text(text = stringResource(id = R.string.start_measurement))
+                    Text(
+                        text = stringResource(id = R.string.start_measurement).toUpperCase(Locale.current),
+                        textAlign = TextAlign.Center
+                    )
                 }
 
                 // TODO: uncomment the line below
                 Button(
                     modifier = Modifier
-                        .width(150.dp)
-                        .height(50.dp),
+                        .width(measurementButtonWidth)
+                        .height(measurementButtonHeight),
                     enabled = isMeasuring,
                     onClick = {
                         homeScreenViewModel.stopMeasuring()
                         navController.navigate(Screens.TripReviewScreen.route + "/${homeScreenViewModel.tripUUID}")
                     }) {
-                    Text(text = stringResource(id = R.string.stop_measurement))
+                    Text(
+                        text = stringResource(id = R.string.stop_measurement).toUpperCase(Locale.current),
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
         }

@@ -97,5 +97,4 @@ dependencies {
 
     // Splash API
     implementation "androidx.core:core-splashscreen:$splashscreen_version"
-
 }

@@ -11,6 +11,6 @@ data class TripReview(
     val suddenAcceleration: Int = -1,
     val suddenDecelaration: Int = -1,
     val efficiencyKnowledge: Boolean = false,
-    val efficiencyEstimation: Int = -1,
+    val efficiencyEstimation: Double = -1.0,
     val comment: String = ""
 )

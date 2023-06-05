@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 interface ITripSummaryDao {
     fun getAll(): Flow<List<TripSummaryEntity>>
 
-    fun insert(tripSummaryEntity: TripSummaryEntity)
+    suspend fun insert(tripSummaryEntity: TripSummaryEntity)
 
     fun getAllUnsentUUIDs(): Flow<List<String>>
 

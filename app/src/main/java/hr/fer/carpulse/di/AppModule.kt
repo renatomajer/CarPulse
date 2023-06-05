@@ -7,8 +7,6 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import hr.fer.carpulse.bluetooth.AndroidBluetoothController
 import hr.fer.carpulse.bluetooth.BluetoothController
-import hr.fer.carpulse.data.api.Api
-import hr.fer.carpulse.data.api.MockedApi
 import hr.fer.carpulse.data.repository.DataStoreRepositoryImpl
 import hr.fer.carpulse.data.repository.DriverDataRepositoryImpl
 import hr.fer.carpulse.data.repository.TripsRepositoryImpl
@@ -19,12 +17,21 @@ import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SaveDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendTripReviewUseCase
+import hr.fer.carpulse.domain.usecase.mqtt.ConnectToBrokerUseCase
+import hr.fer.carpulse.domain.usecase.mqtt.DisconnectFromBrokerUseCase
 import hr.fer.carpulse.domain.usecase.preferences.ReadLocalStorageStateUseCase
 import hr.fer.carpulse.domain.usecase.preferences.SaveLocalStorageStateUseCase
 import hr.fer.carpulse.domain.usecase.trip.GetAllTripSummariesUseCase
 import hr.fer.carpulse.domain.usecase.trip.SaveTripSummaryUseCase
 import hr.fer.carpulse.domain.usecase.trip.SendTripStartInfoUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.*
 import hr.fer.carpulse.domain.usecase.trip.obd.*
+import hr.fer.carpulse.domain.usecase.trip.review.DeleteTripReviewUseCase
+import hr.fer.carpulse.domain.usecase.trip.review.GetTripReviewUseCase
+import hr.fer.carpulse.domain.usecase.trip.review.SaveTripReviewUseCase
+import hr.fer.carpulse.domain.usecase.trip.startInfo.DeleteTripStartInfoUseCase
+import hr.fer.carpulse.domain.usecase.trip.startInfo.GetTripStartInfoUseCase
+import hr.fer.carpulse.domain.usecase.trip.startInfo.SaveTripStartInfoUseCase
 import hr.fer.carpulse.util.PhoneUtils
 import hr.fer.carpulse.viewmodel.*
 import kotlinx.coroutines.CoroutineScope
@@ -40,22 +47,31 @@ val appModule = module {
         AndroidBluetoothController(context = androidApplication())
     }
 
-    // TODO put api creation in its own module
-    single<Api> {
-        MockedApi()
-    }
-
     single<DriverDataRepository> {
-        DriverDataRepositoryImpl(driverDataDao = get(), mapper = get(), api = get())
+        DriverDataRepositoryImpl(
+            driverDataDao = get(),
+            driverDataMapper = get(),
+            dataApi = get(),
+            tripReviewDao = get(),
+            tripReviewMapper = get()
+        )
     }
 
     single<TripsRepository> {
         TripsRepositoryImpl(
-            api = get(),
+            dataApi = get(),
             tripSummaryMapper = get(),
             tripSummaryDao = get(),
+            tripStartInfoDao = get(),
+            locationDataDao = get(),
+            weatherDataDao = get(),
+            tripStartInfoMapper = get(),
             obdReadingMapper = get(),
-            obdReadingsDao = get()
+            obdReadingsDao = get(),
+            locationDataMapper = get(),
+            weatherDataMapper = get(),
+            servicesApi = get(),
+            weatherApi = get()
         )
     }
 
@@ -80,7 +96,31 @@ val appModule = module {
     }
 
     single {
+        GetTripReviewUseCase(driverDataRepository = get())
+    }
+
+    single {
+        SaveTripReviewUseCase(driverDataRepository = get())
+    }
+
+    single {
+        DeleteTripReviewUseCase(driverDataRepository = get())
+    }
+
+    single {
         SendTripStartInfoUseCase(tripsRepository = get())
+    }
+
+    single {
+        GetTripStartInfoUseCase(tripsRepository = get())
+    }
+
+    single {
+        SaveTripStartInfoUseCase(tripsRepository = get())
+    }
+
+    single {
+        DeleteTripStartInfoUseCase(tripsRepository = get())
     }
 
     single {
@@ -116,11 +156,47 @@ val appModule = module {
     }
 
     single {
-        SendOBDReadingUseCase(tripsRepository = get())
+        UpdateSummarySentStatusUseCase(tripsRepository = get())
     }
 
     single {
-        UpdateSummarySentStatusUseCase(tripsRepository = get())
+        GetWeatherDataUseCase(tripsRepository = get())
+    }
+
+    single {
+        GetLocationDataUseCase(tripsRepository = get())
+    }
+
+    single {
+        UpdateLocationDataUseCase(tripsRepository = get())
+    }
+
+    single {
+        GetSavedLocationDataUseCase(tripsRepository = get())
+    }
+
+    single {
+        SaveLocationDataUseCase(tripsRepository = get())
+    }
+
+    single {
+        GetSavedWeatherDataUseCase(tripsRepository = get())
+    }
+
+    single {
+        SaveWeatherDataUseCase(tripsRepository = get())
+    }
+
+    single {
+        ConnectToBrokerUseCase(tripsRepository = get())
+    }
+
+    single {
+        DisconnectFromBrokerUseCase(tripsRepository = get())
+    }
+
+    single {
+        SendTripReadingDataUseCase(tripsRepository = get())
     }
 
     single {
@@ -138,10 +214,18 @@ val appModule = module {
             phoneUtils = get(),
             getDriverDataUseCase = get(),
             sendTripStartInfoUseCase = get(),
+            saveTripStartInfoUseCase = get(),
             readLocalStorageStateUseCase = get(),
             saveOBDReadingUseCase = get(),
             saveTripSummaryUseCase = get(),
-            sendOBDReadingUseCase = get()
+            getLocationDataUseCase = get(),
+            updateLocationDataUseCase = get(),
+            getWeatherDataUseCase = get(),
+            saveLocationDataUseCase = get(),
+            saveWeatherDataUseCase = get(),
+            connectToBrokerUseCase = get(),
+            disconnectFromBrokerUseCase = get(),
+            sendTripReadingDataUseCase = get()
         )
     }
 
@@ -150,7 +234,9 @@ val appModule = module {
             dataStoreRepository = get(),
             saveDriverDataUseCase = get(),
             getDriverDataUseCase = get(),
-            sendDriverDataUseCase = get()
+            sendDriverDataUseCase = get(),
+            connectToBrokerUseCase = get(),
+            disconnectFromBrokerUseCase = get()
         )
     }
 
@@ -159,7 +245,14 @@ val appModule = module {
     }
 
     viewModel {
-        TripReviewScreenViewModel(sendTripReviewUseCase = get(), getDriverDataUseCase = get())
+        TripReviewScreenViewModel(
+            sendTripReviewUseCase = get(),
+            getDriverDataUseCase = get(),
+            readLocalStorageStateUseCase = get(),
+            saveTripReviewUseCase = get(),
+            connectToBrokerUseCase = get(),
+            disconnectFromBrokerUseCase = get()
+        )
     }
 
     viewModel {
@@ -174,8 +267,18 @@ val appModule = module {
             getAllTripSummariesUseCase = get(),
             getAllUnsentUUIDsUseCase = get(),
             getOBDReadingsUseCase = get(),
-            sendOBDReadingUseCase = get(),
-            updateSummarySentStatusUseCase = get()
+            updateSummarySentStatusUseCase = get(),
+            getTripStartInfoUseCase = get(),
+            deleteTripStartInfoUseCase = get(),
+            sendTripStartInfoUseCase = get(),
+            deleteTripReviewUseCase = get(),
+            getTripReviewUseCase = get(),
+            sendTripReviewUseCase = get(),
+            getSavedLocationDataUseCase = get(),
+            getSavedWeatherDataUseCase = get(),
+            connectToBrokerUseCase = get(),
+            disconnectFromBrokerUseCase = get(),
+            sendTripReadingDataUseCase = get()
         )
     }
 }

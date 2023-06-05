@@ -11,15 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import hr.fer.carpulse.R
 import hr.fer.carpulse.navigation.Screens
 import hr.fer.carpulse.ui.components.ScreenTopBar
-import hr.fer.carpulse.ui.theme.Teal200
-import hr.fer.carpulse.ui.theme.Typography
-import hr.fer.carpulse.ui.theme.microPadding
-import hr.fer.carpulse.ui.theme.mediumPadding
+import hr.fer.carpulse.ui.theme.*
 import hr.fer.carpulse.viewmodel.SettingsScreenViewModel
 import org.koin.androidx.compose.getViewModel
 
@@ -68,7 +64,7 @@ fun SettingsScreen(
             Spacer(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(1.dp)
+                    .height(smallSpacerHeight)
                     .background(Color.Gray)
             )
 

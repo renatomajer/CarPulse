@@ -20,8 +20,7 @@ import hr.fer.carpulse.R
 import hr.fer.carpulse.domain.common.trip.StartStopSystem
 import hr.fer.carpulse.ui.components.DataTextField
 import hr.fer.carpulse.ui.components.LabeledRadioButton
-import hr.fer.carpulse.ui.theme.Typography
-import hr.fer.carpulse.ui.theme.microPadding
+import hr.fer.carpulse.ui.theme.*
 import hr.fer.carpulse.util.defaultKeyboardActions
 import hr.fer.carpulse.viewmodel.TripReviewScreenViewModel
 import org.koin.androidx.compose.getViewModel
@@ -43,7 +42,7 @@ fun TripReviewScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.background)
-            .padding(start = microPadding, end = microPadding)
+            .padding(start = smallPadding, end = smallPadding)
     ) {
 
         item {
@@ -52,7 +51,7 @@ fun TripReviewScreen(
                 style = Typography.h2,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = microPadding, bottom = microPadding),
+                    .padding(top = bigPadding, bottom = bigPadding),
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colors.onBackground
             )
@@ -60,14 +59,20 @@ fun TripReviewScreen(
 
         item {
             Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = microPadding),
                 text = stringResource(id = R.string.start_stop_system) + ":",
-                color = MaterialTheme.colors.onBackground
+                color = MaterialTheme.colors.onBackground,
+                textAlign = TextAlign.Start
             )
         }
 
         item {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = microPadding),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 LabeledRadioButton(
@@ -116,14 +121,20 @@ fun TripReviewScreen(
 
         item {
             Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = microPadding),
                 text = stringResource(id = R.string.efficiency_knowledge) + ":",
-                color = MaterialTheme.colors.onBackground
+                color = MaterialTheme.colors.onBackground,
+                textAlign = TextAlign.Start
             )
         }
 
         item {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = microPadding),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 LabeledRadioButton(
@@ -171,13 +182,26 @@ fun TripReviewScreen(
         }
 
         item {
-            Button(onClick = {
-                tripReviewScreenViewModel.sendTripReview(tripUUID = tripUUID)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Button(
+                    modifier = Modifier
+                        .width(reviewDoneButtonSize)
+                        .padding(top = mediumPadding, bottom = doubleBigPadding),
+                    onClick = {
+                        tripReviewScreenViewModel.sendTripReview(tripUUID = tripUUID)
 
-                navController.popBackStack()
+                        navController.popBackStack()
 
-            }) {
-                Text(text = stringResource(id = R.string.done))
+                    }
+                ) {
+                    Text(
+                        modifier = Modifier.fillMaxHeight(),
+                        text = stringResource(id = R.string.done),
+                    )
+                }
             }
         }
     }
