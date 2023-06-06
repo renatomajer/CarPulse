@@ -8,7 +8,7 @@ import hr.fer.carpulse.domain.common.obd.OBDReading
 data class TripReadingPublishData(
     val locationData: LocationData,
     val trafficData: TrafficData?,
-    val sensorData: SensorData?,
+    val sensorData: List<SensorData?>?,
     val weatherData: WeatherData,
     val tripId: String,
     val obdData: OBDReading,

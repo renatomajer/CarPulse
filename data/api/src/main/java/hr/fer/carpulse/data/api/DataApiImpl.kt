@@ -58,7 +58,7 @@ class DataApiImpl(
         val tripReadingPublishData = TripReadingPublishData(
             locationData = locationData,
             trafficData = TrafficData(),
-            sensorData = SensorData(),
+            sensorData = emptyList(),
             weatherData = weatherData,
             tripId = tripUUID,
             obdData = obdData,
