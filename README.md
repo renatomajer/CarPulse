@@ -1,5 +1,5 @@
 # CarPulse
-A mobile application for collecting contextually enriched driving data via OBD-II protocol using ELM 327 device.
+A mobile application for collecting contextually enriched driving data via OBD-II protocol using ELM327 device.
 
 
 ## Installation
@@ -11,5 +11,6 @@ A mobile application for collecting contextually enriched driving data via OBD-I
 - Before launching the application, please make sure your Bluetooth and GPS adapters are turned ON, and you have a suitable Internet connection.
 - On the first launch, the app will request multiple permissions. It is necessary to allow the permissions for the app to function properly.
 - Fill in the user data on the onboarding screen and proceed to main screen.
-- Navigate to "Connect device" using the menu in the top right corner of the application and connect to your OBDII-to-Bluetooth-microcontroller.
-- Return to the main screen and start the measurement. The application will display the collected data and send it to the assigned MQTT broker.
+- Navigate to "Connect device" using the menu in the top right corner of the application and connect to your OBD-II-to-Bluetooth microcontroller.
+- Return to the main screen and start the measurement. 
+- The application will display the collected data and send it to the assigned MQTT broker.
