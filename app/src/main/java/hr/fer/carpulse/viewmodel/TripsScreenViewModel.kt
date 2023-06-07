@@ -3,6 +3,8 @@ package hr.fer.carpulse.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hr.fer.carpulse.domain.common.contextual.data.LocationData
+import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
+import hr.fer.carpulse.domain.usecase.driver.SendDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendTripReviewUseCase
 import hr.fer.carpulse.domain.usecase.mqtt.ConnectToBrokerUseCase
 import hr.fer.carpulse.domain.usecase.mqtt.DisconnectFromBrokerUseCase
@@ -19,6 +21,7 @@ import hr.fer.carpulse.domain.usecase.trip.review.GetTripReviewUseCase
 import hr.fer.carpulse.domain.usecase.trip.startInfo.DeleteTripStartInfoUseCase
 import hr.fer.carpulse.domain.usecase.trip.startInfo.GetTripStartInfoUseCase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -37,7 +40,9 @@ class TripsScreenViewModel(
     private val getSavedWeatherDataUseCase: GetSavedWeatherDataUseCase,
     private val connectToBrokerUseCase: ConnectToBrokerUseCase,
     private val disconnectFromBrokerUseCase: DisconnectFromBrokerUseCase,
-    private val sendTripReadingDataUseCase: SendTripReadingDataUseCase
+    private val sendTripReadingDataUseCase: SendTripReadingDataUseCase,
+    private val getDriverDataUseCase: GetDriverDataUseCase,
+    private val sendDriverDataUseCase: SendDriverDataUseCase
 ) : ViewModel() {
 
     val tripSummaries = getAllTripSummariesUseCase()
@@ -50,6 +55,10 @@ class TripsScreenViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             // get the uuids of all the trips that are stored locally
             val uuids = getAllUnsentUUIDsUseCase().first()
+
+            // send driver data, so the web page can display the right information
+            val driverData = getDriverDataUseCase().first()
+            sendDriverDataUseCase(driverData)
 
             uuids.forEach { uuid ->
 
@@ -80,6 +89,8 @@ class TripsScreenViewModel(
 
                     // update last known location data
                     lastLocationData = currentLocationData
+
+                    delay(3000L) // simulate the time gap between sending the data
                 }
 
                 // send trip review and remove it from database

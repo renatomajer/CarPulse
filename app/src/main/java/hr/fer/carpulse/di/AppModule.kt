@@ -225,7 +225,8 @@ val appModule = module {
             saveWeatherDataUseCase = get(),
             connectToBrokerUseCase = get(),
             disconnectFromBrokerUseCase = get(),
-            sendTripReadingDataUseCase = get()
+            sendTripReadingDataUseCase = get(),
+            sendDriverDataUseCase = get()
         )
     }
 
@@ -278,7 +279,9 @@ val appModule = module {
             getSavedWeatherDataUseCase = get(),
             connectToBrokerUseCase = get(),
             disconnectFromBrokerUseCase = get(),
-            sendTripReadingDataUseCase = get()
+            sendTripReadingDataUseCase = get(),
+            getDriverDataUseCase = get(),
+            sendDriverDataUseCase = get()
         )
     }
 }

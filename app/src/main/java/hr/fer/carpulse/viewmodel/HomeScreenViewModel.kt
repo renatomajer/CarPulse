@@ -13,6 +13,7 @@ import hr.fer.carpulse.domain.common.trip.TripStartInfo
 import hr.fer.carpulse.domain.common.trip.TripSummary
 import hr.fer.carpulse.domain.common.trip.VehicleInfo
 import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
+import hr.fer.carpulse.domain.usecase.driver.SendDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.mqtt.ConnectToBrokerUseCase
 import hr.fer.carpulse.domain.usecase.mqtt.DisconnectFromBrokerUseCase
 import hr.fer.carpulse.domain.usecase.preferences.ReadLocalStorageStateUseCase
@@ -46,7 +47,8 @@ class HomeScreenViewModel(
     private val saveWeatherDataUseCase: SaveWeatherDataUseCase,
     private val connectToBrokerUseCase: ConnectToBrokerUseCase,
     private val disconnectFromBrokerUseCase: DisconnectFromBrokerUseCase,
-    private val sendTripReadingDataUseCase: SendTripReadingDataUseCase
+    private val sendTripReadingDataUseCase: SendTripReadingDataUseCase,
+    private val sendDriverDataUseCase: SendDriverDataUseCase
 ) : ViewModel() {
 
     private val isMeasuring = MutableStateFlow(false)
@@ -81,6 +83,7 @@ class HomeScreenViewModel(
 //
 //            if (!storeDataLocally) {
 //                connectToBrokerUseCase()
+//                getAndSendDriverData()
 //            }
 //            generateAndSendTripStartInfo()
 //            getApiWeatherData()
@@ -97,6 +100,7 @@ class HomeScreenViewModel(
 
                 if (!storeDataLocally) {
                     connectToBrokerUseCase()
+                    getAndSendDriverData() // send driver data so the web page can display correct information
                 }
 
                 generateAndSendTripStartInfo()
@@ -307,6 +311,14 @@ class HomeScreenViewModel(
                     saveWeatherDataUseCase(weatherData, tripUUID.toString())
                 }
             }
+        }
+    }
+
+    // send driver data, so the web page can display the right information
+    private fun getAndSendDriverData() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val driverData = getDriverDataUseCase().first()
+            sendDriverDataUseCase(driverData)
         }
     }
 
