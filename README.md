@@ -3,7 +3,7 @@ A mobile application for collecting contextually enriched driving data via OBD-I
 
 
 ## Installation
-- Download the [APK](https://github.com/renatomajer/CarPulse/releases/download/v0.1.0/CarPulse.apk)
+- Download the [APK](https://github.com/renatomajer/CarPulse/releases/download/v0.1.0-beta/CarPulse.apk)
 - Transfer the file to your Android device
 - Open the file to install the application
 
