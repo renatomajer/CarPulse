@@ -166,7 +166,7 @@ class HomeScreenViewModel(
 
                     sendOrStoreTripReadingData(reading)
 
-                    delay(5000L)
+                    delay(2000L)
                 }
             }
         } else {
