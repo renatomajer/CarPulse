@@ -90,7 +90,7 @@ class TripsScreenViewModel(
                     // update last known location data
                     lastLocationData = currentLocationData
 
-                    delay(3000L) // simulate the time gap between sending the data
+                    delay(2000L) // simulate the time gap between sending the data
                 }
 
                 // send trip review and remove it from database
