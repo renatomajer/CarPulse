@@ -34,7 +34,7 @@ fun HomeScreen(
     val errorMessage by homeScreenViewModel.getErrorMessages().collectAsState()
     val isConnected by homeScreenViewModel.getIsDeviceConnected().collectAsState()
 
-    val obdReading by homeScreenViewModel.getOBDReadingDataFLow()
+    val obdReading by homeScreenViewModel.getOBDReadingDataFlow()
         .collectAsState(initial = OBDReading(timestamp = 0L))
 
     var showMenu by remember { mutableStateOf(false) }

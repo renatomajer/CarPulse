@@ -33,6 +33,8 @@ interface TripsRepository {
 
     fun updateLocationData()
 
+    fun stopLocationUpdate()
+
     fun getLocationData(): StateFlow<LocationData>
 
     suspend fun insertLocationData(locationData: LocationData, tripUUID: String)

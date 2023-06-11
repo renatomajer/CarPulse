@@ -172,6 +172,10 @@ val appModule = module {
     }
 
     single {
+        StopLocationDataUpdateUseCase(tripsRepository = get())
+    }
+
+    single {
         GetSavedLocationDataUseCase(tripsRepository = get())
     }
 
@@ -220,6 +224,7 @@ val appModule = module {
             saveTripSummaryUseCase = get(),
             getLocationDataUseCase = get(),
             updateLocationDataUseCase = get(),
+            stopLocationDataUpdateUseCase = get(),
             getWeatherDataUseCase = get(),
             saveLocationDataUseCase = get(),
             saveWeatherDataUseCase = get(),

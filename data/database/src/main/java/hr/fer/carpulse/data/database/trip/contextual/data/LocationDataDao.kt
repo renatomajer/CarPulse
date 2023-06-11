@@ -1,9 +1,6 @@
 package hr.fer.carpulse.data.database.trip.contextual.data
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -15,7 +12,7 @@ abstract class LocationDataDao : ILocationDataDao {
     @Delete
     abstract override fun delete(locationDataEntity: LocationDataEntity)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract override suspend fun insert(locationDataEntity: LocationDataEntity)
 
 }

@@ -6,5 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 interface ServicesApi {
     fun updateLocation()
 
+    fun stopLocationUpdate()
+
     fun getLocationFlow(): StateFlow<LocationData>
 }

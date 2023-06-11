@@ -42,6 +42,7 @@ class HomeScreenViewModel(
     private val saveTripSummaryUseCase: SaveTripSummaryUseCase,
     private val getLocationDataUseCase: GetLocationDataUseCase,
     private val updateLocationDataUseCase: UpdateLocationDataUseCase,
+    private val stopLocationDataUpdateUseCase: StopLocationDataUpdateUseCase,
     private val getWeatherDataUseCase: GetWeatherDataUseCase,
     private val saveLocationDataUseCase: SaveLocationDataUseCase,
     private val saveWeatherDataUseCase: SaveWeatherDataUseCase,
@@ -56,11 +57,12 @@ class HomeScreenViewModel(
     private val errorMessage = MutableStateFlow<String?>(null)
 
     private var readOBDDataJob: Job? = null
+    private var readLocationDataJob: Job? = null
 
-    private val obdReadingData = MutableSharedFlow<OBDReading>()
+    private val obdReadingData = MutableStateFlow<OBDReading>(OBDReading())
 
-    private var locationDataFlow: StateFlow<LocationData>
-    private lateinit var weatherData: WeatherData
+    private lateinit var locationDataFlow: StateFlow<LocationData>
+    private var weatherData: WeatherData = WeatherData()
 
     var tripUUID: UUID? = null
     var tripStartTimestamp: Long = 0L
@@ -69,11 +71,6 @@ class HomeScreenViewModel(
 
     var maxTripRPM: Int = 0
     var maxTripSpeed: Int = 0
-
-    init {
-        updateLocationDataUseCase()
-        locationDataFlow = getLocationDataUseCase()
-    }
 
     fun startMeasuring() {
         // TODO remove the lines below- added only for testing purposes
@@ -85,7 +82,12 @@ class HomeScreenViewModel(
 //                connectToBrokerUseCase()
 //                getAndSendDriverData()
 //            }
+//            updateLocationDataUseCase()
+//            locationDataFlow = getLocationDataUseCase()
+//            delay(1000L)
 //            generateAndSendTripStartInfo()
+//            delay(2000L)
+//            readLocationDataJob = readLocationData()
 //            getApiWeatherData()
 //        }
 
@@ -103,11 +105,17 @@ class HomeScreenViewModel(
                     getAndSendDriverData() // send driver data so the web page can display correct information
                 }
 
+                updateLocationDataUseCase()
+                locationDataFlow = getLocationDataUseCase()
+
+                delay(1000L)
                 generateAndSendTripStartInfo()
+
+                delay(2000L)
+                readOBDDataJob = readOBDData()
+                readLocationDataJob = readLocationData()
                 getApiWeatherData()
             }
-
-            readOBDDataJob = readOBDData()
 
         } else {
             errorMessage.update { "Device not connected!" }
@@ -121,8 +129,14 @@ class HomeScreenViewModel(
     }
 
     fun stopMeasuring() {
+        stopLocationDataUpdateUseCase()
+
         readOBDDataJob?.cancel()
         readOBDDataJob = null
+
+        readLocationDataJob?.cancel()
+        readLocationDataJob = null
+
 
         // save summary only if the trip was previously started
         if (tripStartTimestamp != 0L && tripUUID != null) {
@@ -156,21 +170,30 @@ class HomeScreenViewModel(
             // TODO: launch the coroutine with viewModelScope.launch(Dispatchers.IO) {}
             CoroutineScope(Dispatchers.IO).launch {
                 while (true) {
-                    updateLocationDataUseCase()
 
                     val reading = obd.readData()
 
                     checkAndUpdateMaxValues(reading)
 
-                    obdReadingData.emit(reading)
-
-                    sendOrStoreTripReadingData(reading)
+                    obdReadingData.update { reading }
 
                     delay(2000L)
                 }
             }
         } else {
             null
+        }
+    }
+
+    private fun readLocationData(): Job {
+        return CoroutineScope(Dispatchers.IO).launch {
+            while (true) {
+                val reading = obdReadingData.value
+
+                sendOrStoreTripReadingData(reading)
+
+                delay(500L)
+            }
         }
     }
 
@@ -292,7 +315,6 @@ class HomeScreenViewModel(
     }
 
     private fun getApiWeatherData() {
-        updateLocationDataUseCase()
 
         viewModelScope.launch(Dispatchers.IO) {
 
@@ -328,12 +350,17 @@ class HomeScreenViewModel(
 
     fun getIsDeviceConnected() = bluetoothController.isConnected
 
-    fun getOBDReadingDataFLow() = obdReadingData.asSharedFlow()
+    fun getOBDReadingDataFlow() = obdReadingData.asStateFlow()
 
     override fun onCleared() {
+        stopLocationDataUpdateUseCase()
+
         readOBDDataJob?.cancel()
         readOBDDataJob = null
         bluetoothController.release()
+
+        readLocationDataJob?.cancel()
+        readLocationDataJob = null
         Log.d("debug_log", "HomeScreenViewModel::onCleared")
         super.onCleared()
     }

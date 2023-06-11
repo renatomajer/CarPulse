@@ -2,13 +2,9 @@ package hr.fer.carpulse.data.api
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Looper
 import android.util.Log
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
-import com.google.android.gms.tasks.CancellationToken
-import com.google.android.gms.tasks.CancellationTokenSource
-import com.google.android.gms.tasks.OnTokenCanceledListener
+import com.google.android.gms.location.*
 import hr.fer.carpulse.domain.common.contextual.data.LocationData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,19 +20,32 @@ class ServicesApiImpl(
     private val fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
 
+    private lateinit var locationRequest: LocationRequest
+
     // TODO: handle permissions in MainActivity
     @SuppressLint("MissingPermission")
     override fun updateLocation() {
 
-        fusedLocationClient.getCurrentLocation(
-            Priority.PRIORITY_HIGH_ACCURACY,
-            object : CancellationToken() {
-                override fun onCanceledRequested(p0: OnTokenCanceledListener) =
-                    CancellationTokenSource().token
+        locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 300L).build()
 
-                override fun isCancellationRequested() = false
-            }).addOnSuccessListener { location ->
-            if (location != null) {
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            Looper.getMainLooper()
+        )
+    }
+
+    override fun stopLocationUpdate() {
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+    }
+
+    override fun getLocationFlow(): StateFlow<LocationData> {
+        return locationDataFlow.asStateFlow()
+    }
+
+    private val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            for (location in locationResult.locations) {
                 val lat = location.latitude
                 val lon = location.longitude
                 val alt = location.altitude
@@ -52,9 +61,6 @@ class ServicesApiImpl(
                 locationDataFlow.update { data }
             }
         }
-    }
 
-    override fun getLocationFlow(): StateFlow<LocationData> {
-        return locationDataFlow.asStateFlow()
     }
 }

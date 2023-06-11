@@ -3,6 +3,7 @@ package hr.fer.carpulse.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hr.fer.carpulse.domain.common.contextual.data.LocationData
+import hr.fer.carpulse.domain.common.obd.OBDReading
 import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendTripReviewUseCase
@@ -78,19 +79,21 @@ class TripsScreenViewModel(
                 // last known location data
                 var lastLocationData = locationDataList.firstOrNull() ?: LocationData()
 
-                readings.forEachIndexed { index, obdReading ->
+                var readingIndex = 0
+                var currentReading = OBDReading()
 
-                    // every obdReading should have its location data
-                    val currentLocationData =
-                        locationDataList.getOrElse(index) { lastLocationData }
+                locationDataList.forEach { locationData ->
+
+
+                    if (readingIndex < readings.size && locationData.timestamp >= readings[readingIndex].timestamp) {
+                        currentReading = readings[readingIndex]
+                        readingIndex += 1
+                    }
 
                     // send location , weather and reading to server and delete the data from database
-                    sendTripReadingDataUseCase(currentLocationData, weatherData, uuid, obdReading)
+                    sendTripReadingDataUseCase(locationData, weatherData, uuid, currentReading)
 
-                    // update last known location data
-                    lastLocationData = currentLocationData
-
-                    delay(2000L) // simulate the time gap between sending the data
+                    delay(800L) // simulate the time gap between sending the data
                 }
 
                 // send trip review and remove it from database

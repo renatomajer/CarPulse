@@ -12,7 +12,7 @@ abstract class TripSummaryDao : ITripSummaryDao {
     @Query("SELECT * FROM trip_summary")
     abstract override fun getAll(): Flow<List<TripSummaryEntity>>
 
-    @Query("SELECT tripUUID FROM trip_summary WHERE sent = false")
+    @Query("SELECT tripUUID FROM trip_summary WHERE sent = 0")
     abstract override fun getAllUnsentUUIDs(): Flow<List<String>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

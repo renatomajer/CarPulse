@@ -23,8 +23,10 @@ data class OBDReading(
     val engineLoad: String = NO_DATA,
     @SerialName("Accelerator Pedal Position D")
     val acceleratorPedalPositionD: String = NO_DATA,
+//    @Transient
+//    val timestamp: Long = 0L
     @Transient
-    val timestamp: Long = 0L
+    val timestamp: Long = System.currentTimeMillis()
 ) {
     companion object {
         const val NO_DATA = "No Data"
@@ -32,8 +34,8 @@ data class OBDReading(
 
         fun createPublishData(data: OBDReading): OBDReading {
             return OBDReading(
-                rpm = data.rpm.removeSuffix("RPM"),
-                speed = data.speed.removeSuffix("km/h"),
+                rpm = if(data.rpm == NO_DATA) "0" else data.rpm.removeSuffix("RPM"),
+                speed = if(data.speed == NO_DATA) "0" else data.speed.removeSuffix("km/h"),
                 relativeThrottlePosition = data.relativeThrottlePosition,
                 absoluteThrottlePositionB = data.absoluteThrottlePositionB,
                 throttlePosition = data.throttlePosition,

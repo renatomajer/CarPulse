@@ -116,7 +116,7 @@ class MQTTClient(
     private fun defaultCbPublish(message: String, topic: String) =
         object : IMqttActionListener {
             override fun onSuccess(asyncActionToken: IMqttToken?) {
-                val msg = "Publish message: $message to topic: $topic"
+                val msg = "Publish message to topic: $topic"
                 Log.d("MQTT", msg)
 
                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()

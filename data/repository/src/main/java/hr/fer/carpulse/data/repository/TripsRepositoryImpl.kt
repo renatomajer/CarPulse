@@ -119,6 +119,10 @@ class TripsRepositoryImpl(
         servicesApi.updateLocation()
     }
 
+    override fun stopLocationUpdate() {
+        servicesApi.stopLocationUpdate()
+    }
+
     override fun getLocationData(): StateFlow<LocationData> {
         return servicesApi.getLocationFlow()
     }
