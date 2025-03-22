@@ -19,7 +19,8 @@ import hr.fer.carpulse.data.database.trip.startInfo.TripStartInfoEntity
 @Database(
     entities = [DriverDataEntity::class, TripSummaryEntity::class, OBDReadingEntity::class,
         TripStartInfoEntity::class, TripReviewEntity::class, LocationDataEntity::class, WeatherDataEntity::class],
-    version = 1
+    version = 1,
+    exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class CarPulseDatabase : RoomDatabase() {

@@ -6,11 +6,11 @@ plugins {
 
 android {
     namespace 'hr.fer.carpulse.data.api'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
-        minSdk 24
-        targetSdk 33
+        minSdk 29
+        targetSdk 34
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -23,11 +23,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '21'
     }
 }
 
@@ -57,5 +57,5 @@ dependencies {
 //    implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
     //new mqtt library that supports android 12
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.github.hannesa2:paho.mqtt.android:3.3.5'
+    implementation 'com.github.hannesa2:paho.mqtt.android:3.6.6'
 }
