@@ -1,20 +1,23 @@
 package hr.fer.carpulse.navigation
 
-import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import hr.fer.carpulse.ui.screens.*
+import hr.fer.carpulse.ui.screens.ConnectScreen
+import hr.fer.carpulse.ui.screens.HomeScreen
+import hr.fer.carpulse.ui.screens.SettingsScreen
+import hr.fer.carpulse.ui.screens.TripReviewScreen
+import hr.fer.carpulse.ui.screens.TripsScreen
+import hr.fer.carpulse.ui.screens.UserDataScreen
 
 @Composable
 fun Navigation(
-    applicationContext: Context,
-    startDestination: String
+    startDestination: String,
+    navController: NavHostController
 ) {
-    val navController = rememberNavController()
 
     NavHost(
         navController = navController,
@@ -36,11 +39,11 @@ fun Navigation(
         }
 
         composable(route = Screens.HomeScreen.route) {
-            HomeScreen(navController = navController, applicationContext = applicationContext)
+            HomeScreen(navController = navController)
         }
 
         composable(route = Screens.ConnectScreen.route) {
-            ConnectScreen(navController = navController, applicationContext = applicationContext)
+            ConnectScreen(navController = navController)
         }
 
         composable(route = Screens.SettingsScreen.route) {
@@ -48,7 +51,7 @@ fun Navigation(
         }
 
         composable(route = Screens.TripsScreen.route) {
-            TripsScreen(navController = navController, context = applicationContext)
+            TripsScreen(navController = navController)
         }
 
         composable(

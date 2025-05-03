@@ -8,8 +8,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.compose.rememberNavController
 import hr.fer.carpulse.navigation.Navigation
 import hr.fer.carpulse.ui.theme.CarPulseTheme
 import hr.fer.carpulse.viewmodel.SplashScreenViewModel
@@ -34,7 +36,7 @@ class MainActivity : ComponentActivity() {
         val splashScreenViewModel = getViewModel<SplashScreenViewModel>()
 
         installSplashScreen().setKeepOnScreenCondition {
-            !splashScreenViewModel.isLoading.value
+            splashScreenViewModel.isLoading.value
         }
 
         val enableBluetoothLauncher = registerForActivityResult(
@@ -82,10 +84,12 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             CarPulseTheme {
+                val navController = rememberNavController()
+                val screen by splashScreenViewModel.startDestination.collectAsState()
 
-                val screen by splashScreenViewModel.startDestination
-
-                Navigation(applicationContext, startDestination = screen)
+                screen?.let {
+                    Navigation(navController = navController, startDestination = it)
+                }
             }
         }
     }

@@ -1,8 +1,12 @@
 package hr.fer.carpulse.ui.screens
 
-import android.content.Context
 import android.widget.Toast
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
@@ -12,6 +16,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale.Companion.current
 import androidx.compose.ui.text.toUpperCase
@@ -25,9 +30,9 @@ import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun ConnectScreen(
-    applicationContext: Context,
     navController: NavController
 ) {
+    val context = LocalContext.current
 
     val connectScreenViewModel = getViewModel<ConnectScreenViewModel>()
 
@@ -40,7 +45,7 @@ fun ConnectScreen(
     LaunchedEffect(key1 = errorMessage) {
         errorMessage?.let { message ->
             Toast.makeText(
-                applicationContext,
+                context,
                 message,
                 Toast.LENGTH_LONG
             ).show()
@@ -51,7 +56,7 @@ fun ConnectScreen(
 
         if (isConnected) {
             Toast.makeText(
-                applicationContext,
+                context,
                 "You're connected!",
                 Toast.LENGTH_LONG
             ).show()
