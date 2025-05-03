@@ -1,6 +1,7 @@
 package hr.fer.carpulse.domain.usecase.trip.contextual.data
 
 import hr.fer.carpulse.domain.common.contextual.data.LocationData
+import hr.fer.carpulse.domain.common.contextual.data.TrafficData
 import hr.fer.carpulse.domain.common.contextual.data.WeatherData
 import hr.fer.carpulse.domain.common.obd.OBDReading
 import hr.fer.carpulse.domain.repointerfaces.TripsRepository
@@ -12,8 +13,15 @@ class SendTripReadingDataUseCase(
         locationData: LocationData,
         weatherData: WeatherData,
         tripUUID: String,
-        obdReading: OBDReading
+        obdReading: OBDReading,
+        trafficData: TrafficData?
     ) {
-        tripsRepository.sendTripReadingData(locationData, weatherData, tripUUID, obdReading)
+        tripsRepository.sendTripReadingData(
+            locationData,
+            weatherData,
+            tripUUID,
+            obdReading,
+            trafficData
+        )
     }
 }

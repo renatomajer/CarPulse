@@ -2,8 +2,12 @@ package hr.fer.carpulse.data.api
 
 import android.util.Log
 import hr.fer.carpulse.data.api.mqtt.MQTTClient
-import hr.fer.carpulse.data.api.mqtt.publish.*
+import hr.fer.carpulse.data.api.mqtt.publish.Timestamp
+import hr.fer.carpulse.data.api.mqtt.publish.TripReadingPublishData
+import hr.fer.carpulse.data.api.mqtt.publish.TripReviewPublishData
+import hr.fer.carpulse.data.api.mqtt.publish.TripStartInfoPublishData
 import hr.fer.carpulse.domain.common.contextual.data.LocationData
+import hr.fer.carpulse.domain.common.contextual.data.TrafficData
 import hr.fer.carpulse.domain.common.contextual.data.WeatherData
 import hr.fer.carpulse.domain.common.driver.DriverData
 import hr.fer.carpulse.domain.common.obd.OBDReading
@@ -50,14 +54,15 @@ class DataApiImpl(
         locationData: LocationData,
         weatherData: WeatherData,
         tripUUID: String,
-        obdReading: OBDReading
+        obdReading: OBDReading,
+        trafficData: TrafficData?
     ) {
 
         val obdData = OBDReading.createPublishData(obdReading)
 
         val tripReadingPublishData = TripReadingPublishData(
             locationData = locationData,
-            trafficData = TrafficData(),
+            trafficData = trafficData,
             sensorData = emptyList(),
             weatherData = weatherData,
             tripId = tripUUID,

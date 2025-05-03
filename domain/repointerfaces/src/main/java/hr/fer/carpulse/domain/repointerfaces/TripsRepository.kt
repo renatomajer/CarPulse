@@ -1,6 +1,7 @@
 package hr.fer.carpulse.domain.repointerfaces
 
 import hr.fer.carpulse.domain.common.contextual.data.LocationData
+import hr.fer.carpulse.domain.common.contextual.data.TrafficData
 import hr.fer.carpulse.domain.common.contextual.data.WeatherData
 import hr.fer.carpulse.domain.common.obd.OBDReading
 import hr.fer.carpulse.domain.common.trip.TripStartInfo
@@ -47,6 +48,12 @@ interface TripsRepository {
 
     fun getSavedWeatherData(tripUUID: String): Flow<WeatherData>
 
+    suspend fun getTrafficData(latitude: Double, longitude: Double): TrafficData?
+
+    fun getSavedTrafficData(tripUUID: String): Flow<List<TrafficData>>
+
+    suspend fun insertTrafficData(trafficData: TrafficData, tripUUID: String)
+
     fun connectToMqttBroker()
 
     fun disconnectFromMqttBroker()
@@ -55,6 +62,7 @@ interface TripsRepository {
         locationData: LocationData,
         weatherData: WeatherData,
         tripUUID: String,
-        obdReading: OBDReading
+        obdReading: OBDReading,
+        trafficData: TrafficData?
     )
 }

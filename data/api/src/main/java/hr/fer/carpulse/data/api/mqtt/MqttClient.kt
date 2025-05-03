@@ -3,18 +3,25 @@ package hr.fer.carpulse.data.api.mqtt
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import hr.fer.carpulse.data.api.BuildConfig
 import hr.fer.carpulse.domain.common.contextual.data.Message
 import info.mqtt.android.service.Ack
 import info.mqtt.android.service.MqttAndroidClient
-import org.eclipse.paho.client.mqttv3.*
-import java.util.*
+import org.eclipse.paho.client.mqttv3.IMqttActionListener
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
+import org.eclipse.paho.client.mqttv3.IMqttToken
+import org.eclipse.paho.client.mqttv3.MqttCallback
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions
+import org.eclipse.paho.client.mqttv3.MqttException
+import org.eclipse.paho.client.mqttv3.MqttMessage
+import java.util.LinkedList
+import java.util.Queue
 
 class MQTTClient(
     private val context: Context,
-    serverURI: String = SERVER_URI,
     clientID: String = ""
 ) {
-    private var mqttClient = MqttAndroidClient(context, serverURI, clientID, Ack.AUTO_ACK)
+    private var mqttClient = MqttAndroidClient(context, BuildConfig.MQTT_SERVER_URI, clientID, Ack.AUTO_ACK)
 
     private var isConnected = false
     private val messageQueue: Queue<Message> = LinkedList()
@@ -28,6 +35,8 @@ class MQTTClient(
         Log.d("MQTT", "Trying to connect!")
         mqttClient.setCallback(cbClient)
         val options = MqttConnectOptions()
+        options.userName = BuildConfig.MQTT_CLIENT_USERNAME
+        options.password = BuildConfig.MQTT_CLIENT_PWD.toCharArray()
 
         try {
             mqttClient.connect(options, null, cbConnect)
@@ -162,7 +171,7 @@ class MQTTClient(
     }
 
     companion object {
-        private const val SERVER_URI = "tcp://broker.hivemq.com:1883"
+//        private const val SERVER_URI = "tcp://broker.hivemq.com:1883"
     }
 }
 

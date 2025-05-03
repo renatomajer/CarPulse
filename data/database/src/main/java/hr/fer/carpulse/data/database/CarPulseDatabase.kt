@@ -8,7 +8,14 @@ import hr.fer.carpulse.data.database.driver.DriverDataDao
 import hr.fer.carpulse.data.database.driver.DriverDataEntity
 import hr.fer.carpulse.data.database.trip.TripSummaryDao
 import hr.fer.carpulse.data.database.trip.TripSummaryEntity
-import hr.fer.carpulse.data.database.trip.contextual.data.*
+import hr.fer.carpulse.data.database.trip.contextual.data.CoordinateConverters
+import hr.fer.carpulse.data.database.trip.contextual.data.LocationDataDao
+import hr.fer.carpulse.data.database.trip.contextual.data.LocationDataEntity
+import hr.fer.carpulse.data.database.trip.contextual.data.TrafficDataDao
+import hr.fer.carpulse.data.database.trip.contextual.data.TrafficDataEntity
+import hr.fer.carpulse.data.database.trip.contextual.data.WeatherConverters
+import hr.fer.carpulse.data.database.trip.contextual.data.WeatherDataDao
+import hr.fer.carpulse.data.database.trip.contextual.data.WeatherDataEntity
 import hr.fer.carpulse.data.database.trip.obd.OBDReadingEntity
 import hr.fer.carpulse.data.database.trip.obd.OBDReadingsDao
 import hr.fer.carpulse.data.database.trip.review.TripReviewDao
@@ -17,12 +24,20 @@ import hr.fer.carpulse.data.database.trip.startInfo.TripStartInfoDao
 import hr.fer.carpulse.data.database.trip.startInfo.TripStartInfoEntity
 
 @Database(
-    entities = [DriverDataEntity::class, TripSummaryEntity::class, OBDReadingEntity::class,
-        TripStartInfoEntity::class, TripReviewEntity::class, LocationDataEntity::class, WeatherDataEntity::class],
+    entities = [
+        DriverDataEntity::class,
+        TripSummaryEntity::class,
+        OBDReadingEntity::class,
+        TripStartInfoEntity::class,
+        TripReviewEntity::class,
+        LocationDataEntity::class,
+        WeatherDataEntity::class,
+        TrafficDataEntity::class
+    ],
     version = 1,
     exportSchema = false
 )
-@TypeConverters(Converters::class)
+@TypeConverters(WeatherConverters::class, CoordinateConverters::class)
 abstract class CarPulseDatabase : RoomDatabase() {
     abstract fun driverDataDao(): DriverDataDao
 
@@ -37,4 +52,6 @@ abstract class CarPulseDatabase : RoomDatabase() {
     abstract fun locationDataDao(): LocationDataDao
 
     abstract fun weatherDataDao(): WeatherDataDao
+
+    abstract fun trafficDataDao(): TrafficDataDao
 }

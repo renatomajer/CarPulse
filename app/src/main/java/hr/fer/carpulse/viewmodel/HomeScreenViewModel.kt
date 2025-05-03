@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import hr.fer.carpulse.bluetooth.BluetoothController
 import hr.fer.carpulse.bluetooth.OBDCommunication
 import hr.fer.carpulse.domain.common.contextual.data.LocationData
+import hr.fer.carpulse.domain.common.contextual.data.TrafficData
 import hr.fer.carpulse.domain.common.contextual.data.WeatherData
 import hr.fer.carpulse.domain.common.obd.OBDReading
 import hr.fer.carpulse.domain.common.trip.MobileDeviceInfo
@@ -19,14 +20,30 @@ import hr.fer.carpulse.domain.usecase.mqtt.DisconnectFromBrokerUseCase
 import hr.fer.carpulse.domain.usecase.preferences.ReadLocalStorageStateUseCase
 import hr.fer.carpulse.domain.usecase.trip.SaveTripSummaryUseCase
 import hr.fer.carpulse.domain.usecase.trip.SendTripStartInfoUseCase
-import hr.fer.carpulse.domain.usecase.trip.contextual.data.*
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetLocationDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetTrafficDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetWeatherDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.SaveLocationDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.SaveTrafficDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.SaveWeatherDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.SendTripReadingDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.StopLocationDataUpdateUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.UpdateLocationDataUseCase
 import hr.fer.carpulse.domain.usecase.trip.obd.SaveOBDReadingUseCase
 import hr.fer.carpulse.domain.usecase.trip.startInfo.SaveTripStartInfoUseCase
 import hr.fer.carpulse.util.PhoneUtils
 import hr.fer.carpulse.util.getAppVersion
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
-import java.util.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.util.UUID
 
 
 // TODO: check if the bluetoothController should be used as api and accessed trough a separate repository class
@@ -44,8 +61,10 @@ class HomeScreenViewModel(
     private val updateLocationDataUseCase: UpdateLocationDataUseCase,
     private val stopLocationDataUpdateUseCase: StopLocationDataUpdateUseCase,
     private val getWeatherDataUseCase: GetWeatherDataUseCase,
+    private val getTrafficDataUseCase: GetTrafficDataUseCase,
     private val saveLocationDataUseCase: SaveLocationDataUseCase,
     private val saveWeatherDataUseCase: SaveWeatherDataUseCase,
+    private val saveTrafficDataUseCase: SaveTrafficDataUseCase,
     private val connectToBrokerUseCase: ConnectToBrokerUseCase,
     private val disconnectFromBrokerUseCase: DisconnectFromBrokerUseCase,
     private val sendTripReadingDataUseCase: SendTripReadingDataUseCase,
@@ -58,11 +77,13 @@ class HomeScreenViewModel(
 
     private var readOBDDataJob: Job? = null
     private var readLocationDataJob: Job? = null
+    private var collectTrafficDataJob: Job? = null
 
     private val obdReadingData = MutableStateFlow<OBDReading>(OBDReading())
 
     private lateinit var locationDataFlow: StateFlow<LocationData>
     private var weatherData: WeatherData = WeatherData()
+    private var trafficData: TrafficData? = null
 
     var tripUUID: UUID? = null
     var tripStartTimestamp: Long = 0L
@@ -114,6 +135,7 @@ class HomeScreenViewModel(
                 delay(2000L)
                 readOBDDataJob = readOBDData()
                 readLocationDataJob = readLocationData()
+                collectTrafficDataJob = collectTrafficData()
                 getApiWeatherData()
             }
 
@@ -136,6 +158,9 @@ class HomeScreenViewModel(
 
         readLocationDataJob?.cancel()
         readLocationDataJob = null
+
+        collectTrafficDataJob?.cancel()
+        collectTrafficDataJob = null
 
 
         // save summary only if the trip was previously started
@@ -268,6 +293,10 @@ class HomeScreenViewModel(
                     tripUUID = tripUUID.toString()
                 )
 
+                trafficData?.let {
+                    saveTrafficDataUseCase(trafficData = it, tripUUID = tripUUID.toString())
+                }
+
             } else {
                 // send data to server
 
@@ -277,7 +306,8 @@ class HomeScreenViewModel(
                     locationDataFlow.value,
                     weatherData,
                     tripUUID.toString(),
-                    obdReading
+                    obdReading,
+                    trafficData
                 )
             }
         }
@@ -336,6 +366,19 @@ class HomeScreenViewModel(
         }
     }
 
+    private fun collectTrafficData(): Job {
+        return viewModelScope.launch {
+            while (true) {
+                trafficData = getTrafficDataUseCase.invoke(
+                    latitude = locationDataFlow.value.latitude,
+                    longitude = locationDataFlow.value.longitude
+                )
+
+                delay(1000L)
+            }
+        }
+    }
+
     // send driver data, so the web page can display the right information
     private fun getAndSendDriverData() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -361,6 +404,10 @@ class HomeScreenViewModel(
 
         readLocationDataJob?.cancel()
         readLocationDataJob = null
+
+        collectTrafficDataJob?.cancel()
+        collectTrafficDataJob = null
+
         Log.d("debug_log", "HomeScreenViewModel::onCleared")
         super.onCleared()
     }

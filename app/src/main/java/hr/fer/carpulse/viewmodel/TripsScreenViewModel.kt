@@ -3,6 +3,7 @@ package hr.fer.carpulse.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hr.fer.carpulse.domain.common.contextual.data.LocationData
+import hr.fer.carpulse.domain.common.contextual.data.TrafficData
 import hr.fer.carpulse.domain.common.obd.OBDReading
 import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendDriverDataUseCase
@@ -12,6 +13,7 @@ import hr.fer.carpulse.domain.usecase.mqtt.DisconnectFromBrokerUseCase
 import hr.fer.carpulse.domain.usecase.trip.GetAllTripSummariesUseCase
 import hr.fer.carpulse.domain.usecase.trip.SendTripStartInfoUseCase
 import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetSavedLocationDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetSavedTrafficDataUseCase
 import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetSavedWeatherDataUseCase
 import hr.fer.carpulse.domain.usecase.trip.contextual.data.SendTripReadingDataUseCase
 import hr.fer.carpulse.domain.usecase.trip.obd.GetAllUnsentUUIDsUseCase
@@ -39,6 +41,7 @@ class TripsScreenViewModel(
     private val getSavedLocationDataUseCase: GetSavedLocationDataUseCase,
     private val updateSummarySentStatusUseCase: UpdateSummarySentStatusUseCase,
     private val getSavedWeatherDataUseCase: GetSavedWeatherDataUseCase,
+    private val getSavedTrafficDataUseCase: GetSavedTrafficDataUseCase,
     private val connectToBrokerUseCase: ConnectToBrokerUseCase,
     private val disconnectFromBrokerUseCase: DisconnectFromBrokerUseCase,
     private val sendTripReadingDataUseCase: SendTripReadingDataUseCase,
@@ -70,6 +73,8 @@ class TripsScreenViewModel(
 
                 val weatherData = getSavedWeatherDataUseCase(uuid).first()
 
+                val trafficDataList = getSavedTrafficDataUseCase(uuid).first()
+
                 val readings =
                     getOBDReadingsUseCase(uuid).first() // get all the readings with the specified uuid
 
@@ -81,17 +86,25 @@ class TripsScreenViewModel(
 
                 var readingIndex = 0
                 var currentReading = OBDReading()
+                var currentTrafficData: TrafficData? = null
 
                 locationDataList.forEach { locationData ->
 
 
                     if (readingIndex < readings.size && locationData.timestamp >= readings[readingIndex].timestamp) {
                         currentReading = readings[readingIndex]
+                        currentTrafficData = trafficDataList.getOrNull(readingIndex)
                         readingIndex += 1
                     }
 
                     // send location , weather and reading to server and delete the data from database
-                    sendTripReadingDataUseCase(locationData, weatherData, uuid, currentReading)
+                    sendTripReadingDataUseCase(
+                        locationData,
+                        weatherData,
+                        uuid,
+                        currentReading,
+                        currentTrafficData
+                    )
 
                     delay(800L) // simulate the time gap between sending the data
                 }

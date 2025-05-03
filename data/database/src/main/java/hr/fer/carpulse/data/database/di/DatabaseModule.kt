@@ -6,12 +6,14 @@ import hr.fer.carpulse.data.database.driver.IDriverDataDao
 import hr.fer.carpulse.data.database.mapper.DriverDataMapper
 import hr.fer.carpulse.data.database.mapper.OBDReadingMapper
 import hr.fer.carpulse.data.database.mapper.contextual.data.LocationDataMapper
+import hr.fer.carpulse.data.database.mapper.contextual.data.TrafficDataMapper
 import hr.fer.carpulse.data.database.mapper.contextual.data.WeatherDataMapper
 import hr.fer.carpulse.data.database.mapper.trip.TripReviewMapper
 import hr.fer.carpulse.data.database.mapper.trip.TripStartInfoMapper
 import hr.fer.carpulse.data.database.mapper.trip.TripSummaryMapper
 import hr.fer.carpulse.data.database.trip.ITripSummaryDao
 import hr.fer.carpulse.data.database.trip.contextual.data.ILocationDataDao
+import hr.fer.carpulse.data.database.trip.contextual.data.ITrafficDataDao
 import hr.fer.carpulse.data.database.trip.contextual.data.IWeatherDataDao
 import hr.fer.carpulse.data.database.trip.obd.IOBDReadingsDao
 import hr.fer.carpulse.data.database.trip.review.ITripReviewDao
@@ -89,5 +91,14 @@ val databaseModule = module {
 
     single {
         WeatherDataMapper()
+    }
+
+    single<ITrafficDataDao> {
+        val database: CarPulseDatabase = get()
+        database.trafficDataDao()
+    }
+
+    single {
+        TrafficDataMapper()
     }
 }

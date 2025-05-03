@@ -24,8 +24,23 @@ import hr.fer.carpulse.domain.usecase.preferences.SaveLocalStorageStateUseCase
 import hr.fer.carpulse.domain.usecase.trip.GetAllTripSummariesUseCase
 import hr.fer.carpulse.domain.usecase.trip.SaveTripSummaryUseCase
 import hr.fer.carpulse.domain.usecase.trip.SendTripStartInfoUseCase
-import hr.fer.carpulse.domain.usecase.trip.contextual.data.*
-import hr.fer.carpulse.domain.usecase.trip.obd.*
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetLocationDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetSavedLocationDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetSavedTrafficDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetSavedWeatherDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetTrafficDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetWeatherDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.SaveLocationDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.SaveTrafficDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.SaveWeatherDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.SendTripReadingDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.StopLocationDataUpdateUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.UpdateLocationDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.obd.GetAllOBDReadingsUseCase
+import hr.fer.carpulse.domain.usecase.trip.obd.GetAllUnsentUUIDsUseCase
+import hr.fer.carpulse.domain.usecase.trip.obd.GetOBDReadingsUseCase
+import hr.fer.carpulse.domain.usecase.trip.obd.SaveOBDReadingUseCase
+import hr.fer.carpulse.domain.usecase.trip.obd.UpdateSummarySentStatusUseCase
 import hr.fer.carpulse.domain.usecase.trip.review.DeleteTripReviewUseCase
 import hr.fer.carpulse.domain.usecase.trip.review.GetTripReviewUseCase
 import hr.fer.carpulse.domain.usecase.trip.review.SaveTripReviewUseCase
@@ -33,7 +48,13 @@ import hr.fer.carpulse.domain.usecase.trip.startInfo.DeleteTripStartInfoUseCase
 import hr.fer.carpulse.domain.usecase.trip.startInfo.GetTripStartInfoUseCase
 import hr.fer.carpulse.domain.usecase.trip.startInfo.SaveTripStartInfoUseCase
 import hr.fer.carpulse.util.PhoneUtils
-import hr.fer.carpulse.viewmodel.*
+import hr.fer.carpulse.viewmodel.ConnectScreenViewModel
+import hr.fer.carpulse.viewmodel.HomeScreenViewModel
+import hr.fer.carpulse.viewmodel.SettingsScreenViewModel
+import hr.fer.carpulse.viewmodel.SplashScreenViewModel
+import hr.fer.carpulse.viewmodel.TripReviewScreenViewModel
+import hr.fer.carpulse.viewmodel.TripsScreenViewModel
+import hr.fer.carpulse.viewmodel.UserDataScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -65,13 +86,16 @@ val appModule = module {
             tripStartInfoDao = get(),
             locationDataDao = get(),
             weatherDataDao = get(),
+            trafficDataDao = get(),
             tripStartInfoMapper = get(),
             obdReadingMapper = get(),
             obdReadingsDao = get(),
             locationDataMapper = get(),
             weatherDataMapper = get(),
+            trafficDataMapper = get(),
             servicesApi = get(),
-            weatherApi = get()
+            weatherApi = get(),
+            trafficApi = get()
         )
     }
 
@@ -164,6 +188,10 @@ val appModule = module {
     }
 
     single {
+        GetTrafficDataUseCase(tripsRepository = get())
+    }
+
+    single {
         GetLocationDataUseCase(tripsRepository = get())
     }
 
@@ -189,6 +217,14 @@ val appModule = module {
 
     single {
         SaveWeatherDataUseCase(tripsRepository = get())
+    }
+
+    single {
+        SaveTrafficDataUseCase(tripsRepository = get())
+    }
+
+    single {
+        GetSavedTrafficDataUseCase(tripsRepository = get())
     }
 
     single {
@@ -228,10 +264,12 @@ val appModule = module {
             getWeatherDataUseCase = get(),
             saveLocationDataUseCase = get(),
             saveWeatherDataUseCase = get(),
+            saveTrafficDataUseCase = get(),
             connectToBrokerUseCase = get(),
             disconnectFromBrokerUseCase = get(),
             sendTripReadingDataUseCase = get(),
-            sendDriverDataUseCase = get()
+            sendDriverDataUseCase = get(),
+            getTrafficDataUseCase = get()
         )
     }
 
@@ -282,6 +320,7 @@ val appModule = module {
             sendTripReviewUseCase = get(),
             getSavedLocationDataUseCase = get(),
             getSavedWeatherDataUseCase = get(),
+            getSavedTrafficDataUseCase = get(),
             connectToBrokerUseCase = get(),
             disconnectFromBrokerUseCase = get(),
             sendTripReadingDataUseCase = get(),

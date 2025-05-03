@@ -2,25 +2,33 @@ package hr.fer.carpulse.data.repository
 
 import hr.fer.carpulse.data.api.DataApi
 import hr.fer.carpulse.data.api.ServicesApi
+import hr.fer.carpulse.data.api.TrafficApi
 import hr.fer.carpulse.data.api.WeatherApi
 import hr.fer.carpulse.data.database.mapper.OBDReadingMapper
 import hr.fer.carpulse.data.database.mapper.contextual.data.LocationDataMapper
+import hr.fer.carpulse.data.database.mapper.contextual.data.TrafficDataMapper
 import hr.fer.carpulse.data.database.mapper.contextual.data.WeatherDataMapper
 import hr.fer.carpulse.data.database.mapper.trip.TripStartInfoMapper
 import hr.fer.carpulse.data.database.mapper.trip.TripSummaryMapper
 import hr.fer.carpulse.data.database.trip.ITripSummaryDao
 import hr.fer.carpulse.data.database.trip.contextual.data.ILocationDataDao
+import hr.fer.carpulse.data.database.trip.contextual.data.ITrafficDataDao
 import hr.fer.carpulse.data.database.trip.contextual.data.IWeatherDataDao
 import hr.fer.carpulse.data.database.trip.obd.IOBDReadingsDao
 import hr.fer.carpulse.data.database.trip.startInfo.ITripStartInfoDao
 import hr.fer.carpulse.domain.common.contextual.data.LocationData
+import hr.fer.carpulse.domain.common.contextual.data.TrafficData
 import hr.fer.carpulse.domain.common.contextual.data.WeatherData
 import hr.fer.carpulse.domain.common.obd.OBDReading
 import hr.fer.carpulse.domain.common.trip.TripStartInfo
 import hr.fer.carpulse.domain.common.trip.TripSummary
 import hr.fer.carpulse.domain.repointerfaces.TripsRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 
 class TripsRepositoryImpl(
     private val tripSummaryDao: ITripSummaryDao,
@@ -28,13 +36,16 @@ class TripsRepositoryImpl(
     private val obdReadingsDao: IOBDReadingsDao,
     private val locationDataDao: ILocationDataDao,
     private val weatherDataDao: IWeatherDataDao,
+    private val trafficDataDao: ITrafficDataDao,
     private val tripSummaryMapper: TripSummaryMapper,
     private val tripStartInfoMapper: TripStartInfoMapper,
     private val obdReadingMapper: OBDReadingMapper,
     private val locationDataMapper: LocationDataMapper,
     private val weatherDataMapper: WeatherDataMapper,
+    private val trafficDataMapper: TrafficDataMapper,
     private val dataApi: DataApi,
     private val weatherApi: WeatherApi,
+    private val trafficApi: TrafficApi,
     private val servicesApi: ServicesApi
 ) : TripsRepository {
 
@@ -115,6 +126,10 @@ class TripsRepositoryImpl(
         )
     }
 
+    override suspend fun getTrafficData(latitude: Double, longitude: Double): TrafficData? {
+        return trafficApi.getTrafficFlowData(latitude = latitude, longitude = longitude)
+    }
+
     override fun updateLocationData() {
         servicesApi.updateLocation()
     }
@@ -152,17 +167,30 @@ class TripsRepositoryImpl(
         }
     }
 
+    override fun getSavedTrafficData(tripUUID: String): Flow<List<TrafficData>> {
+        return trafficDataDao.get(tripUUID).map { entityList ->
+            entityList.map { trafficDataMapper.fromEntity(it) }
+        }
+    }
+
+    override suspend fun insertTrafficData(trafficData: TrafficData, tripUUID: String) {
+        val entity = trafficDataMapper.toEntity(tripUUID = tripUUID, data = trafficData)
+        trafficDataDao.insert(entity)
+    }
+
     override fun sendTripReadingData(
         locationData: LocationData,
         weatherData: WeatherData,
         tripUUID: String,
-        obdReading: OBDReading
+        obdReading: OBDReading,
+        trafficData: TrafficData?
     ) {
         dataApi.sendTripReadingData(
             locationData = locationData,
             weatherData = weatherData,
             tripUUID = tripUUID,
-            obdReading = obdReading
+            obdReading = obdReading,
+            trafficData = trafficData
         )
 
         //TODO refactor this so that weather data is deleted after all the data stored locally is sent
@@ -170,6 +198,11 @@ class TripsRepositoryImpl(
         // delete weather data once it is sent to the server
         val weatherDataEntity = weatherDataMapper.toEntity(weatherData, tripUUID)
         weatherDataDao.delete(weatherDataEntity)
+
+        trafficData?.let {
+            val trafficDataEntity = trafficDataMapper.toEntity(trafficData, tripUUID)
+            trafficDataDao.delete(trafficDataEntity)
+        }
 
         // delete the data once it is sent to the server
         val locationDataEntity = locationDataMapper.toEntity(locationData, tripUUID)

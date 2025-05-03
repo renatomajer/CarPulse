@@ -3,9 +3,9 @@ package hr.fer.carpulse.data.database.trip.contextual.data
 import androidx.room.Entity
 import androidx.room.TypeConverter
 import hr.fer.carpulse.domain.common.contextual.data.Weather
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.decodeFromString
 
 @Entity(tableName = "weather_data", primaryKeys = ["tripUUID"])
 data class WeatherDataEntity(
@@ -41,7 +41,7 @@ data class WeatherDataEntity(
 ) {
 }
 
-class Converters {
+class WeatherConverters {
     private val format = Json { encodeDefaults = true }
 
     @TypeConverter

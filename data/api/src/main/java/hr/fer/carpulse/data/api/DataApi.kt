@@ -1,6 +1,7 @@
 package hr.fer.carpulse.data.api
 
 import hr.fer.carpulse.domain.common.contextual.data.LocationData
+import hr.fer.carpulse.domain.common.contextual.data.TrafficData
 import hr.fer.carpulse.domain.common.contextual.data.WeatherData
 import hr.fer.carpulse.domain.common.driver.DriverData
 import hr.fer.carpulse.domain.common.obd.OBDReading
@@ -23,6 +24,7 @@ interface DataApi {
         locationData: LocationData,
         weatherData: WeatherData,
         tripUUID: String,
-        obdReading: OBDReading
+        obdReading: OBDReading,
+        trafficData: TrafficData?
     )
 }
