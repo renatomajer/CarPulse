@@ -2,7 +2,14 @@ package hr.fer.carpulse.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -15,7 +22,11 @@ import androidx.navigation.NavController
 import hr.fer.carpulse.R
 import hr.fer.carpulse.navigation.Screens
 import hr.fer.carpulse.ui.components.ScreenTopBar
-import hr.fer.carpulse.ui.theme.*
+import hr.fer.carpulse.ui.theme.Teal200
+import hr.fer.carpulse.ui.theme.Typography
+import hr.fer.carpulse.ui.theme.mediumPadding
+import hr.fer.carpulse.ui.theme.microPadding
+import hr.fer.carpulse.ui.theme.smallSpacerHeight
 import hr.fer.carpulse.viewmodel.SettingsScreenViewModel
 import org.koin.androidx.compose.getViewModel
 
@@ -50,7 +61,7 @@ fun SettingsScreen(
                 .fillMaxWidth()
                 .padding(start = microPadding, end = microPadding, bottom = mediumPadding)
                 .clickable {
-                    navController.navigate(Screens.UserDataScreen.route)
+                    navController.navigate(Screens.OnboardingNavigatorScreen.route)
                 }) {
                 Text(text = stringResource(id = R.string.driver_info), style = Typography.body1)
                 Text(

@@ -50,11 +50,11 @@ import hr.fer.carpulse.domain.usecase.trip.startInfo.SaveTripStartInfoUseCase
 import hr.fer.carpulse.util.PhoneUtils
 import hr.fer.carpulse.viewmodel.ConnectScreenViewModel
 import hr.fer.carpulse.viewmodel.HomeScreenViewModel
+import hr.fer.carpulse.viewmodel.OnboardingViewModel
 import hr.fer.carpulse.viewmodel.SettingsScreenViewModel
 import hr.fer.carpulse.viewmodel.SplashScreenViewModel
 import hr.fer.carpulse.viewmodel.TripReviewScreenViewModel
 import hr.fer.carpulse.viewmodel.TripsScreenViewModel
-import hr.fer.carpulse.viewmodel.UserDataScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -274,7 +274,7 @@ val appModule = module {
     }
 
     viewModel {
-        UserDataScreenViewModel(
+        OnboardingViewModel(
             dataStoreRepository = get(),
             saveDriverDataUseCase = get(),
             getDriverDataUseCase = get(),

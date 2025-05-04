@@ -5,6 +5,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import hr.fer.carpulse.domain.repointerfaces.DataStoreRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -19,6 +21,8 @@ class DataStoreRepositoryImpl(
     private object PreferencesKey {
         val onBoardingKey = booleanPreferencesKey(name = "on_boarding_complete")
         val localStorageKey = booleanPreferencesKey(name = "store_locally")
+        val userNameKey = stringPreferencesKey(name = "user_name")
+        val avatarColorIndexKey = intPreferencesKey(name = "avatar_color_index")
     }
 
     override suspend fun saveOnBoardingState(completed: Boolean) {
@@ -27,7 +31,7 @@ class DataStoreRepositoryImpl(
         }
     }
 
-    override fun readOnBoardingState(): Flow<Boolean> {
+    override fun isOnboardingCompleted(): Flow<Boolean> {
         return dataStore.data
             .catch { exception ->
                 if (exception is IOException) {
@@ -61,6 +65,44 @@ class DataStoreRepositoryImpl(
             .map { preferences ->
                 val localStorageState = preferences[PreferencesKey.localStorageKey] ?: false
                 localStorageState
+            }
+    }
+
+    override suspend fun storeUserName(name: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.userNameKey] = name
+        }
+    }
+
+    override fun retrieveUserName(): Flow<String> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }.map { preferences ->
+                preferences[PreferencesKey.userNameKey] ?: ""
+            }
+    }
+
+    override suspend fun storeAvatarColorIndex(index: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.avatarColorIndexKey] = index
+        }
+    }
+
+    override fun retrieveAvatarColorIndex(): Flow<Int> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }.map { preferences ->
+                preferences[PreferencesKey.avatarColorIndexKey] ?: 0
             }
     }
 }

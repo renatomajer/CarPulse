@@ -2,6 +2,7 @@ package hr.fer.carpulse.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,7 +12,7 @@ import hr.fer.carpulse.ui.screens.HomeScreen
 import hr.fer.carpulse.ui.screens.SettingsScreen
 import hr.fer.carpulse.ui.screens.TripReviewScreen
 import hr.fer.carpulse.ui.screens.TripsScreen
-import hr.fer.carpulse.ui.screens.UserDataScreen
+import hr.fer.carpulse.ui.screens.onboardibng.OnboardingNavigatorScreen
 
 @Composable
 fun Navigation(
@@ -21,20 +22,29 @@ fun Navigation(
 
     NavHost(
         navController = navController,
-        startDestination = getStartDestination(startDestination)
+        startDestination = startDestination
     ) {
 
-        composable(route = Screens.UserDataScreen.route) {
-            UserDataScreen(
-                navController = navController,
-                isOnboarding = false
-            )
-        }
+        composable(route = Screens.OnboardingNavigatorScreen.route) {
+            OnboardingNavigatorScreen(
+                navigateToHomeScreen = { isOnboarding ->
 
-        composable(route = Screens.UserDataScreen.route + "/onBoarding") {
-            UserDataScreen(
-                navController = navController,
-                isOnboarding = true
+                    if (isOnboarding) {
+                        navController.navigate(
+                            route = Screens.HomeScreen.route,
+                            navOptions = NavOptions.Builder().setPopUpTo(
+                                route = Screens.OnboardingNavigatorScreen.route,
+                                inclusive = true
+                            ).build()
+                        )
+
+                    } else {
+                        navController.popBackStack(
+                            route = Screens.HomeScreen.route,
+                            inclusive = false
+                        )
+                    }
+                }
             )
         }
 
@@ -66,12 +76,4 @@ fun Navigation(
         }
     }
 
-}
-
-fun getStartDestination(startDestination: String): String {
-    return if (startDestination == Screens.UserDataScreen.route) {
-        Screens.UserDataScreen.route + "/onBoarding"
-    } else {
-        startDestination
-    }
 }

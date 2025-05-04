@@ -1,6 +1,9 @@
 package hr.fer.carpulse.viewmodel
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hr.fer.carpulse.domain.common.driver.DriverData
@@ -18,7 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class UserDataScreenViewModel(
+class OnboardingViewModel(
     private val dataStoreRepository: DataStoreRepository,
     private val saveDriverDataUseCase: SaveDriverDataUseCase,
     private val getDriverDataUseCase: GetDriverDataUseCase,
@@ -29,6 +32,15 @@ class UserDataScreenViewModel(
 
     private val _driverData = MutableStateFlow(DriverData())
     val driverData: StateFlow<DriverData> = _driverData.asStateFlow()
+
+    var isOnboarding by mutableStateOf(true)
+        private set
+
+    var selectedColorIndex by mutableStateOf(0)
+        private set
+
+    var driverName by mutableStateOf("")
+        private set
 
     init {
         connectToBrokerUseCase()
@@ -249,19 +261,39 @@ class UserDataScreenViewModel(
         Log.d("debug_log", driverData.value.toString())
         viewModelScope.launch(Dispatchers.IO) {
             saveDriverDataUseCase(driverData.value)
+            dataStoreRepository.storeUserName(driverName)
+            dataStoreRepository.storeAvatarColorIndex(selectedColorIndex)
         }
     }
 
-    fun getDriverData() {
-        viewModelScope.launch {
-            val dd = getDriverDataUseCase().first()
-            _driverData.value = dd
-            Log.d("debug_log", "Data stored: " + dd.toString())
+    private suspend fun getDriverData() {
+        val dd = getDriverDataUseCase().first()
+        _driverData.value = dd
+        Log.d("debug_log", "Data stored: $dd")
+    }
+
+    fun checkIsOnboarding() {
+        viewModelScope.launch(Dispatchers.IO) {
+            isOnboarding = !dataStoreRepository.isOnboardingCompleted().first()
+            if (!isOnboarding) {
+                getDriverData()
+
+                driverName = dataStoreRepository.retrieveUserName().first()
+                selectedColorIndex = dataStoreRepository.retrieveAvatarColorIndex().first()
+            }
         }
     }
 
     fun sendDriverData() {
         sendDriverDataUseCase(_driverData.value)
+    }
+
+    fun updateSelectedColorIndex(newValue: Int) {
+        selectedColorIndex = newValue
+    }
+
+    fun updateDriverName(newValue: String) {
+        driverName = newValue
     }
 
     override fun onCleared() {

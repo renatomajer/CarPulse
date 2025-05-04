@@ -21,12 +21,12 @@ class SplashScreenViewModel(
 
     init {
         viewModelScope.launch {
-            val isOnboardingCompleted = dataStoreRepository.readOnBoardingState().first()
+            val isOnboardingCompleted = dataStoreRepository.isOnboardingCompleted().first()
 
             if (isOnboardingCompleted) {
                 _startDestination.value = Screens.HomeScreen.route
             } else {
-                _startDestination.value = Screens.UserDataScreen.route
+                _startDestination.value = Screens.OnboardingNavigatorScreen.route
             }
 
             _isLoading.value = false

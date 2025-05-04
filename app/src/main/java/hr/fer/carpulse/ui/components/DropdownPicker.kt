@@ -1,11 +1,21 @@
 package hr.fer.carpulse.ui.components
 
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ExposedDropdownMenuBox
+import androidx.compose.material.ExposedDropdownMenuDefaults
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import hr.fer.carpulse.R
+import hr.fer.carpulse.ui.theme.thinText
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -34,7 +44,6 @@ fun DropdownPicker(
             value = selectedItem,
             onValueChange = {},
             readOnly = true,
-            label = { Text(text = stringResource(id = R.string.fuel_type)) },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(
                     expanded = expanded
@@ -42,18 +51,22 @@ fun DropdownPicker(
             },
             colors = ExposedDropdownMenuDefaults.textFieldColors(
                 textColor = MaterialTheme.colors.onBackground,
-                trailingIconColor = Color.Gray,
+                trailingIconColor = Color.Black,
                 focusedTrailingIconColor = MaterialTheme.colors.onBackground,
-                focusedIndicatorColor = MaterialTheme.colors.onBackground,
-                unfocusedIndicatorColor = Color.Gray,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
                 focusedLabelColor = Color.Gray,
-                unfocusedLabelColor = Color.Gray,
-                placeholderColor = Color.LightGray
-            )
+                unfocusedLabelColor = Color.Transparent,
+                placeholderColor = Color.LightGray,
+                backgroundColor = Color.White
+            ),
+            shape = RoundedCornerShape(13),
+            textStyle = thinText
         )
 
         // menu
         ExposedDropdownMenu(
+            modifier = modifier,
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
