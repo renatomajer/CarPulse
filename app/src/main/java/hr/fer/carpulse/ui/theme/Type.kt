@@ -78,9 +78,30 @@ val thinText = TextStyle(
     color = Color.Black
 )
 
-val thinGrayText = TextStyle(
+val menuSubtitle = TextStyle(
+    fontFamily = FontFamily.SansSerif,
+    fontWeight = FontWeight.Normal,
+    fontSize = 16.sp,
+    color = Color.Black
+)
+
+val smallLightText = TextStyle(
+    fontFamily = FontFamily.SansSerif,
+    fontWeight = FontWeight.Light,
+    fontSize = 16.sp,
+    color = Color.Black
+)
+
+val smallThinText = TextStyle(
     fontFamily = FontFamily.SansSerif,
     fontWeight = FontWeight.Thin,
-    fontSize = 14.sp,
-    color = Color.Gray
+    fontSize = 16.sp,
+    color = Color.Black
+)
+
+val gaugeLabel = TextStyle(
+    fontFamily = FontFamily.SansSerif,
+    fontWeight = FontWeight.ExtraLight,
+    fontSize = 18.sp,
+    color = Color.Black
 )

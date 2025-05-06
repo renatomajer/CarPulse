@@ -1,69 +1,91 @@
 package hr.fer.carpulse.ui.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Button
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.DrawerValue
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
+import androidx.compose.material.ModalDrawer
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.toUpperCase
-import androidx.navigation.NavController
+import androidx.compose.ui.unit.dp
 import hr.fer.carpulse.R
 import hr.fer.carpulse.domain.common.obd.OBDReading
-import hr.fer.carpulse.navigation.Screens
-import hr.fer.carpulse.ui.components.OBDReadingDataComponent
-import hr.fer.carpulse.ui.theme.Purple200
-import hr.fer.carpulse.ui.theme.measurementButtonHeight
-import hr.fer.carpulse.ui.theme.measurementButtonWidth
-import hr.fer.carpulse.ui.theme.measurementButtonsTopBottomPadding
-import hr.fer.carpulse.ui.theme.mediumPadding
+import hr.fer.carpulse.ui.components.CircularGauge
+import hr.fer.carpulse.ui.components.DataFieldComponent
+import hr.fer.carpulse.ui.components.DrawerContent
+import hr.fer.carpulse.ui.components.RecordingButton
+import hr.fer.carpulse.ui.theme.AppBackgroundColor
+import hr.fer.carpulse.ui.theme.BlueColor
+import hr.fer.carpulse.ui.theme.OrangeColor
+import hr.fer.carpulse.ui.theme.subtitle
+import hr.fer.carpulse.ui.theme.title
 import hr.fer.carpulse.viewmodel.HomeScreenViewModel
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun HomeScreen(
-    navController: NavController
+    modifier: Modifier = Modifier,
+    viewModel: HomeScreenViewModel = getViewModel(),
+    navigateToTripReviewScreen: (tripUUID: String) -> Unit,
+    navigateToConnectScreen: () -> Unit,
+    navigateToTripsScreen: () -> Unit,
+    navigateToSettingsScreen: () -> Unit,
+    navigateToTalkWithAssistant: () -> Unit,
+    navigateToConfigureAssistant: () -> Unit,
+    navigateToStatistics: () -> Unit
 ) {
+
     val context = LocalContext.current
 
-    val homeScreenViewModel = getViewModel<HomeScreenViewModel>()
-
-    val isMeasuring by homeScreenViewModel.getIsMeasuring().collectAsState()
-    val errorMessage by homeScreenViewModel.getErrorMessages().collectAsState()
-    val isConnected by homeScreenViewModel.getIsDeviceConnected().collectAsState()
-
-    val obdReading by homeScreenViewModel.getOBDReadingDataFlow()
+    val obdReading by viewModel.getOBDReadingDataFlow()
         .collectAsState(initial = OBDReading(timestamp = 0L))
 
-    var showMenu by remember { mutableStateOf(false) }
+    val isMeasuring by viewModel.getIsMeasuring().collectAsState()
+    val errorMessage by viewModel.getErrorMessages().collectAsState()
+    val isConnected by viewModel.getIsDeviceConnected().collectAsState()
+
+    val isStartButtonEnabled = isConnected && !isMeasuring
+    val isStopButtonEnabled = isConnected && isMeasuring
+
+    val maxSpeed = 200f
+    val maxRpm = 5000f
+
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        viewModel.retrieveDriverData()
+    }
 
     LaunchedEffect(key1 = errorMessage) {
         errorMessage?.let { message ->
@@ -75,109 +97,259 @@ fun HomeScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(id = R.string.app_name)) },
-                actions = {
-                    IconButton(onClick = { showMenu = !showMenu }) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = stringResource(
-                                id = R.string.menu
-                            )
-                        )
-                    }
-
-                    DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-                        DropdownMenuItem(onClick = {
-                            navController.navigate(Screens.ConnectScreen.route)
-                        }) {
-                            Text(text = stringResource(id = R.string.connect_device))
-                        }
-
-                        DropdownMenuItem(onClick = {
-                            navController.navigate(Screens.TripsScreen.route)
-                        }) {
-                            Text(text = stringResource(id = R.string.show_trips))
-                        }
-
-                        DropdownMenuItem(onClick = {
-                            navController.navigate(Screens.SettingsScreen.route)
-                        }) {
-                            Text(text = stringResource(id = R.string.settings))
-                        }
-                    }
-                }
+    ModalDrawer(
+        modifier = modifier,
+        drawerState = drawerState,
+        drawerContent = {
+            DrawerContent(
+                driverName = viewModel.driverName ?: "",
+                vehicleType = viewModel.vehicleType ?: "",
+                avatarBgColorIndex = viewModel.avatarColorIndex ?: 0,
+                onCloseClick = { coroutineScope.launch { drawerState.close() } },
+                onEditProfileClick = navigateToSettingsScreen,
+                onDrivingHistoryClick = navigateToTripsScreen,
+                onStatisticsClick = navigateToStatistics,
+                onTalkWithAssistantClick = navigateToTalkWithAssistant,
+                onConfigureAssistantClick = navigateToConfigureAssistant,
+                onScanAndConnectClick = navigateToConnectScreen
             )
         }
-
-    ) { contentPadding ->
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(
-                    top = contentPadding.calculateTopPadding(),
-                    bottom = contentPadding.calculateBottomPadding()
-                ),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .background(color = AppBackgroundColor)
         ) {
+            Spacer(modifier = Modifier.height(65.dp))
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(mediumPadding)
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = stringResource(id = R.string.obd_device_status)
-                )
+                IconButton(
+                    modifier = Modifier
+                        .padding(start = 30.dp)
+                        .background(
+                            color = Color.White,
+                            shape = RoundedCornerShape(100)
+                        ),
+                    onClick = { coroutineScope.launch { drawerState.open() } }
+                ) {
+                    Icon(Icons.Outlined.Menu, contentDescription = null)
+                }
 
-                Text(
-                    text = if (isConnected) stringResource(
-                        id = R.string.connected
-                    ) else stringResource(id = R.string.disconnected),
-                    color = if (isConnected) Purple200 else MaterialTheme.colors.onSurface,
-                    fontWeight = FontWeight.Medium
+                Spacer(modifier = Modifier.weight(1f))
+
+                Text(text = stringResource(R.string.home_screen_title), style = title)
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(end = 30.dp)
                 )
             }
 
-            OBDReadingDataComponent(obdReading)
-
-            Row(
-                modifier = Modifier.padding(
-                    top = measurementButtonsTopBottomPadding,
-                    bottom = measurementButtonsTopBottomPadding
-                ),
-                horizontalArrangement = Arrangement.SpaceBetween
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 47.dp, end = 31.dp, top = 50.dp)
             ) {
-                Button(
-                    modifier = Modifier
-                        .width(measurementButtonWidth)
-                        .height(measurementButtonHeight),
-                    enabled = !isMeasuring,
-                    onClick = {
-                        homeScreenViewModel.startMeasuring()
-                    }) {
+                Text(text = stringResource(R.string.home_screen_obd_device_status), style = title)
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Image(
+                        painter = if (isConnected) painterResource(R.drawable.ic_obd_connected)
+                        else painterResource(R.drawable.ic_obd_disconnected),
+                        contentDescription = null
+                    )
+
                     Text(
-                        text = stringResource(id = R.string.start_measurement).toUpperCase(Locale.current),
-                        textAlign = TextAlign.Center
+                        text = if (isConnected) stringResource(R.string.home_screen_obd_device_connected)
+                        else stringResource(R.string.home_screen_obd_device_disconnected),
+                        style = subtitle
+                    )
+
+                    IconButton(
+                        modifier = Modifier.background(
+                            color = Color.White,
+                            shape = RoundedCornerShape(100)
+                        ), onClick = navigateToConnectScreen
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_arrow_right),
+                            contentDescription = null
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(50.dp))
+                Text(text = stringResource(R.string.home_screen_record_trip_title), style = title)
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    RecordingButton(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(R.string.home_screen_record_trip_start),
+                        enabled = isStartButtonEnabled,
+                        imageRes = if (isStartButtonEnabled) R.drawable.ic_start_enabled
+                        else R.drawable.ic_start_disabled,
+                        onClick = { viewModel.startMeasuring() }
+                    )
+
+                    Spacer(modifier = Modifier.width(33.dp))
+
+                    RecordingButton(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(R.string.home_screen_record_trip_stop),
+                        enabled = isStopButtonEnabled,
+                        imageRes = if (isStopButtonEnabled) R.drawable.ic_stop_enabled
+                        else R.drawable.ic_stop_disabled,
+                        onClick = {
+                            viewModel.stopMeasuring()
+                            navigateToTripReviewScreen(viewModel.tripUUID.toString())
+                        }
                     )
                 }
 
-                // TODO: uncomment the line below
-                Button(
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(text = stringResource(R.string.home_screen_data_import_status), style = title)
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Column(
                     modifier = Modifier
-                        .width(measurementButtonWidth)
-                        .height(measurementButtonHeight),
-                    enabled = isMeasuring,
-                    onClick = {
-                        homeScreenViewModel.stopMeasuring()
-                        navController.navigate(Screens.TripReviewScreen.route + "/${homeScreenViewModel.tripUUID}")
-                    }) {
-                    Text(
-                        text = stringResource(id = R.string.stop_measurement).toUpperCase(Locale.current),
-                        textAlign = TextAlign.Center
+                        .fillMaxWidth()
+                        .height(86.dp)
+                        .background(
+                            color = Color.White,
+                            shape = RoundedCornerShape(13.dp)
+                        )
+                        .padding(start = 13.dp, top = 12.dp, end = 18.dp, bottom = 8.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    DataFieldComponent(
+                        dataTypeDescription = stringResource(R.string.home_screen_data_timestamp),
+                        data = obdReading.timestamp.toString()
                     )
+                    DataFieldComponent(
+                        dataTypeDescription = stringResource(R.string.home_screen_data_rpm),
+                        data = obdReading.rpm
+                    )
+                    DataFieldComponent(
+                        dataTypeDescription = stringResource(R.string.home_screen_data_speed),
+                        data = obdReading.speed
+                    )
+                    DataFieldComponent(
+                        dataTypeDescription = stringResource(R.string.home_screen_data_relative_throttle_position),
+                        data = obdReading.relativeThrottlePosition
+                    )
+                    DataFieldComponent(
+                        dataTypeDescription = stringResource(R.string.home_screen_data_absolute_throttle_position_b),
+                        data = obdReading.absoluteThrottlePositionB
+                    )
+                    DataFieldComponent(
+                        dataTypeDescription = stringResource(R.string.home_screen_data_throttle_position),
+                        data = obdReading.throttlePosition
+                    )
+                    DataFieldComponent(
+                        dataTypeDescription = stringResource(R.string.home_screen_data_accelerator_pedal_position_e),
+                        data = obdReading.acceleratorPedalPositionE
+                    )
+                    DataFieldComponent(
+                        dataTypeDescription = stringResource(R.string.home_screen_data_accelerator_pedal_position_d),
+                        data = obdReading.acceleratorPedalPositionD
+                    )
+                    DataFieldComponent(
+                        dataTypeDescription = stringResource(R.string.home_screen_data_engine_load),
+                        data = obdReading.engineLoad
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(30.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(bottom = 7.dp),
+                            text = stringResource(R.string.home_screen_data_speed),
+                            style = title
+                        )
+
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularGauge(
+                                value = if (obdReading.speed == OBDReading.NO_DATA) 0f else obdReading.speed.toFloat(),
+                                maxValue = maxSpeed,
+                                label = stringResource(R.string.home_screen_gauge_speed_label),
+                                height = 150,
+                                width = 150,
+                                indicatorColor = BlueColor
+                            )
+                        }
+                    }
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(bottom = 10.dp),
+                            text = stringResource(R.string.home_screen_data_rpm),
+                            style = title
+                        )
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularGauge(
+                                value = if (obdReading.rpm == OBDReading.NO_DATA) 0f else obdReading.rpm.toFloat(),
+                                maxValue = maxRpm,
+                                label = stringResource(R.string.home_screen_gauge_rpm_label),
+                                height = 150,
+                                width = 150,
+                                indicatorColor = OrangeColor
+                            )
+                        }
+                    }
+                }
+
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(R.string.home_screen_talk_with_ai_assistant),
+                        style = title
+                    )
+
+                    IconButton(
+                        modifier = Modifier.size(70.dp),
+                        onClick = navigateToTalkWithAssistant
+                    ) {
+                        Image(
+                            modifier = Modifier.size(70.dp),
+                            painter = painterResource(R.drawable.ic_ai_assistant),
+                            contentDescription = null
+                        )
+                    }
                 }
             }
         }

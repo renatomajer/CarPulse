@@ -269,7 +269,8 @@ val appModule = module {
             disconnectFromBrokerUseCase = get(),
             sendTripReadingDataUseCase = get(),
             sendDriverDataUseCase = get(),
-            getTrafficDataUseCase = get()
+            getTrafficDataUseCase = get(),
+            dataStoreRepository = get()
         )
     }
 

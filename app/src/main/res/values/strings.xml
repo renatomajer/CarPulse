@@ -5,7 +5,7 @@
     <string name="settings">Settings</string>
     <string name="show_trips">Show trips</string>
     <string name="connect_device">Connect device</string>
-    
+
     <string name="onboarding_screen_car_info_title">CAR\n information</string>
     <string name="onboarding_screen_car_info_subtitle">Choose your car</string>
     <string name="onboarding_screen_vehicle_type">Vehicle type</string>
@@ -25,12 +25,47 @@
 
     <string name="onboarding_screen_finished_title">Hi %s!</string>
     <string name="onboarding_screen_finished_lets_ride">Let\'s RIDE</string>
-
     <string name="onboarding_screen_driver_self_info_driving_age">Driving age</string>
     <string name="onboarding_screen_driver_self_info_driving_comfortable">I drive comfortable?</string>
     <string name="onboarding_screen_driver_self_info_driving_safe">I drive safe?</string>
     <string name="onboarding_screen_driver_self_info_driving_sport">I like sport style driving?</string>
     <string name="onboarding_screen_driver_self_info_driving_economically">I drive economically?</string>
+
+    <string name="home_screen_title">CAR Pulse</string>
+    <string name="home_screen_drawer_title">About me and my car</string>
+    <string name="home_screen_drawer_profile">Profile</string>
+    <string name="home_screen_drawer_my_rides">My rides</string>
+    <string name="home_screen_drawer_driving_history">Driving history</string>
+    <string name="home_screen_drawer_overall_statistics">Overall statistics</string>
+    <string name="home_screen_drawer_ai_assistant">AI assistant</string>
+    <string name="home_screen_drawer_talk">Talk</string>
+    <string name="home_screen_drawer_configure">Configure</string>
+    <string name="home_screen_drawer_obd_setup">OBD setup</string>
+    <string name="home_screen_drawer_scan_and_connect">Scan and connect</string>
+    <string name="home_screen_obd_device_status">OBD device status</string>
+    <string name="home_screen_obd_device_connected">Connected</string>
+    <string name="home_screen_obd_device_disconnected">Disconnected</string>
+    <string name="home_screen_record_trip_title">Record trip</string>
+    <string name="home_screen_record_trip_start">START</string>
+    <string name="home_screen_record_trip_stop">STOP</string>
+    <string name="home_screen_data_import_status">Data import status</string>
+    <string name="home_screen_data_speed">Speed</string>
+    <string name="home_screen_data_rpm">RPM</string>
+    <string name="home_screen_gauge_speed_label">km/h</string>
+    <string name="home_screen_gauge_rpm_label">rpm</string>
+    <string name="home_screen_data_no_data_label">No Data</string>
+    <string name="home_screen_data_timestamp">Timestamp</string>
+    <string name="home_screen_data_relative_throttle_position">Relative throttle position</string>
+    <string name="home_screen_data_absolute_throttle_position_b">Absolute throttle position B</string>
+    <string name="home_screen_data_throttle_position">Throttle position</string>
+    <string name="home_screen_data_accelerator_pedal_position_e">Accelerator pedal position E</string>
+    <string name="home_screen_data_accelerator_pedal_position_d">Accelerator pedal position D</string>
+    <string name="home_screen_data_engine_load">Engine load</string>
+    <string name="home_screen_talk_with_ai_assistant">Talk with AI assistant</string>
+
+
+
+    <!--    TODO: delete old strings below-->
 
     <string name="back">Back</string>
     <string name="start_scan">Start scan</string>

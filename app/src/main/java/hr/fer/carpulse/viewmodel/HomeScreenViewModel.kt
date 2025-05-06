@@ -1,6 +1,9 @@
 package hr.fer.carpulse.viewmodel
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hr.fer.carpulse.bluetooth.BluetoothController
@@ -13,6 +16,7 @@ import hr.fer.carpulse.domain.common.trip.MobileDeviceInfo
 import hr.fer.carpulse.domain.common.trip.TripStartInfo
 import hr.fer.carpulse.domain.common.trip.TripSummary
 import hr.fer.carpulse.domain.common.trip.VehicleInfo
+import hr.fer.carpulse.domain.repointerfaces.DataStoreRepository
 import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.mqtt.ConnectToBrokerUseCase
@@ -68,12 +72,22 @@ class HomeScreenViewModel(
     private val connectToBrokerUseCase: ConnectToBrokerUseCase,
     private val disconnectFromBrokerUseCase: DisconnectFromBrokerUseCase,
     private val sendTripReadingDataUseCase: SendTripReadingDataUseCase,
-    private val sendDriverDataUseCase: SendDriverDataUseCase
+    private val sendDriverDataUseCase: SendDriverDataUseCase,
+    private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
 
     private val isMeasuring = MutableStateFlow(false)
 
     private val errorMessage = MutableStateFlow<String?>(null)
+
+    var driverName by mutableStateOf<String?>(null)
+        private set
+
+    var vehicleType by mutableStateOf<String?>(null)
+        private set
+
+    var avatarColorIndex by mutableStateOf<Int?>(null)
+        private set
 
     private var readOBDDataJob: Job? = null
     private var readLocationDataJob: Job? = null
@@ -384,6 +398,14 @@ class HomeScreenViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val driverData = getDriverDataUseCase().first()
             sendDriverDataUseCase(driverData)
+        }
+    }
+
+    fun retrieveDriverData() {
+        viewModelScope.launch(Dispatchers.IO) {
+            driverName = dataStoreRepository.retrieveUserName().first()
+            avatarColorIndex = dataStoreRepository.retrieveAvatarColorIndex().first()
+            vehicleType = getDriverDataUseCase().first().vehicleType
         }
     }
 

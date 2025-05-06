@@ -49,7 +49,23 @@ fun Navigation(
         }
 
         composable(route = Screens.HomeScreen.route) {
-            HomeScreen(navController = navController)
+            HomeScreen(
+                navigateToTripReviewScreen = { tripUUID ->
+                    navController.navigate(Screens.TripReviewScreen.route + "/$tripUUID")
+                },
+                navigateToConnectScreen = { navController.navigate(Screens.ConnectScreen.route) },
+                navigateToTripsScreen = { navController.navigate(Screens.TripsScreen.route) },
+                navigateToSettingsScreen = { navController.navigate(Screens.SettingsScreen.route) },
+                navigateToStatistics = {
+                    // TODO: add navigation
+                },
+                navigateToConfigureAssistant = {
+                    // TODO: add navigation
+                },
+                navigateToTalkWithAssistant = {
+                    // TODO: add navigation
+                }
+            )
         }
 
         composable(route = Screens.ConnectScreen.route) {

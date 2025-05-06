@@ -15,4 +15,6 @@ val PurpleColor = Color(0xFFC2B1DD)
 val OrangeColor = Color(0xFFFDCBA9)
 val RedColor = Color(0xFFFF939B)
 
+val LightGrayColor = Color(0xFFD9D9D9)
+
 val avatarBgColors = listOf(TealColor, BlueColor, GreenColor, PurpleColor, OrangeColor, RedColor)
