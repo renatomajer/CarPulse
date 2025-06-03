@@ -1,5 +1,7 @@
 package hr.fer.carpulse.data.api.di
 
+import hr.fer.carpulse.data.api.AssistantApi
+import hr.fer.carpulse.data.api.AssistantApiImpl
 import hr.fer.carpulse.data.api.DataApi
 import hr.fer.carpulse.data.api.DataApiImpl
 import hr.fer.carpulse.data.api.ServicesApi
@@ -37,5 +39,9 @@ val apiModule = module {
 
     single<TrafficApi> {
         TrafficApiImpl(httpClient = get())
+    }
+
+    single<AssistantApi> {
+        AssistantApiImpl(httpClient = get())
     }
 }

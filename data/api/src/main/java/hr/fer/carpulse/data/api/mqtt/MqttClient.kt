@@ -35,8 +35,8 @@ class MQTTClient(
         Log.d("MQTT", "Trying to connect!")
         mqttClient.setCallback(cbClient)
         val options = MqttConnectOptions()
-        options.userName = BuildConfig.MQTT_CLIENT_USERNAME
-        options.password = BuildConfig.MQTT_CLIENT_PWD.toCharArray()
+//        options.userName = BuildConfig.MQTT_CLIENT_USERNAME
+//        options.password = BuildConfig.MQTT_CLIENT_PWD.toCharArray()
 
         try {
             mqttClient.connect(options, null, cbConnect)

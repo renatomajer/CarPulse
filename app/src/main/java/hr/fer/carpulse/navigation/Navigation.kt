@@ -10,6 +10,7 @@ import androidx.navigation.navArgument
 import hr.fer.carpulse.ui.screens.ConnectScreen
 import hr.fer.carpulse.ui.screens.HomeScreen
 import hr.fer.carpulse.ui.screens.SettingsScreen
+import hr.fer.carpulse.ui.screens.TalkWithAssistantScreen
 import hr.fer.carpulse.ui.screens.TripReviewScreen
 import hr.fer.carpulse.ui.screens.TripsScreen
 import hr.fer.carpulse.ui.screens.onboardibng.OnboardingNavigatorScreen
@@ -63,7 +64,7 @@ fun Navigation(
                     // TODO: add navigation
                 },
                 navigateToTalkWithAssistant = {
-                    // TODO: add navigation
+                    navController.navigate(Screens.TalkWithAssistantScreen.route)
                 }
             )
         }
@@ -89,6 +90,10 @@ fun Navigation(
                 TripReviewScreen(navController = navController, tripUUID = tripUUID)
 
             }
+        }
+
+        composable(route = Screens.TalkWithAssistantScreen.route) {
+            TalkWithAssistantScreen(navigateBack = { navController.popBackStack() })
         }
     }
 

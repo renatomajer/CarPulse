@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,7 +34,8 @@ fun MenuComponent(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(color = Color.White, shape = RoundedCornerShape(13.dp))
+            .clip(shape = RoundedCornerShape(13.dp))
+            .background(color = Color.White)
             .clickable(
                 onClick = onClick,
                 indication = rememberRipple(),

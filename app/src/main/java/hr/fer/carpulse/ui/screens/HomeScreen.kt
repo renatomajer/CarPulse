@@ -295,7 +295,8 @@ fun HomeScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             CircularGauge(
-                                value = if (obdReading.speed == OBDReading.NO_DATA) 0f else obdReading.speed.toFloat(),
+                                value = if (obdReading.speed == OBDReading.NO_DATA) 0f
+                                else obdReading.speed.removeSuffix("km/h").toFloat(),
                                 maxValue = maxSpeed,
                                 label = stringResource(R.string.home_screen_gauge_speed_label),
                                 height = 150,
@@ -318,7 +319,8 @@ fun HomeScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             CircularGauge(
-                                value = if (obdReading.rpm == OBDReading.NO_DATA) 0f else obdReading.rpm.toFloat(),
+                                value = if (obdReading.rpm == OBDReading.NO_DATA) 0f
+                                else obdReading.rpm.removeSuffix("RPM").toFloat(),
                                 maxValue = maxRpm,
                                 label = stringResource(R.string.home_screen_gauge_rpm_label),
                                 height = 150,

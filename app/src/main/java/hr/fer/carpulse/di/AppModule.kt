@@ -7,9 +7,11 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import hr.fer.carpulse.bluetooth.AndroidBluetoothController
 import hr.fer.carpulse.bluetooth.BluetoothController
+import hr.fer.carpulse.data.repository.AssistantRepositoryImpl
 import hr.fer.carpulse.data.repository.DataStoreRepositoryImpl
 import hr.fer.carpulse.data.repository.DriverDataRepositoryImpl
 import hr.fer.carpulse.data.repository.TripsRepositoryImpl
+import hr.fer.carpulse.domain.repointerfaces.AssistantRepository
 import hr.fer.carpulse.domain.repointerfaces.DataStoreRepository
 import hr.fer.carpulse.domain.repointerfaces.DriverDataRepository
 import hr.fer.carpulse.domain.repointerfaces.TripsRepository
@@ -53,6 +55,7 @@ import hr.fer.carpulse.viewmodel.HomeScreenViewModel
 import hr.fer.carpulse.viewmodel.OnboardingViewModel
 import hr.fer.carpulse.viewmodel.SettingsScreenViewModel
 import hr.fer.carpulse.viewmodel.SplashScreenViewModel
+import hr.fer.carpulse.viewmodel.TalkWithAssistantViewModel
 import hr.fer.carpulse.viewmodel.TripReviewScreenViewModel
 import hr.fer.carpulse.viewmodel.TripsScreenViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -101,6 +104,10 @@ val appModule = module {
 
     single<DataStoreRepository> {
         DataStoreRepositoryImpl(dataStore = get())
+    }
+
+    single<AssistantRepository> {
+        AssistantRepositoryImpl(assistantApi = get())
     }
 
     single {
@@ -327,6 +334,13 @@ val appModule = module {
             sendTripReadingDataUseCase = get(),
             getDriverDataUseCase = get(),
             sendDriverDataUseCase = get()
+        )
+    }
+
+    viewModel {
+        TalkWithAssistantViewModel(
+            assistantRepository = get(),
+            getDriverDataUseCase = get()
         )
     }
 }

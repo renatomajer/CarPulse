@@ -63,6 +63,9 @@
     <string name="home_screen_data_engine_load">Engine load</string>
     <string name="home_screen_talk_with_ai_assistant">Talk with AI assistant</string>
 
+    <string name="talk_with_assistant_screen_title">CAR Pulse</string>
+    <string name="talk_with_assistant_screen_content">Talk with AI assistant</string>
+
 
 
     <!--    TODO: delete old strings below-->

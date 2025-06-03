@@ -64,8 +64,8 @@ class MainActivity : ComponentActivity() {
                     android.Manifest.permission.BLUETOOTH_CONNECT,
                     android.Manifest.permission.ACCESS_COARSE_LOCATION,
                     android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    android.Manifest.permission.WAKE_LOCK
-
+                    android.Manifest.permission.WAKE_LOCK,
+                    android.Manifest.permission.RECORD_AUDIO
                 )
             )
         } else {
@@ -76,7 +76,8 @@ class MainActivity : ComponentActivity() {
                     android.Manifest.permission.BLUETOOTH_CONNECT,
                     android.Manifest.permission.ACCESS_COARSE_LOCATION,
                     android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    android.Manifest.permission.WAKE_LOCK
+                    android.Manifest.permission.WAKE_LOCK,
+                    android.Manifest.permission.RECORD_AUDIO
 
                 )
             )
