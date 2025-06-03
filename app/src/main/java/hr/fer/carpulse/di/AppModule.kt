@@ -340,7 +340,8 @@ val appModule = module {
     viewModel {
         TalkWithAssistantViewModel(
             assistantRepository = get(),
-            getDriverDataUseCase = get()
+            getDriverDataUseCase = get(),
+            application = androidApplication()
         )
     }
 }

@@ -23,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -46,8 +45,6 @@ fun TalkWithAssistantScreen(
     viewModel: TalkWithAssistantViewModel = getViewModel()
 ) {
 
-    val context = LocalContext.current
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -68,7 +65,6 @@ fun TalkWithAssistantScreen(
                         shape = RoundedCornerShape(100)
                     ),
                 onClick = {
-                    //TODO: kill assistant
                     navigateBack()
                 }
             ) {
@@ -99,7 +95,7 @@ fun TalkWithAssistantScreen(
 
             Image(
                 modifier = Modifier
-                    .clickable { viewModel.talk(context) },
+                    .clickable { viewModel.talk() },
                 painter = painterResource(R.drawable.assistant_logo_big),
                 contentDescription = null
             )
@@ -112,7 +108,14 @@ fun TalkWithAssistantScreen(
                     contentDescription = null,
                     modifier = Modifier.size(30.dp)
                 )
-            } else if (viewModel.fetchingResponse) {
+            } else if (viewModel.isSpeaking) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_speaker),
+                    contentDescription = null,
+                    modifier = Modifier.size(30.dp),
+                    tint = Color.Black
+                )
+            } else if (viewModel.isFetchingAssistantResponse) {
                 CircularProgressIndicator(modifier = Modifier.size(30.dp), color = LightGrayColor)
             } else {
                 Spacer(modifier = Modifier.height(30.dp))
@@ -143,7 +146,6 @@ fun TalkWithAssistantScreen(
                         )
                     }
                 }
-
             }
 
             Spacer(modifier = Modifier.height(48.dp))
