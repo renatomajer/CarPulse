@@ -50,7 +50,7 @@ import hr.fer.carpulse.domain.usecase.trip.startInfo.DeleteTripStartInfoUseCase
 import hr.fer.carpulse.domain.usecase.trip.startInfo.GetTripStartInfoUseCase
 import hr.fer.carpulse.domain.usecase.trip.startInfo.SaveTripStartInfoUseCase
 import hr.fer.carpulse.util.PhoneUtils
-import hr.fer.carpulse.viewmodel.ConnectScreenViewModel
+import hr.fer.carpulse.viewmodel.ConnectDeviceViewModel
 import hr.fer.carpulse.viewmodel.HomeScreenViewModel
 import hr.fer.carpulse.viewmodel.OnboardingViewModel
 import hr.fer.carpulse.viewmodel.SplashScreenViewModel
@@ -251,7 +251,7 @@ val appModule = module {
 
 
     viewModel {
-        ConnectScreenViewModel(bluetoothController = get())
+        ConnectDeviceViewModel(bluetoothController = get())
     }
 
     viewModel {

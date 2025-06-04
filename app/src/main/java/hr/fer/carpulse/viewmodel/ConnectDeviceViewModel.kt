@@ -7,15 +7,21 @@ import hr.fer.carpulse.bluetooth.BluetoothController
 import hr.fer.carpulse.domain.common.BluetoothDevice
 import hr.fer.carpulse.domain.common.ConnectionResult
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 
-class ConnectScreenViewModel(
+class ConnectDeviceViewModel(
     private val bluetoothController: BluetoothController
 ) : ViewModel() {
 
     private val isScanning = MutableStateFlow(false)
 
-    private val isConnecting = MutableStateFlow(false)
+    private val connectingDeviceAddress = MutableStateFlow<String?>(null)
     private val isConnected = MutableStateFlow(false)
 
     private val errorMessage = MutableStateFlow<String?>(null)
@@ -38,14 +44,14 @@ class ConnectScreenViewModel(
 
     fun connectToDevice(device: BluetoothDevice) {
         isScanning.update { false }
-        isConnecting.update { true }
+        connectingDeviceAddress.update { device.address }
         deviceConnectionJob = bluetoothController.connectToDevice(device).listen()
     }
 
     fun disconnectFromDevice() {
         deviceConnectionJob?.cancel()
         bluetoothController.closeConnection()
-        isConnecting.update { false }
+        connectingDeviceAddress.update { null }
         isConnected.update { false }
     }
 
@@ -61,7 +67,7 @@ class ConnectScreenViewModel(
 
     fun isScanning() = isScanning.asStateFlow()
 
-    fun isConnecting() = isConnecting.asStateFlow()
+    fun getConnectingDeviceAddress() = connectingDeviceAddress.asStateFlow()
     fun isConnected() = isConnected.asStateFlow()
 
     fun errorMessage() = errorMessage.asStateFlow()
@@ -73,19 +79,19 @@ class ConnectScreenViewModel(
             when (result) {
                 ConnectionResult.ConnectionEstablished -> {
                     isConnected.update { true }
-                    isConnecting.update { false }
+                    connectingDeviceAddress.update { null }
                     errorMessage.update { null }
                 }
                 is ConnectionResult.Error -> {
                     isConnected.update { false }
-                    isConnecting.update { false }
+                    connectingDeviceAddress.update { null }
                     errorMessage.update { result.message }
                 }
             }
         }.catch { throwable ->
             bluetoothController.closeConnection()
             isConnected.update { false }
-            isConnecting.update { false }
+            connectingDeviceAddress.update { null }
 
         }.launchIn(viewModelScope)
     }

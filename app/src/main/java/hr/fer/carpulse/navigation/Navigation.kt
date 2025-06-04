@@ -7,7 +7,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import hr.fer.carpulse.ui.screens.ConnectScreen
+import hr.fer.carpulse.ui.screens.ConnectDeviceScreen
 import hr.fer.carpulse.ui.screens.HomeScreen
 import hr.fer.carpulse.ui.screens.TalkWithAssistantScreen
 import hr.fer.carpulse.ui.screens.TripReviewScreen
@@ -53,7 +53,7 @@ fun Navigation(
                 navigateToTripReviewScreen = { tripUUID ->
                     navController.navigate(Screens.TripReviewScreen.route + "/$tripUUID")
                 },
-                navigateToConnectScreen = { navController.navigate(Screens.ConnectScreen.route) },
+                navigateToConnectScreen = { navController.navigate(Screens.ConnectDeviceScreen.route) },
                 navigateToTripsScreen = { navController.navigate(Screens.TripsScreen.route) },
                 navigateToEditProfileScreen = { navController.navigate(Screens.OnboardingNavigatorScreen.route) },
                 navigateToStatistics = {
@@ -68,8 +68,8 @@ fun Navigation(
             )
         }
 
-        composable(route = Screens.ConnectScreen.route) {
-            ConnectScreen(navController = navController)
+        composable(route = Screens.ConnectDeviceScreen.route) {
+            ConnectDeviceScreen(onNavigateBack = { navController.popBackStack() })
         }
 
         composable(route = Screens.TripsScreen.route) {

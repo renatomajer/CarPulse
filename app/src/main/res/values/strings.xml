@@ -70,6 +70,19 @@
     <string name="talk_with_assistant_screen_title">CAR Pulse</string>
     <string name="talk_with_assistant_screen_content">Talk with AI assistant</string>
 
+    <string name="connect_device_screen_title">OBD Device Setup</string>
+    <string name="connect_device_screen_bluetooth">Bluetooth:</string>
+    <string name="connect_device_screen_bluetooth_switch_on">On</string>
+    <string name="connect_device_screen_bluetooth_switch_off">Off</string>
+    <string name="connect_device_screen_turn_on_bluetooth_message">Turn on Bluetooth to view devices available for pairing or already paired.</string>
+    <string name="connect_device_screen_scanning">Scanning</string>
+    <string name="connect_device_screen_scanning_button_stop">STOP</string>
+    <string name="connect_device_screen_scanning_button_start">START</string>
+    <string name="connect_device_screen_paired_devices">Paired devices</string>
+    <string name="connect_device_screen_scanned_devices">Scanned devices</string>
+    <string name="connect_device_screen_connect_button">Connect</string>
+    <string name="connect_device_screen_device_connected">Connected</string>
+
 
 
     <!--    TODO: delete old strings below-->

@@ -13,9 +13,18 @@ import android.util.Log
 import hr.fer.carpulse.domain.common.BluetoothDeviceDomain
 import hr.fer.carpulse.domain.common.ConnectionResult
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.update
 import java.io.IOException
-import java.util.*
+import java.util.UUID
 
 
 @SuppressLint("MissingPermission")
@@ -98,6 +107,9 @@ class AndroidBluetoothController(
     override fun startDiscovery() {
         if (!hasPermission(Manifest.permission.BLUETOOTH_SCAN)) return
 
+        // Reset scanned devices list
+        _scannedDevices.update { emptyList() }
+
         context.registerReceiver(
             foundDeviceReceiver,
             IntentFilter(BluetoothDevice.ACTION_FOUND)
@@ -118,8 +130,6 @@ class AndroidBluetoothController(
             context.unregisterReceiver(foundDeviceReceiver)
             isFoundDeviceReceiverRegistered = false
         }
-
-        _scannedDevices.update { emptyList() }
     }
 
     override fun connectToDevice(device: BluetoothDeviceDomain): Flow<ConnectionResult> {
