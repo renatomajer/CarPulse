@@ -9,11 +9,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import hr.fer.carpulse.ui.screens.ConnectScreen
 import hr.fer.carpulse.ui.screens.HomeScreen
-import hr.fer.carpulse.ui.screens.SettingsScreen
 import hr.fer.carpulse.ui.screens.TalkWithAssistantScreen
 import hr.fer.carpulse.ui.screens.TripReviewScreen
 import hr.fer.carpulse.ui.screens.TripsScreen
-import hr.fer.carpulse.ui.screens.onboardibng.OnboardingNavigatorScreen
+import hr.fer.carpulse.ui.screens.onboarding.OnboardingNavigatorScreen
 
 @Composable
 fun Navigation(
@@ -56,7 +55,7 @@ fun Navigation(
                 },
                 navigateToConnectScreen = { navController.navigate(Screens.ConnectScreen.route) },
                 navigateToTripsScreen = { navController.navigate(Screens.TripsScreen.route) },
-                navigateToSettingsScreen = { navController.navigate(Screens.SettingsScreen.route) },
+                navigateToEditProfileScreen = { navController.navigate(Screens.OnboardingNavigatorScreen.route) },
                 navigateToStatistics = {
                     // TODO: add navigation
                 },
@@ -71,10 +70,6 @@ fun Navigation(
 
         composable(route = Screens.ConnectScreen.route) {
             ConnectScreen(navController = navController)
-        }
-
-        composable(route = Screens.SettingsScreen.route) {
-            SettingsScreen(navController = navController)
         }
 
         composable(route = Screens.TripsScreen.route) {

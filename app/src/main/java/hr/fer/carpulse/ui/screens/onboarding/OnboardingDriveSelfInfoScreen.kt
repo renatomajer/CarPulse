@@ -1,4 +1,4 @@
-package hr.fer.carpulse.ui.screens.onboardibng
+package hr.fer.carpulse.ui.screens.onboarding
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

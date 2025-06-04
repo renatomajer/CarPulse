@@ -62,6 +62,10 @@
     <string name="home_screen_data_accelerator_pedal_position_d">Accelerator pedal position D</string>
     <string name="home_screen_data_engine_load">Engine load</string>
     <string name="home_screen_talk_with_ai_assistant">Talk with AI assistant</string>
+    <string name="home_screen_drawer_data_setup">Data setup</string>
+    <string name="home_screen_drawer_upload_to_server">Upload to server</string>
+    <string name="home_screen_drawer_upload_to_server_no">No</string>
+    <string name="home_screen_drawer_upload_to_server_yes">Yes</string>
 
     <string name="talk_with_assistant_screen_title">CAR Pulse</string>
     <string name="talk_with_assistant_screen_content">Talk with AI assistant</string>

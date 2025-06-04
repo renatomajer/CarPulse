@@ -59,7 +59,7 @@ fun HomeScreen(
     navigateToTripReviewScreen: (tripUUID: String) -> Unit,
     navigateToConnectScreen: () -> Unit,
     navigateToTripsScreen: () -> Unit,
-    navigateToSettingsScreen: () -> Unit,
+    navigateToEditProfileScreen: () -> Unit,
     navigateToTalkWithAssistant: () -> Unit,
     navigateToConfigureAssistant: () -> Unit,
     navigateToStatistics: () -> Unit
@@ -106,12 +106,14 @@ fun HomeScreen(
                 vehicleType = viewModel.vehicleType ?: "",
                 avatarBgColorIndex = viewModel.avatarColorIndex ?: 0,
                 onCloseClick = { coroutineScope.launch { drawerState.close() } },
-                onEditProfileClick = navigateToSettingsScreen,
+                onEditProfileClick = navigateToEditProfileScreen,
                 onDrivingHistoryClick = navigateToTripsScreen,
                 onStatisticsClick = navigateToStatistics,
                 onTalkWithAssistantClick = navigateToTalkWithAssistant,
                 onConfigureAssistantClick = navigateToConfigureAssistant,
-                onScanAndConnectClick = navigateToConnectScreen
+                onScanAndConnectClick = navigateToConnectScreen,
+                uploadToServer = !viewModel.storeDataLocally,
+                onUploadToServerChange = { viewModel.saveLocalStorageState(uploadToServer = it) }
             )
         }
     ) {

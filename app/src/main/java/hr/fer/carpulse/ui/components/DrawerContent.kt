@@ -2,6 +2,7 @@ package hr.fer.carpulse.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.Switch
+import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,7 +31,9 @@ import androidx.compose.ui.unit.dp
 import hr.fer.carpulse.R
 import hr.fer.carpulse.ui.theme.AppBackgroundColor
 import hr.fer.carpulse.ui.theme.OrangeColor
+import hr.fer.carpulse.ui.theme.TealColor
 import hr.fer.carpulse.ui.theme.avatarBgColors
+import hr.fer.carpulse.ui.theme.extraLightText
 import hr.fer.carpulse.ui.theme.menuSubtitle
 import hr.fer.carpulse.ui.theme.title
 
@@ -44,7 +49,9 @@ fun DrawerContent(
     onStatisticsClick: () -> Unit,
     onTalkWithAssistantClick: () -> Unit,
     onConfigureAssistantClick: () -> Unit,
-    onScanAndConnectClick: () -> Unit
+    onScanAndConnectClick: () -> Unit,
+    uploadToServer: Boolean,
+    onUploadToServerChange: (Boolean) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -190,6 +197,61 @@ fun DrawerContent(
                 iconResource = R.drawable.ic_scan_connect,
                 onClick = onScanAndConnectClick
             )
+
+            Spacer(modifier = Modifier.height(25.dp))
+
+            Text(text = stringResource(R.string.home_screen_drawer_data_setup), style = title)
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Column(
+                modifier = Modifier
+                    .background(
+                        color = Color.White,
+                        shape = RoundedCornerShape(13.dp)
+                    )
+                    .padding(start = 17.dp, end = 12.dp, top = 10.dp, bottom = 10.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    Text(
+                        text = stringResource(R.string.home_screen_drawer_upload_to_server),
+                        style = menuSubtitle
+                    )
+
+                    Image(
+                        painter = painterResource(R.drawable.ic_upload),
+                        contentDescription = null
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = stringResource(R.string.home_screen_drawer_upload_to_server_no), style = extraLightText)
+
+                    Switch(
+                        checked = uploadToServer,
+                        onCheckedChange = onUploadToServerChange,
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = TealColor,
+                            checkedTrackAlpha = 1f,
+                            uncheckedThumbColor = TealColor,
+                            uncheckedTrackColor = Color.LightGray
+                        )
+                    )
+
+                    Text(text = stringResource(R.string.home_screen_drawer_upload_to_server_yes), style = extraLightText)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(25.dp))
         }
     }
 }
@@ -208,6 +270,8 @@ private fun DrawerContentPreview() {
         onEditProfileClick = {},
         onTalkWithAssistantClick = {},
         onConfigureAssistantClick = {},
-        onCloseClick = {}
+        onCloseClick = {},
+        uploadToServer = true,
+        onUploadToServerChange = {}
     )
 }

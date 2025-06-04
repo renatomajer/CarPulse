@@ -22,6 +22,7 @@ import hr.fer.carpulse.domain.usecase.driver.SendDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.mqtt.ConnectToBrokerUseCase
 import hr.fer.carpulse.domain.usecase.mqtt.DisconnectFromBrokerUseCase
 import hr.fer.carpulse.domain.usecase.preferences.ReadLocalStorageStateUseCase
+import hr.fer.carpulse.domain.usecase.preferences.SaveLocalStorageStateUseCase
 import hr.fer.carpulse.domain.usecase.trip.SaveTripSummaryUseCase
 import hr.fer.carpulse.domain.usecase.trip.SendTripStartInfoUseCase
 import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetLocationDataUseCase
@@ -59,6 +60,7 @@ class HomeScreenViewModel(
     private val sendTripStartInfoUseCase: SendTripStartInfoUseCase,
     private val saveTripStartInfoUseCase: SaveTripStartInfoUseCase,
     private val readLocalStorageStateUseCase: ReadLocalStorageStateUseCase,
+    private val saveLocalStorageStateUseCase: SaveLocalStorageStateUseCase,
     private val saveOBDReadingUseCase: SaveOBDReadingUseCase,
     private val saveTripSummaryUseCase: SaveTripSummaryUseCase,
     private val getLocationDataUseCase: GetLocationDataUseCase,
@@ -102,10 +104,19 @@ class HomeScreenViewModel(
     var tripUUID: UUID? = null
     var tripStartTimestamp: Long = 0L
 
-    private var storeDataLocally: Boolean = false
+    var storeDataLocally by mutableStateOf(false)
+        private set
 
     var maxTripRPM: Int = 0
     var maxTripSpeed: Int = 0
+
+    init {
+        viewModelScope.launch {
+            readLocalStorageStateUseCase().collect { storeLocally ->
+                storeDataLocally = storeLocally
+            }
+        }
+    }
 
     fun startMeasuring() {
         // TODO remove the lines below- added only for testing purposes
@@ -133,7 +144,7 @@ class HomeScreenViewModel(
 
             // Read the value from DataStore
             viewModelScope.launch(Dispatchers.IO) {
-                storeDataLocally = readLocalStorageStateUseCase().first()
+//                storeDataLocally = readLocalStorageStateUseCase().first()
 
                 if (!storeDataLocally) {
                     connectToBrokerUseCase()
@@ -406,6 +417,13 @@ class HomeScreenViewModel(
             driverName = dataStoreRepository.retrieveUserName().first()
             avatarColorIndex = dataStoreRepository.retrieveAvatarColorIndex().first()
             vehicleType = getDriverDataUseCase().first().vehicleType
+        }
+    }
+
+    fun saveLocalStorageState(uploadToServer: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val storeLocally = !uploadToServer
+            saveLocalStorageStateUseCase(storeLocally)
         }
     }
 

@@ -53,7 +53,6 @@ import hr.fer.carpulse.util.PhoneUtils
 import hr.fer.carpulse.viewmodel.ConnectScreenViewModel
 import hr.fer.carpulse.viewmodel.HomeScreenViewModel
 import hr.fer.carpulse.viewmodel.OnboardingViewModel
-import hr.fer.carpulse.viewmodel.SettingsScreenViewModel
 import hr.fer.carpulse.viewmodel.SplashScreenViewModel
 import hr.fer.carpulse.viewmodel.TalkWithAssistantViewModel
 import hr.fer.carpulse.viewmodel.TripReviewScreenViewModel
@@ -262,6 +261,7 @@ val appModule = module {
             getDriverDataUseCase = get(),
             sendTripStartInfoUseCase = get(),
             saveTripStartInfoUseCase = get(),
+            saveLocalStorageStateUseCase = get(),
             readLocalStorageStateUseCase = get(),
             saveOBDReadingUseCase = get(),
             saveTripSummaryUseCase = get(),
@@ -304,13 +304,6 @@ val appModule = module {
             saveTripReviewUseCase = get(),
             connectToBrokerUseCase = get(),
             disconnectFromBrokerUseCase = get()
-        )
-    }
-
-    viewModel {
-        SettingsScreenViewModel(
-            saveLocalStorageStateUseCase = get(),
-            readLocalStorageStateUseCase = get()
         )
     }
 

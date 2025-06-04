@@ -99,7 +99,7 @@ val smallThinText = TextStyle(
     color = Color.Black
 )
 
-val gaugeLabel = TextStyle(
+val extraLightText = TextStyle(
     fontFamily = FontFamily.SansSerif,
     fontWeight = FontWeight.ExtraLight,
     fontSize = 18.sp,

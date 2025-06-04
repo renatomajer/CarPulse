@@ -1,4 +1,4 @@
-package hr.fer.carpulse.ui.screens.onboardibng
+package hr.fer.carpulse.ui.screens.onboarding
 
 import android.graphics.Paint
 import android.graphics.Path
@@ -18,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -36,7 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import hr.fer.carpulse.R
-import hr.fer.carpulse.domain.common.driver.Gender
+import hr.fer.carpulse.domain.common.driver.getFuelTypeValues
 import hr.fer.carpulse.ui.components.CarPulseTextField
 import hr.fer.carpulse.ui.components.DropdownPicker
 import hr.fer.carpulse.ui.components.NavigationCarousel
@@ -48,11 +49,10 @@ import hr.fer.carpulse.util.defaultKeyboardActions
 import hr.fer.carpulse.viewmodel.OnboardingViewModel
 
 @Composable
-fun OnboardingDriverInfoScreen(
+fun OnboardingCarInfoScreen(
     modifier: Modifier = Modifier,
     viewModel: OnboardingViewModel,
-    navigateToCarInfoScreen: () -> Unit,
-    navigateToDriverSelfInfoScreen: () -> Unit
+    navigateToDriverInfoScreen: () -> Unit
 ) {
 
     val focusManager = LocalFocusManager.current
@@ -75,16 +75,17 @@ fun OnboardingDriverInfoScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = stringResource(R.string.onboarding_screen_driver_info_title),
+                text = stringResource(R.string.onboarding_screen_car_info_title),
                 style = title,
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(7.dp))
             Text(
-                text = stringResource(R.string.onboarding_screen_driver_info_subtitle),
+                text = stringResource(R.string.onboarding_screen_car_info_subtitle),
                 style = subtitle
             )
         }
+
 
         Box(
             modifier = Modifier
@@ -96,9 +97,9 @@ fun OnboardingDriverInfoScreen(
                 ),
             contentAlignment = Alignment.Center
         ) {
-            // TODO: add avatars
+
             val tapToChangeColorText =
-                stringResource(R.string.onboarding_screen_tap_to_change_avatar)
+                stringResource(R.string.onboarding_screen_tap_to_change_color)
 
             Canvas(modifier = Modifier.size(250.dp)) {
                 drawIntoCanvas {
@@ -123,14 +124,22 @@ fun OnboardingDriverInfoScreen(
                 }
             }
 
-            Icon(
-                modifier = Modifier
-                    .height(164.dp)
-                    .width(169.dp),
-                painter = painterResource(R.drawable.color_path),
-                contentDescription = null,
-                tint = avatarBgColors[viewModel.selectedColorIndex]
-            )
+            IconButton(onClick = {
+                if (viewModel.selectedColorIndex == avatarBgColors.indices.last) {
+                    viewModel.updateSelectedColorIndex(0)
+                } else {
+                    viewModel.updateSelectedColorIndex(viewModel.selectedColorIndex + 1)
+                }
+            }) {
+                Icon(
+                    modifier = Modifier
+                        .height(164.dp)
+                        .width(169.dp),
+                    painter = painterResource(R.drawable.color_path),
+                    contentDescription = null,
+                    tint = avatarBgColors[viewModel.selectedColorIndex]
+                )
+            }
         }
 
         Column(
@@ -139,36 +148,17 @@ fun OnboardingDriverInfoScreen(
                 .padding(horizontal = 43.dp)
         ) {
             Text(
-                text = stringResource(R.string.onboarding_screen_driver_name),
+                text = stringResource(R.string.onboarding_screen_vehicle_type),
                 style = subtitle
             )
             CarPulseTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = viewModel.driverName,
-                onChange = { viewModel.updateDriverName(it) },
-                placeholder = "",
-                imeAction = ImeAction.Next,
-                keyboardType = KeyboardType.Text,
-                keyboardActions = keyboardActions
-            )
-
-            Spacer(modifier = Modifier.height(7.dp))
-
-            Text(
-                text = stringResource(R.string.onboarding_screen_driver_email),
-                style = subtitle
-            )
-            CarPulseTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = driverData.email,
-                onChange = {
-                    viewModel.updateEmail(it)
-                },
+                value = driverData.vehicleType,
+                onChange = { viewModel.updateVehicleType(it) },
                 placeholder = "",
                 imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Email,
-                keyboardActions = keyboardActions,
-                readOnly = !viewModel.isOnboarding
+                keyboardType = KeyboardType.Text,
+                keyboardActions = keyboardActions
             )
 
             Spacer(modifier = Modifier.height(7.dp))
@@ -176,12 +166,49 @@ fun OnboardingDriverInfoScreen(
             Row {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = stringResource(R.string.onboarding_screen_driver_age),
+                        text = stringResource(R.string.onboarding_screen_fuel_type),
+                        style = subtitle
+                    )
+                    DropdownPicker(
+                        values = getFuelTypeValues(),
+                        selectedItem = if (driverData.fuelType == "") {
+                            // Set default value if the user does not change the initial state
+                            viewModel.updateFuelType(getFuelTypeValues().first())
+                            getFuelTypeValues().first()
+                        } else driverData.fuelType,
+                        onOptionSelected = { viewModel.updateFuelType(it) }
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(30.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.onboarding_screen_motor_power),
                         style = subtitle
                     )
                     CarPulseTextField(
-                        value = if (driverData.age == 0) "" else driverData.age.toString(),
-                        onChange = { viewModel.updateAge(it) },
+                        value = if (driverData.vehicleMotorPower == 0) "" else driverData.vehicleMotorPower.toString(),
+                        onChange = { viewModel.updateVehicleMotorPower(it) },
+                        placeholder = "",
+                        imeAction = ImeAction.Done,
+                        keyboardType = KeyboardType.Number,
+                        keyboardActions = keyboardActions
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(7.dp))
+
+            Row {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.onboarding_screen_production_year),
+                        style = subtitle
+                    )
+                    CarPulseTextField(
+                        value = if (driverData.vehicleProductionYear == 0) "" else driverData.vehicleProductionYear.toString(),
+                        onChange = { viewModel.updateVehicleProductionYear(it) },
                         placeholder = "",
                         imeAction = ImeAction.Done,
                         keyboardType = KeyboardType.Number,
@@ -193,25 +220,17 @@ fun OnboardingDriverInfoScreen(
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = stringResource(R.string.onboarding_screen_driver_gender),
+                        text = stringResource(R.string.onboarding_screen_start_stop_system),
                         style = subtitle
                     )
                     DropdownPicker(
-                        values = arrayOf("Male", "Female"), selectedItem =
-                        if (driverData.gender == Gender.Male.value) {
-                            "Male"
-                        } else if (driverData.gender == Gender.Female.value){
-                            "Female"
-                        } else {
-                            // Set default value if the user does not change the initial state
-                            viewModel.updateGender(Gender.Female)
-                            "Female"
-                        },
+                        values = arrayOf("Yes", "No"),
+                        selectedItem = if (driverData.startStopSystem) "Yes" else "No",
                         onOptionSelected = {
-                            if (it == "Male") {
-                                viewModel.updateGender(Gender.Male)
+                            if (it == "Yes") {
+                                viewModel.updateStartStopSystem(true)
                             } else {
-                                viewModel.updateGender(Gender.Female)
+                                viewModel.updateStartStopSystem(false)
                             }
                         }
                     )
@@ -222,9 +241,11 @@ fun OnboardingDriverInfoScreen(
 
             NavigationCarousel(
                 carouselCount = 3,
-                currentCarouselIndex = 1,
-                onPreviousButtonClick = navigateToCarInfoScreen,
-                onNextButtonClick = navigateToDriverSelfInfoScreen
+                currentCarouselIndex = 0,
+                onPreviousButtonClick = {
+                    // Do nothing - not visible!
+                },
+                onNextButtonClick = navigateToDriverInfoScreen
             )
 
             Spacer(modifier = Modifier.height(30.dp))

@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import hr.fer.carpulse.ui.theme.LightGrayColor
-import hr.fer.carpulse.ui.theme.gaugeLabel
+import hr.fer.carpulse.ui.theme.extraLightText
 
 
 @Composable
@@ -84,7 +84,7 @@ fun CircularGauge(
 
         Text(
             text = "${value.toInt()} $label",
-            style = gaugeLabel
+            style = extraLightText
         )
     }
 }
