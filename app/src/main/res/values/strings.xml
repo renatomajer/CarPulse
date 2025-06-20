@@ -83,6 +83,14 @@
     <string name="connect_device_screen_connect_button">Connect</string>
     <string name="connect_device_screen_device_connected">Connected</string>
 
+    <string name="driving_history_screen_title">Driving history</string>
+    <string name="driving_history_screen_drive_distance">Distance: %s km</string>
+    <string name="driving_history_screen_drive_duration">Duration: %s min</string>
+    <string name="driving_history_screen_upload_all_drives">Upload all recorded drives</string>
+    <string name="driving_history_screen_uploading_drive">Uploading</string>
+    <string name="driving_history_screen_drive_uploaded">Uploaded</string>
+    <string name="driving_history_screen_drive_not_uploaded">Not Uploaded</string>
+
 
 
     <!--    TODO: delete old strings below-->

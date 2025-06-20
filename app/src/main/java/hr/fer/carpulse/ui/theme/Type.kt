@@ -92,9 +92,23 @@ val smallLightText = TextStyle(
     color = Color.Black
 )
 
+val smallExtraLightText = TextStyle(
+    fontFamily = FontFamily.SansSerif,
+    fontWeight = FontWeight.ExtraLight,
+    fontSize = 16.sp,
+    color = Color.Black
+)
+
 val smallThinText = TextStyle(
     fontFamily = FontFamily.SansSerif,
     fontWeight = FontWeight.Thin,
+    fontSize = 16.sp,
+    color = Color.Black
+)
+
+val smallBoldText = TextStyle(
+    fontFamily = FontFamily.SansSerif,
+    fontWeight = FontWeight.Bold,
     fontSize = 16.sp,
     color = Color.Black
 )
