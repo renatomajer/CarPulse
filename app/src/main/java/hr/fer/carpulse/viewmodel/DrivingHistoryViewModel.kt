@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import hr.fer.carpulse.domain.common.contextual.data.LocationData
 import hr.fer.carpulse.domain.common.contextual.data.TrafficData
 import hr.fer.carpulse.domain.common.obd.OBDReading
 import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
@@ -126,16 +125,16 @@ class DrivingHistoryViewModel(
 
                 val weatherData = getSavedWeatherDataUseCase(uuid).first()
 
-                val trafficDataList = getSavedTrafficDataUseCase(uuid).first()
+                val trafficDataList =
+                    getSavedTrafficDataUseCase(uuid).first().sortedBy { it.timestamp }
 
+                // Get all the readings with the specified uuid
                 val readings =
-                    getOBDReadingsUseCase(uuid).first() // get all the readings with the specified uuid
+                    getOBDReadingsUseCase(uuid).first().sortedBy { it.timestamp }
 
+                // Get all location data from the trip
                 val locationDataList =
-                    getSavedLocationDataUseCase(uuid).first() // get all location data from the trip
-
-                // last known location data
-                var lastLocationData = locationDataList.firstOrNull() ?: LocationData()
+                    getSavedLocationDataUseCase(uuid).first().sortedBy { it.timestamp }
 
                 var readingIndex = 0
                 var currentReading = OBDReading()

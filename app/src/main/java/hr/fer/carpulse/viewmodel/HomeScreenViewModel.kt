@@ -92,7 +92,7 @@ class HomeScreenViewModel(
         private set
 
     private var readOBDDataJob: Job? = null
-    private var readLocationDataJob: Job? = null
+    private var sendOrStoreDataJob: Job? = null
     private var collectTrafficDataJob: Job? = null
 
     private val obdReadingData = MutableStateFlow<OBDReading>(OBDReading())
@@ -133,7 +133,7 @@ class HomeScreenViewModel(
 //            delay(1000L)
 //            generateAndSendTripStartInfo()
 //            delay(2000L)
-//            readLocationDataJob = readLocationData()
+//            sendOrStoreDataJob = sendOrStoreData“()
 //            getApiWeatherData()
 //        }
 
@@ -159,8 +159,8 @@ class HomeScreenViewModel(
 
                 delay(2000L)
                 readOBDDataJob = readOBDData()
-                readLocationDataJob = readLocationData()
                 collectTrafficDataJob = collectTrafficData()
+                sendOrStoreDataJob = sendOrStoreData()
                 getApiWeatherData()
             }
 
@@ -181,8 +181,8 @@ class HomeScreenViewModel(
         readOBDDataJob?.cancel()
         readOBDDataJob = null
 
-        readLocationDataJob?.cancel()
-        readLocationDataJob = null
+        sendOrStoreDataJob?.cancel()
+        sendOrStoreDataJob = null
 
         collectTrafficDataJob?.cancel()
         collectTrafficDataJob = null
@@ -235,7 +235,7 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun readLocationData(): Job {
+    private fun sendOrStoreData(): Job {
         return CoroutineScope(Dispatchers.IO).launch {
             while (true) {
                 val reading = obdReadingData.value
@@ -308,18 +308,27 @@ class HomeScreenViewModel(
     private fun sendOrStoreTripReadingData(obdReading: OBDReading) {
 
         viewModelScope.launch(Dispatchers.IO) {
+
+            val latestTimestamp = locationDataFlow.value.timestamp
+
             if (storeDataLocally) {
                 // store to DB
 
                 Log.d("debug_log", "Saving OBD reading and location...")
-                saveOBDReadingUseCase(obdReading = obdReading, tripUUID = tripUUID.toString())
-                saveLocationDataUseCase(
+                saveOBDReadingUseCase.invoke(
+                    obdReading = obdReading.copy(timestamp = latestTimestamp),
+                    tripUUID = tripUUID.toString()
+                )
+                saveLocationDataUseCase.invoke(
                     locationData = locationDataFlow.value,
                     tripUUID = tripUUID.toString()
                 )
 
                 trafficData?.let {
-                    saveTrafficDataUseCase(trafficData = it, tripUUID = tripUUID.toString())
+                    saveTrafficDataUseCase.invoke(
+                        trafficData = it.copy(timestamp = latestTimestamp),
+                        tripUUID = tripUUID.toString()
+                    )
                 }
 
             } else {
@@ -331,8 +340,8 @@ class HomeScreenViewModel(
                     locationDataFlow.value,
                     weatherData,
                     tripUUID.toString(),
-                    obdReading,
-                    trafficData
+                    obdReading.copy(timestamp = latestTimestamp),
+                    trafficData?.copy(timestamp = latestTimestamp)
                 )
             }
         }
@@ -442,8 +451,8 @@ class HomeScreenViewModel(
         readOBDDataJob = null
         bluetoothController.release()
 
-        readLocationDataJob?.cancel()
-        readLocationDataJob = null
+        sendOrStoreDataJob?.cancel()
+        sendOrStoreDataJob = null
 
         collectTrafficDataJob?.cancel()
         collectTrafficDataJob = null

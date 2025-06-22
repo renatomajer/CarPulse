@@ -241,7 +241,10 @@ fun HomeScreen(
                 ) {
                     DataFieldComponent(
                         dataTypeDescription = stringResource(R.string.home_screen_data_timestamp),
-                        data = obdReading.timestamp.toString()
+                        data = if (isMeasuring)
+                            obdReading.timestamp.toString()
+                        else
+                            stringResource(R.string.home_screen_data_no_data_label)
                     )
                     DataFieldComponent(
                         dataTypeDescription = stringResource(R.string.home_screen_data_rpm),
