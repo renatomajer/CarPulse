@@ -164,7 +164,7 @@ class MQTTClient(
                 topic = message.topic,
                 msg = message.msg,
                 qos = 0,
-                retained = true,
+                retained = false,
                 isFromQueue = true
             )
         }

@@ -8,10 +8,12 @@ import androidx.datastore.preferences.preferencesDataStoreFile
 import hr.fer.carpulse.bluetooth.AndroidBluetoothController
 import hr.fer.carpulse.bluetooth.BluetoothController
 import hr.fer.carpulse.data.repository.AssistantRepositoryImpl
+import hr.fer.carpulse.data.repository.CarPulseRepositoryImpl
 import hr.fer.carpulse.data.repository.DataStoreRepositoryImpl
 import hr.fer.carpulse.data.repository.DriverDataRepositoryImpl
 import hr.fer.carpulse.data.repository.TripsRepositoryImpl
 import hr.fer.carpulse.domain.repointerfaces.AssistantRepository
+import hr.fer.carpulse.domain.repointerfaces.CarPulseRepository
 import hr.fer.carpulse.domain.repointerfaces.DataStoreRepository
 import hr.fer.carpulse.domain.repointerfaces.DriverDataRepository
 import hr.fer.carpulse.domain.repointerfaces.TripsRepository
@@ -24,6 +26,7 @@ import hr.fer.carpulse.domain.usecase.mqtt.DisconnectFromBrokerUseCase
 import hr.fer.carpulse.domain.usecase.preferences.ReadLocalStorageStateUseCase
 import hr.fer.carpulse.domain.usecase.preferences.SaveLocalStorageStateUseCase
 import hr.fer.carpulse.domain.usecase.trip.GetAllTripSummariesUseCase
+import hr.fer.carpulse.domain.usecase.trip.GetTripDistanceUseCase
 import hr.fer.carpulse.domain.usecase.trip.SaveTripSummaryUseCase
 import hr.fer.carpulse.domain.usecase.trip.SendTripStartInfoUseCase
 import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetLocationDataUseCase
@@ -51,12 +54,12 @@ import hr.fer.carpulse.domain.usecase.trip.startInfo.GetTripStartInfoUseCase
 import hr.fer.carpulse.domain.usecase.trip.startInfo.SaveTripStartInfoUseCase
 import hr.fer.carpulse.util.PhoneUtils
 import hr.fer.carpulse.viewmodel.ConnectDeviceViewModel
+import hr.fer.carpulse.viewmodel.DrivingHistoryViewModel
 import hr.fer.carpulse.viewmodel.HomeScreenViewModel
 import hr.fer.carpulse.viewmodel.OnboardingViewModel
 import hr.fer.carpulse.viewmodel.SplashScreenViewModel
 import hr.fer.carpulse.viewmodel.TalkWithAssistantViewModel
 import hr.fer.carpulse.viewmodel.TripReviewScreenViewModel
-import hr.fer.carpulse.viewmodel.TripsScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -107,6 +110,10 @@ val appModule = module {
 
     single<AssistantRepository> {
         AssistantRepositoryImpl(assistantApi = get())
+    }
+
+    single<CarPulseRepository> {
+        CarPulseRepositoryImpl(carPulseApi = get())
     }
 
     single {
@@ -246,6 +253,10 @@ val appModule = module {
     }
 
     single {
+        GetTripDistanceUseCase(carPulseRepository = get())
+    }
+
+    single {
         PhoneUtils(context = androidApplication())
     }
 
@@ -308,7 +319,7 @@ val appModule = module {
     }
 
     viewModel {
-        TripsScreenViewModel(
+        DrivingHistoryViewModel(
             getAllTripSummariesUseCase = get(),
             getAllUnsentUUIDsUseCase = get(),
             getOBDReadingsUseCase = get(),
@@ -326,7 +337,8 @@ val appModule = module {
             disconnectFromBrokerUseCase = get(),
             sendTripReadingDataUseCase = get(),
             getDriverDataUseCase = get(),
-            sendDriverDataUseCase = get()
+            sendDriverDataUseCase = get(),
+            getTripDistanceUseCase = get()
         )
     }
 

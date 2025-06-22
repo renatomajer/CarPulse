@@ -5,7 +5,8 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import hr.fer.carpulse.BuildConfig
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 
 fun defaultKeyboardActions(focusManager: FocusManager) = KeyboardActions(
@@ -29,4 +30,21 @@ fun getDateTime(timestamp: Long): String? {
     } catch (e: Exception) {
         e.toString()
     }
+}
+
+fun getDate(timestamp: Long): String {
+    val simpleDateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+    val date = Date(timestamp)
+    return simpleDateFormat.format(date)
+}
+
+fun getTime(timestamp: Long): String {
+    val simpleDateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    val date = Date(timestamp)
+    return simpleDateFormat.format(date)
+}
+
+fun calculateDurationInMinutes(startTimestamp: Long, endTimestamp: Long): Int {
+    val diff = endTimestamp - startTimestamp
+    return diff.div(60000).toInt()
 }

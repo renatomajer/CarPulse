@@ -17,4 +17,6 @@ val RedColor = Color(0xFFFF939B)
 
 val LightGrayColor = Color(0xFFD9D9D9)
 
+val LightGrayIconColor = Color(0xFFB8B8B8)
+
 val avatarBgColors = listOf(TealColor, BlueColor, GreenColor, PurpleColor, OrangeColor, RedColor)

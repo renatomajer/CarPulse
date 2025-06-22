@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,10 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import hr.fer.carpulse.R
+import hr.fer.carpulse.ui.model.TripUploadState
 import hr.fer.carpulse.ui.theme.LightGrayColor
+import hr.fer.carpulse.ui.theme.LightGrayIconColor
 import hr.fer.carpulse.ui.theme.OrangeColor
 import hr.fer.carpulse.ui.theme.smallBoldText
 import hr.fer.carpulse.ui.theme.smallExtraLightText
@@ -37,16 +41,22 @@ fun DriveComponent(
     startTime: String,
     duration: String,
     distance: String,
-    isUploaded: Boolean,
-    isUploading: Boolean
+    tripUploadState: TripUploadState
 ) {
 
-    Column(modifier = modifier.fillMaxWidth().clickable { onDriveClick() }) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(enabled = tripUploadState == TripUploadState.Uploaded) { onDriveClick() }
+            .padding(start = 38.dp, end = 26.dp)
+    ) {
+        Spacer(modifier = Modifier.height(30.dp))
+
 
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 modifier = Modifier
-                    .height(83.dp),
+                    .height(68.dp),
                 painter = painterResource(R.drawable.color_path),
                 contentDescription = null,
                 tint = OrangeColor
@@ -68,7 +78,7 @@ fun DriveComponent(
                     Text(text = startTime, style = smallBoldText)
                 }
 
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
                     text = stringResource(R.string.driving_history_screen_drive_duration, duration),
@@ -80,24 +90,26 @@ fun DriveComponent(
                 )
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(0.7f))
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                if (isUploaded) {
+                if (tripUploadState == TripUploadState.Uploaded) {
                     Icon(
                         painter = painterResource(R.drawable.ic_uploaded),
+                        tint = LightGrayIconColor,
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = stringResource(R.string.driving_history_screen_drive_uploaded),
-                        style = smallExtraLightText
+                        style = smallExtraLightText,
+                        textAlign = TextAlign.Center
                     )
 
-                } else if (isUploading) {
+                } else if (tripUploadState == TripUploadState.IsUploading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(24.dp),
                         color = LightGrayColor
@@ -105,17 +117,20 @@ fun DriveComponent(
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = stringResource(R.string.driving_history_screen_uploading_drive),
-                        style = smallExtraLightText
+                        style = smallExtraLightText,
+                        textAlign = TextAlign.Center
                     )
                 } else {
                     Icon(
+                        modifier = Modifier.size(25.dp),
                         painter = painterResource(R.drawable.ic_not_uploaded),
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = stringResource(R.string.driving_history_screen_drive_not_uploaded),
-                        style = smallExtraLightText
+                        style = smallExtraLightText,
+                        textAlign = TextAlign.Center
                     )
                 }
             }
@@ -138,8 +153,7 @@ fun DriveComponent(
 private fun DriveComponentNotUploadedPreview() {
     DriveComponent(
         onDriveClick = {},
-        isUploaded = false,
-        isUploading = false,
+        tripUploadState = TripUploadState.NotUploaded,
         startDate = "25.5.2025.",
         startTime = "15:30",
         duration = "15",
@@ -152,8 +166,7 @@ private fun DriveComponentNotUploadedPreview() {
 private fun DriveComponentUploadedPreview() {
     DriveComponent(
         onDriveClick = {},
-        isUploaded = true,
-        isUploading = false,
+        tripUploadState = TripUploadState.Uploaded,
         startDate = "25.5.2025.",
         startTime = "15:30",
         duration = "15",
@@ -166,8 +179,7 @@ private fun DriveComponentUploadedPreview() {
 private fun DriveComponentUploadingPreview() {
     DriveComponent(
         onDriveClick = {},
-        isUploaded = false,
-        isUploading = true,
+        tripUploadState = TripUploadState.IsUploading,
         startDate = "25.5.2025.",
         startTime = "15:30",
         duration = "15",

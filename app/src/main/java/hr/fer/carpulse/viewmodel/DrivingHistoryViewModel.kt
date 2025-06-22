@@ -1,5 +1,8 @@
 package hr.fer.carpulse.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hr.fer.carpulse.domain.common.contextual.data.LocationData
@@ -11,6 +14,7 @@ import hr.fer.carpulse.domain.usecase.driver.SendTripReviewUseCase
 import hr.fer.carpulse.domain.usecase.mqtt.ConnectToBrokerUseCase
 import hr.fer.carpulse.domain.usecase.mqtt.DisconnectFromBrokerUseCase
 import hr.fer.carpulse.domain.usecase.trip.GetAllTripSummariesUseCase
+import hr.fer.carpulse.domain.usecase.trip.GetTripDistanceUseCase
 import hr.fer.carpulse.domain.usecase.trip.SendTripStartInfoUseCase
 import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetSavedLocationDataUseCase
 import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetSavedTrafficDataUseCase
@@ -23,12 +27,18 @@ import hr.fer.carpulse.domain.usecase.trip.review.DeleteTripReviewUseCase
 import hr.fer.carpulse.domain.usecase.trip.review.GetTripReviewUseCase
 import hr.fer.carpulse.domain.usecase.trip.startInfo.DeleteTripStartInfoUseCase
 import hr.fer.carpulse.domain.usecase.trip.startInfo.GetTripStartInfoUseCase
+import hr.fer.carpulse.ui.model.TripSummaryUIModel
+import hr.fer.carpulse.ui.model.TripUploadState
+import hr.fer.carpulse.util.calculateDurationInMinutes
+import hr.fer.carpulse.util.getDate
+import hr.fer.carpulse.util.getTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class TripsScreenViewModel(
+class DrivingHistoryViewModel(
     private val getAllTripSummariesUseCase: GetAllTripSummariesUseCase,
     private val getAllUnsentUUIDsUseCase: GetAllUnsentUUIDsUseCase,
     private val getOBDReadingsUseCase: GetOBDReadingsUseCase,
@@ -46,13 +56,45 @@ class TripsScreenViewModel(
     private val disconnectFromBrokerUseCase: DisconnectFromBrokerUseCase,
     private val sendTripReadingDataUseCase: SendTripReadingDataUseCase,
     private val getDriverDataUseCase: GetDriverDataUseCase,
-    private val sendDriverDataUseCase: SendDriverDataUseCase
+    private val sendDriverDataUseCase: SendDriverDataUseCase,
+    private val getTripDistanceUseCase: GetTripDistanceUseCase
 ) : ViewModel() {
 
-    val tripSummaries = getAllTripSummariesUseCase()
+    var tripSummaries by mutableStateOf<List<TripSummaryUIModel>>(emptyList())
+        private set
+
+    var isLoading by mutableStateOf(true)
+        private set
 
     init {
         connectToBrokerUseCase()
+
+        loadTripSummaries()
+
+        //TODO: check if flow collection blocks the UI
+        viewModelScope.launch {
+            getAllTripSummariesUseCase().cancellable().collect { localTripSummary ->
+                val sentTripsUUIDs = localTripSummary.filter { it.sent }.map { it.tripUUID }
+
+                val tripsMarkedAsNotSent =
+                    tripSummaries.filter { it.uploadState != TripUploadState.Uploaded }
+
+                val tripsToUpdate =
+                    tripsMarkedAsNotSent.filter { sentTripsUUIDs.contains(it.tripUUID) }
+                        .map { it.tripUUID }
+
+                val updatedList = tripSummaries.toMutableList()
+                updatedList.replaceAll {
+                    if (tripsToUpdate.contains(it.tripUUID)) {
+                        it.copy(uploadState = TripUploadState.Uploaded)
+                    } else {
+                        it
+                    }
+                }
+
+                tripSummaries = updatedList
+            }
+        }
     }
 
     fun sendAll() {
@@ -65,6 +107,17 @@ class TripsScreenViewModel(
             sendDriverDataUseCase(driverData)
 
             uuids.forEach { uuid ->
+
+                // Mark trip as uploading
+                val updatedList = tripSummaries.toMutableList()
+                updatedList.replaceAll {
+                    if (it.tripUUID == uuid) {
+                        it.copy(uploadState = TripUploadState.IsUploading)
+                    } else {
+                        it
+                    }
+                }
+                tripSummaries = updatedList
 
                 // send trip start info and remove it from database
                 val tripStartInfo = getTripStartInfoUseCase(uuid).first()
@@ -117,6 +170,33 @@ class TripsScreenViewModel(
                 // all the data is sent to the server - mark trip summary as sent
                 updateSummarySentStatusUseCase(uuid, true)
             }
+        }
+    }
+
+    private fun loadTripSummaries() {
+        viewModelScope.launch {
+            tripSummaries = getAllTripSummariesUseCase().first().map {
+
+                val tripLocationData = if (it.sent) {
+                    null
+                } else {
+                    getSavedLocationDataUseCase(it.tripUUID).first()
+                }
+
+                TripSummaryUIModel(
+                    tripUUID = it.tripUUID,
+                    startDate = getDate(it.startTimestamp),
+                    startTime = getTime(it.startTimestamp),
+                    distance = getTripDistanceUseCase(it.tripUUID, tripLocationData) ?: 0.0,
+                    duration = calculateDurationInMinutes(
+                        startTimestamp = it.startTimestamp,
+                        endTimestamp = it.endTimestamp
+                    ),
+                    uploadState = if (it.sent) TripUploadState.Uploaded else TripUploadState.NotUploaded
+                )
+            }
+
+            isLoading = false
         }
     }
 

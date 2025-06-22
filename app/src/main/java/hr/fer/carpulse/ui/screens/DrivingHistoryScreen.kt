@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,11 +13,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.BottomDrawer
 import androidx.compose.material.BottomDrawerValue
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -26,7 +29,6 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.rememberBottomDrawerState
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -39,9 +41,10 @@ import androidx.compose.ui.unit.dp
 import hr.fer.carpulse.R
 import hr.fer.carpulse.ui.components.DriveComponent
 import hr.fer.carpulse.ui.theme.AppBackgroundColor
+import hr.fer.carpulse.ui.theme.LightGrayColor
 import hr.fer.carpulse.ui.theme.menuSubtitle
 import hr.fer.carpulse.ui.theme.title
-import hr.fer.carpulse.viewmodel.TripsScreenViewModel
+import hr.fer.carpulse.viewmodel.DrivingHistoryViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
@@ -51,23 +54,24 @@ fun DrivingHistoryScreen(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit,
     navigateToTripDetails: (tripUUID: String) -> Unit,
-    viewModel: TripsScreenViewModel = getViewModel()
+    viewModel: DrivingHistoryViewModel = getViewModel()
 ) {
 
     val drawerState = rememberBottomDrawerState(
         initialValue = BottomDrawerValue.Closed,
-        confirmStateChange = { if (it == BottomDrawerValue.Expanded) false else true })
+        confirmStateChange = { it != BottomDrawerValue.Expanded })
 
     val coroutineScope = rememberCoroutineScope()
 
     val context = LocalContext.current
 
-    val trips = viewModel.tripSummaries.collectAsState(initial = emptyList()).value
+    val trips = viewModel.tripSummaries
 
     val toastMessage = stringResource(id = R.string.sending_data_message)
 
     BottomDrawer(
         drawerState = drawerState,
+        gesturesEnabled = !drawerState.isClosed,
         drawerShape = RoundedCornerShape(topStartPercent = 8, topEndPercent = 8),
         drawerContent = {
             Column(
@@ -147,23 +151,40 @@ fun DrivingHistoryScreen(
                 }
             }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(start = 38.dp, end = 26.dp, top = 34.dp)
-            ) {
-
-                trips.forEach { trip ->
-                    DriveComponent(
-                        onDriveClick = {
-                            navigateToTripDetails(trip.tripUUID)
-                        },
-
+            if (viewModel.isLoading) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = LightGrayColor
                     )
                 }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(top = 34.dp)
+                ) {
 
-                Spacer(modifier = Modifier.height(23.dp))
+                    trips.forEach { trip ->
+                        DriveComponent(
+                            onDriveClick = {
+                                navigateToTripDetails(trip.tripUUID)
+                            },
+                            startDate = trip.startDate,
+                            startTime = trip.startTime,
+                            duration = trip.duration.toString(),
+                            distance = trip.distance.toString(),
+                            tripUploadState = trip.uploadState
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(23.dp))
+                }
             }
         }
     }

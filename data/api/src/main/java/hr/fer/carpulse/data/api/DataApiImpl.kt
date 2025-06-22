@@ -32,21 +32,21 @@ class DataApiImpl(
 
     override fun sendDriverData(driverData: DriverData) {
         val jsonString = format.encodeToString(listOf(driverData))
-        mqttClient.publish(topic = DRIVER_TOPIC, msg = jsonString, qos = 0, retained = true)
+        mqttClient.publish(topic = DRIVER_TOPIC, msg = jsonString, qos = 0, retained = false)
 //        Log.d("debug_log", jsonString)
     }
 
     override fun sendTripReview(tripReview: TripReview) {
         val tripReviewPublishData = TripReviewPublishData.createPublishData(tripReview)
         val jsonString = format.encodeToString(tripReviewPublishData)
-        mqttClient.publish(topic = REVIEW_TOPIC, msg = jsonString, qos = 0, retained = true)
+        mqttClient.publish(topic = REVIEW_TOPIC, msg = jsonString, qos = 0, retained = false)
 //        Log.d("debug_log", jsonString)
     }
 
     override fun sendTripStartInfo(tripStartInfo: TripStartInfo) {
         val tripStartInfoPublishData = TripStartInfoPublishData.createPublishData(tripStartInfo)
         val jsonString = format.encodeToString(tripStartInfoPublishData)
-        mqttClient.publish(topic = TRIP_TOPIC, msg = jsonString, qos = 0, retained = true)
+        mqttClient.publish(topic = TRIP_TOPIC, msg = jsonString, qos = 0, retained = false)
 //        Log.d("debug_log", jsonString)
     }
 
@@ -74,7 +74,7 @@ class DataApiImpl(
 
         Log.d("debug_log", jsonString)
 
-        mqttClient.publish(topic = DRIVE_DATA_TOPIC, msg = jsonString, qos = 0, retained = true)
+        mqttClient.publish(topic = DRIVE_DATA_TOPIC, msg = jsonString, qos = 0, retained = false)
     }
 
     companion object {

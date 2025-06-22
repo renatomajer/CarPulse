@@ -1,10 +1,11 @@
 package hr.fer.carpulse.domain.common.contextual.data
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 data class TrafficData(
-    val timestamp: Long,
+    val timestamp: Long = System.currentTimeMillis(),
     val flowSegmentData: FlowSegmentData
 )
 
@@ -17,7 +18,8 @@ data class FlowSegmentData(
     val freeFlowTravelTime: Int,
     val confidence: Double,
     val roadClosure: Boolean,
-    val coordinates: Coordinates
+    @Transient
+    val coordinates: Coordinates = Coordinates(emptyList())
 )
 
 @Serializable

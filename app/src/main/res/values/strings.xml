@@ -89,7 +89,7 @@
     <string name="driving_history_screen_upload_all_drives">Upload all recorded drives</string>
     <string name="driving_history_screen_uploading_drive">Uploading</string>
     <string name="driving_history_screen_drive_uploaded">Uploaded</string>
-    <string name="driving_history_screen_drive_not_uploaded">Not Uploaded</string>
+    <string name="driving_history_screen_drive_not_uploaded">Not\nUploaded</string>
 
 
 

@@ -8,10 +8,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import hr.fer.carpulse.ui.screens.ConnectDeviceScreen
+import hr.fer.carpulse.ui.screens.DrivingHistoryScreen
 import hr.fer.carpulse.ui.screens.HomeScreen
 import hr.fer.carpulse.ui.screens.TalkWithAssistantScreen
 import hr.fer.carpulse.ui.screens.TripReviewScreen
-import hr.fer.carpulse.ui.screens.TripsScreen
 import hr.fer.carpulse.ui.screens.onboarding.OnboardingNavigatorScreen
 
 @Composable
@@ -54,7 +54,7 @@ fun Navigation(
                     navController.navigate(Screens.TripReviewScreen.route + "/$tripUUID")
                 },
                 navigateToConnectScreen = { navController.navigate(Screens.ConnectDeviceScreen.route) },
-                navigateToTripsScreen = { navController.navigate(Screens.TripsScreen.route) },
+                navigateToDrivingHistoryScreen = { navController.navigate(Screens.DrivingHistoryScreen.route) },
                 navigateToEditProfileScreen = { navController.navigate(Screens.OnboardingNavigatorScreen.route) },
                 navigateToStatistics = {
                     // TODO: add navigation
@@ -72,8 +72,13 @@ fun Navigation(
             ConnectDeviceScreen(onNavigateBack = { navController.popBackStack() })
         }
 
-        composable(route = Screens.TripsScreen.route) {
-            TripsScreen(navController = navController)
+        composable(route = Screens.DrivingHistoryScreen.route) {
+            DrivingHistoryScreen(
+                onNavigateBack = { navController.popBackStack() },
+                navigateToTripDetails = { tripUUID: String ->
+                    //TODO: navigate to trip details
+                }
+            )
         }
 
         composable(
