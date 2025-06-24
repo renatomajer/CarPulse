@@ -44,7 +44,21 @@ fun getTime(timestamp: Long): String {
     return simpleDateFormat.format(date)
 }
 
+fun getHoursMinutesSeconds(timestamp: Long): String {
+    val simpleDateFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+    val date = Date(timestamp)
+    return simpleDateFormat.format(date)
+}
+
 fun calculateDurationInMinutes(startTimestamp: Long, endTimestamp: Long): Int {
     val diff = endTimestamp - startTimestamp
     return diff.div(60000).toInt()
+}
+
+fun getHoursMinutesFromMinutesDuration(minutesDuration: Int): String {
+    if(minutesDuration < 60) return "$minutesDuration min"
+
+    val hours: Int = minutesDuration / 60
+    val remainingMinutes: Int = minutesDuration % 60
+    return "${hours}h ${remainingMinutes}min"
 }

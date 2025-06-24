@@ -91,6 +91,31 @@
     <string name="driving_history_screen_drive_uploaded">Uploaded</string>
     <string name="driving_history_screen_drive_not_uploaded">Not\nUploaded</string>
 
+    <string name="trip_details_screen_listen_to_assistant">Listen to AI assistant</string>
+    <string name="trip_details_screen_basic_information">Basic information</string>
+    <string name="trip_details_screen_distance">Distance</string>
+    <string name="trip_details_screen_start_location">START location</string>
+    <string name="trip_details_screen_end_location">END location</string>
+    <string name="trip_details_screen_weather">Weather</string>
+    <string name="trip_details_screen_about_time">About time</string>
+    <string name="trip_details_screen_start_time">START time</string>
+    <string name="trip_details_screen_end_time">END time</string>
+    <string name="trip_details_screen_duration">Duration</string>
+    <string name="trip_details_screen_time_idling">Time idling</string>
+    <string name="trip_details_screen_about_speed">About speed</string>
+    <string name="trip_details_screen_speed">Speed</string>
+    <string name="trip_details_screen_rpm">RPM</string>
+    <string name="trip_details_screen_average">Average</string>
+    <string name="trip_details_screen_maximum">MAXimum</string>
+    <string name="trip_details_screen_driving_above_limit">Driving ABOVE speed limit</string>
+    <string name="trip_details_screen_driving_within_limit">Driving WITHIN speed limit</string>
+    <string name="trip_details_screen_special_events">Special events during driving</string>
+    <string name="trip_details_screen_sudden_breaking">Sudden breaking</string>
+    <string name="trip_details_screen_sudden_acceleration">Sudden acceleration</string>
+    <string name="trip_details_screen_stop_and_go">Stop-and-go situation</string>
+
+    <string name="overall_statistics_screen_title">Overall statistics</string>
+    <string name="overall_statistics_screen_listen_to_assistant">Listen to AI assistant</string>
 
 
     <!--    TODO: delete old strings below-->

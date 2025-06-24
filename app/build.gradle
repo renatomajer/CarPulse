@@ -18,6 +18,11 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file('project.properties').newDataInputStream())
+
+        buildConfigField "String", "MAPBOX_PUBLIC_TOKEN", "\"${properties.getProperty('MAPBOX_PUBLIC_TOKEN')}\""
     }
 
     buildTypes {
@@ -97,4 +102,7 @@ dependencies {
 
     // Splash API
     implementation "androidx.core:core-splashscreen:$splashscreen_version"
+
+    implementation 'com.mapbox.maps:android:11.13.1'
+    implementation 'com.mapbox.extension:maps-compose:11.13.1'
 }

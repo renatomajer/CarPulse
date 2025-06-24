@@ -10,7 +10,9 @@ import androidx.navigation.navArgument
 import hr.fer.carpulse.ui.screens.ConnectDeviceScreen
 import hr.fer.carpulse.ui.screens.DrivingHistoryScreen
 import hr.fer.carpulse.ui.screens.HomeScreen
+import hr.fer.carpulse.ui.screens.OverallStatisticsScreen
 import hr.fer.carpulse.ui.screens.TalkWithAssistantScreen
+import hr.fer.carpulse.ui.screens.TripDetailsScreen
 import hr.fer.carpulse.ui.screens.TripReviewScreen
 import hr.fer.carpulse.ui.screens.onboarding.OnboardingNavigatorScreen
 
@@ -53,11 +55,17 @@ fun Navigation(
                 navigateToTripReviewScreen = { tripUUID ->
                     navController.navigate(Screens.TripReviewScreen.route + "/$tripUUID")
                 },
-                navigateToConnectScreen = { navController.navigate(Screens.ConnectDeviceScreen.route) },
-                navigateToDrivingHistoryScreen = { navController.navigate(Screens.DrivingHistoryScreen.route) },
-                navigateToEditProfileScreen = { navController.navigate(Screens.OnboardingNavigatorScreen.route) },
+                navigateToConnectScreen = {
+                    navController.navigate(Screens.ConnectDeviceScreen.route)
+                },
+                navigateToDrivingHistoryScreen = {
+                    navController.navigate(Screens.DrivingHistoryScreen.route)
+                },
+                navigateToEditProfileScreen = {
+                    navController.navigate(Screens.OnboardingNavigatorScreen.route)
+                },
                 navigateToStatistics = {
-                    // TODO: add navigation
+                    navController.navigate(Screens.OverallStatisticsScreen.route)
                 },
                 navigateToConfigureAssistant = {
                     // TODO: add navigation
@@ -76,9 +84,24 @@ fun Navigation(
             DrivingHistoryScreen(
                 onNavigateBack = { navController.popBackStack() },
                 navigateToTripDetails = { tripUUID: String ->
-                    //TODO: navigate to trip details
+                    navController.navigate(Screens.TripDetailsScreen.route + "/$tripUUID")
                 }
             )
+        }
+
+        composable(
+            route = Screens.TripDetailsScreen.route + "/{tripUUID}",
+            arguments = listOf(navArgument(name = "tripUUID") { type = NavType.StringType })
+        ) { entry ->
+            entry.arguments?.let {
+                val tripUUID = it.getString("tripUUID")
+                tripUUID?.let {
+                    TripDetailsScreen(
+                        tripUUID = tripUUID,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+            }
         }
 
         composable(
@@ -95,6 +118,11 @@ fun Navigation(
         composable(route = Screens.TalkWithAssistantScreen.route) {
             TalkWithAssistantScreen(navigateBack = { navController.popBackStack() })
         }
-    }
 
+        composable(route = Screens.OverallStatisticsScreen.route) {
+            OverallStatisticsScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+    }
 }

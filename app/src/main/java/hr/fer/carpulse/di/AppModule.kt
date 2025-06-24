@@ -34,6 +34,7 @@ import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetSavedLocationDataU
 import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetSavedTrafficDataUseCase
 import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetSavedWeatherDataUseCase
 import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetTrafficDataUseCase
+import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetTripRouteUseCase
 import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetWeatherDataUseCase
 import hr.fer.carpulse.domain.usecase.trip.contextual.data.SaveLocationDataUseCase
 import hr.fer.carpulse.domain.usecase.trip.contextual.data.SaveTrafficDataUseCase
@@ -59,6 +60,7 @@ import hr.fer.carpulse.viewmodel.HomeScreenViewModel
 import hr.fer.carpulse.viewmodel.OnboardingViewModel
 import hr.fer.carpulse.viewmodel.SplashScreenViewModel
 import hr.fer.carpulse.viewmodel.TalkWithAssistantViewModel
+import hr.fer.carpulse.viewmodel.TripDetailsViewModel
 import hr.fer.carpulse.viewmodel.TripReviewScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -257,6 +259,10 @@ val appModule = module {
     }
 
     single {
+        GetTripRouteUseCase(carPulseRepository = get())
+    }
+
+    single {
         PhoneUtils(context = androidApplication())
     }
 
@@ -347,6 +353,12 @@ val appModule = module {
             assistantRepository = get(),
             getDriverDataUseCase = get(),
             application = androidApplication()
+        )
+    }
+
+    viewModel {
+        TripDetailsViewModel(
+            getTripRouteUseCase = get()
         )
     }
 }

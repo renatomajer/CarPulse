@@ -10,10 +10,13 @@ val Teal200 = Color(0xFF03DAC5)
 val AppBackgroundColor = Color(0xFFF7F7F7)
 val TealColor = Color(0xFF7ED0CA)
 val BlueColor = Color(0xFF8CABF2)
+val LightBlueColor = Color(0x338CABF2)
 val GreenColor = Color(0xFF9FD15F)
+val LightGreenColor = Color(0x339FD15F)
 val PurpleColor = Color(0xFFC2B1DD)
 val OrangeColor = Color(0xFFFDCBA9)
 val RedColor = Color(0xFFFF939B)
+val StrongRedColor = Color(0xFFF52024)
 
 val LightGrayColor = Color(0xFFD9D9D9)
 

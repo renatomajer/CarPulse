@@ -1,6 +1,7 @@
 package hr.fer.carpulse.data.repository
 
 import hr.fer.carpulse.data.api.CarPulseApi
+import hr.fer.carpulse.domain.common.contextual.data.Coordinate
 import hr.fer.carpulse.domain.common.contextual.data.LocationData
 import hr.fer.carpulse.domain.repointerfaces.CarPulseRepository
 
@@ -17,5 +18,9 @@ class CarPulseRepositoryImpl(
         locationData: List<LocationData>
     ): Int? {
         return carPulseApi.calculateTripDistance(tripUUID, locationData).distance
+    }
+
+    override suspend fun getTripCoordinates(tripUUID: String): List<Coordinate>? {
+        return carPulseApi.getTripCoordinates(tripUUID)?.coordinates
     }
 }

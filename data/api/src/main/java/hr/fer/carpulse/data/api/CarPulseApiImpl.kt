@@ -1,6 +1,7 @@
 package hr.fer.carpulse.data.api
 
 import android.util.Log
+import hr.fer.carpulse.data.api.model.TripCoordinates
 import hr.fer.carpulse.data.api.model.TripDistance
 import hr.fer.carpulse.domain.common.contextual.data.LocationData
 import io.ktor.client.HttpClient
@@ -32,6 +33,17 @@ class CarPulseApiImpl(
         } catch (exc: Exception) {
             Log.d("debug_log", exc.message ?: "Exception occurred wile contacting CarPulse server.")
             TripDistance(tripUUID, null)
+        }
+    }
+
+    override suspend fun getTripCoordinates(tripUUID: String): TripCoordinates? {
+        return try {
+            val url = "$API_BASE_URL/trips/$tripUUID/data/coordinates"
+            val tripCoordinates = httpClient.get<TripCoordinates>(url)
+            tripCoordinates
+        } catch (exc: Exception) {
+            Log.d("debug_log", exc.message ?: "Exception occurred wile contacting CarPulse server.")
+            null
         }
     }
 

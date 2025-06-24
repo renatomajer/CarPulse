@@ -78,6 +78,13 @@ val thinText = TextStyle(
     color = Color.Black
 )
 
+val boldText = TextStyle(
+    fontFamily = FontFamily.SansSerif,
+    fontWeight = FontWeight.Bold,
+    fontSize = 18.sp,
+    color = Color.Black
+)
+
 val menuSubtitle = TextStyle(
     fontFamily = FontFamily.SansSerif,
     fontWeight = FontWeight.Normal,
