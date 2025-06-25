@@ -4,7 +4,7 @@ import hr.fer.carpulse.domain.common.contextual.data.Coordinate
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class TripCoordinates(
+data class TripCoordinatesDto(
     val tripUUID: String,
     val coordinates: List<Coordinate>
 )

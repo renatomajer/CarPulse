@@ -24,6 +24,7 @@ android {
         buildConfigField "String", "MQTT_CLIENT_PWD", "\"${properties.getProperty('MQTT_CLIENT_PWD')}\""
         buildConfigField "String", "WEATHER_API_KEY", "\"${properties.getProperty('WEATHER_API_KEY')}\""
         buildConfigField "String", "ASSISTANT_BASE_URL", "\"${properties.getProperty('ASSISTANT_BASE_URL')}\""
+        buildConfigField "String", "CAR_PULSE_API_BASE_URL", "\"${properties.getProperty('CAR_PULSE_API_BASE_URL')}\""
     }
 
     buildTypes {

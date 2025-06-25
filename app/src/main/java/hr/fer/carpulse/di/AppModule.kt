@@ -18,6 +18,7 @@ import hr.fer.carpulse.domain.repointerfaces.DataStoreRepository
 import hr.fer.carpulse.domain.repointerfaces.DriverDataRepository
 import hr.fer.carpulse.domain.repointerfaces.TripsRepository
 import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
+import hr.fer.carpulse.domain.usecase.driver.GetDriverStatisticsUseCase
 import hr.fer.carpulse.domain.usecase.driver.SaveDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendTripReviewUseCase
@@ -58,6 +59,7 @@ import hr.fer.carpulse.viewmodel.ConnectDeviceViewModel
 import hr.fer.carpulse.viewmodel.DrivingHistoryViewModel
 import hr.fer.carpulse.viewmodel.HomeScreenViewModel
 import hr.fer.carpulse.viewmodel.OnboardingViewModel
+import hr.fer.carpulse.viewmodel.OverallStatisticsViewModel
 import hr.fer.carpulse.viewmodel.SplashScreenViewModel
 import hr.fer.carpulse.viewmodel.TalkWithAssistantViewModel
 import hr.fer.carpulse.viewmodel.TripDetailsViewModel
@@ -263,6 +265,13 @@ val appModule = module {
     }
 
     single {
+        GetDriverStatisticsUseCase(
+            getDriverDataUseCase = get(),
+            carPulseRepository = get()
+        )
+    }
+
+    single {
         PhoneUtils(context = androidApplication())
     }
 
@@ -359,6 +368,12 @@ val appModule = module {
     viewModel {
         TripDetailsViewModel(
             getTripRouteUseCase = get()
+        )
+    }
+
+    viewModel {
+        OverallStatisticsViewModel(
+            getDriverStatisticsUseCase = get()
         )
     }
 }

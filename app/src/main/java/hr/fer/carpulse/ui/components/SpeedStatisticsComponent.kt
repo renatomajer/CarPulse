@@ -27,9 +27,9 @@ fun SpeedStatisticsComponent(
     modifier: Modifier = Modifier,
     backgroundColor: Color,
     averageSpeed: Int,
-    maxSpeed: Int,
+    maxSpeed: Int?,
     averageRpm: Int,
-    maxRpm: Int
+    maxRpm: Int?
 ) {
 
     Column(
@@ -73,7 +73,7 @@ fun SpeedStatisticsComponent(
                     style = menuSubtitle
                 )
                 Text(
-                    text = "$maxSpeed km/h",
+                    text = if(maxSpeed != null) "$maxSpeed km/h" else stringResource(R.string.home_screen_data_no_data_label),
                     style = boldText
                 )
             }
@@ -110,7 +110,7 @@ fun SpeedStatisticsComponent(
                     style = menuSubtitle
                 )
                 Text(
-                    text = "$maxRpm",
+                    text = if(maxSpeed != null) "$maxRpm" else stringResource(R.string.home_screen_data_no_data_label),
                     style = boldText
                 )
             }

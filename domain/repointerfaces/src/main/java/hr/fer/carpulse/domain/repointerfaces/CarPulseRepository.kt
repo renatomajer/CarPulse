@@ -2,6 +2,7 @@ package hr.fer.carpulse.domain.repointerfaces
 
 import hr.fer.carpulse.domain.common.contextual.data.Coordinate
 import hr.fer.carpulse.domain.common.contextual.data.LocationData
+import hr.fer.carpulse.domain.common.driver.DriverStatistics
 
 interface CarPulseRepository {
 
@@ -10,4 +11,6 @@ interface CarPulseRepository {
     suspend fun calculateTripDistance(tripUUID: String, locationData: List<LocationData>): Int?
 
     suspend fun getTripCoordinates(tripUUID: String): List<Coordinate>?
+
+    suspend fun getDriverStatistics(driverId: String): DriverStatistics?
 }

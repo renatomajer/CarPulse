@@ -1,8 +1,9 @@
 package hr.fer.carpulse.data.api
 
 import android.util.Log
-import hr.fer.carpulse.data.api.model.TripCoordinates
-import hr.fer.carpulse.data.api.model.TripDistance
+import hr.fer.carpulse.data.api.model.DriverStatisticsDto
+import hr.fer.carpulse.data.api.model.TripCoordinatesDto
+import hr.fer.carpulse.data.api.model.TripDistanceDto
 import hr.fer.carpulse.domain.common.contextual.data.LocationData
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -10,37 +11,51 @@ import io.ktor.client.request.post
 
 class CarPulseApiImpl(
     private val httpClient: HttpClient
-): CarPulseApi {
+) : CarPulseApi {
 
-    override suspend fun getTripDistance(tripUUID: String): TripDistance {
+    override suspend fun getTripDistance(tripUUID: String): TripDistanceDto {
         return try {
             val url = "$API_BASE_URL/trips/$tripUUID/data/distance"
-            val tripDistance = httpClient.get<TripDistance>(url)
-            tripDistance
+            val tripDistanceDto = httpClient.get<TripDistanceDto>(url)
+            tripDistanceDto
         } catch (exc: Exception) {
             Log.d("debug_log", exc.message ?: "Exception occurred wile contacting CarPulse server.")
-            TripDistance(tripUUID, null)
+            TripDistanceDto(tripUUID, null)
         }
     }
 
-    override suspend fun calculateTripDistance(tripUUID: String, locationData: List<LocationData>): TripDistance {
+    override suspend fun calculateTripDistance(
+        tripUUID: String,
+        locationData: List<LocationData>
+    ): TripDistanceDto {
         return try {
             val url = "$API_BASE_URL/trips/$tripUUID/calculate/distance"
-            val tripDistance = httpClient.post<TripDistance>(url) {
+            val tripDistanceDto = httpClient.post<TripDistanceDto>(url) {
                 body = locationData
             }
-            tripDistance
+            tripDistanceDto
         } catch (exc: Exception) {
             Log.d("debug_log", exc.message ?: "Exception occurred wile contacting CarPulse server.")
-            TripDistance(tripUUID, null)
+            TripDistanceDto(tripUUID, null)
         }
     }
 
-    override suspend fun getTripCoordinates(tripUUID: String): TripCoordinates? {
+    override suspend fun getTripCoordinates(tripUUID: String): TripCoordinatesDto? {
         return try {
             val url = "$API_BASE_URL/trips/$tripUUID/data/coordinates"
-            val tripCoordinates = httpClient.get<TripCoordinates>(url)
-            tripCoordinates
+            val tripCoordinatesDto = httpClient.get<TripCoordinatesDto>(url)
+            tripCoordinatesDto
+        } catch (exc: Exception) {
+            Log.d("debug_log", exc.message ?: "Exception occurred wile contacting CarPulse server.")
+            null
+        }
+    }
+
+    override suspend fun getDriverStatistics(driverId: String): DriverStatisticsDto? {
+        return try {
+            val url = "$API_BASE_URL/drivers/$driverId/statistics"
+            val driverStatisticsDto = httpClient.get<DriverStatisticsDto>(url)
+            driverStatisticsDto
         } catch (exc: Exception) {
             Log.d("debug_log", exc.message ?: "Exception occurred wile contacting CarPulse server.")
             null
@@ -48,7 +63,6 @@ class CarPulseApiImpl(
     }
 
     companion object {
-        private const val API_BASE_URL =
-            "http://31.147.204.134:4000"
+        private const val API_BASE_URL = BuildConfig.CAR_PULSE_API_BASE_URL
     }
 }

@@ -116,6 +116,7 @@
 
     <string name="overall_statistics_screen_title">Overall statistics</string>
     <string name="overall_statistics_screen_listen_to_assistant">Listen to AI assistant</string>
+    <string name="overall_statistics_screen_no_user_data_available">No user statistics available.</string>
 
 
     <!--    TODO: delete old strings below-->
