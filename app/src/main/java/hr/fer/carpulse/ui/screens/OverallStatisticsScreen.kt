@@ -36,6 +36,7 @@ import hr.fer.carpulse.ui.theme.LightGrayColor
 import hr.fer.carpulse.ui.theme.boldText
 import hr.fer.carpulse.ui.theme.menuSubtitle
 import hr.fer.carpulse.ui.theme.title
+import hr.fer.carpulse.util.carImageIds
 import hr.fer.carpulse.util.getHoursMinutesFromMinutesDuration
 import hr.fer.carpulse.viewmodel.OverallStatisticsViewModel
 import org.koin.androidx.compose.getViewModel
@@ -96,11 +97,10 @@ fun OverallStatisticsScreen(
                 .padding(start = 38.dp, end = 19.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            //TODO: insert users car
             Image(
                 modifier = Modifier
                     .width(228.dp),
-                painter = painterResource(R.drawable.car_logo),
+                painter = painterResource(carImageIds[viewModel.carImageIndex]),
                 contentDescription = null
             )
 

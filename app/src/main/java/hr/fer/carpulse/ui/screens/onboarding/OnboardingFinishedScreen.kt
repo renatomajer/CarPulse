@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -22,8 +21,9 @@ import androidx.compose.ui.unit.dp
 import hr.fer.carpulse.R
 import hr.fer.carpulse.ui.components.CarPulseButton
 import hr.fer.carpulse.ui.theme.AppBackgroundColor
-import hr.fer.carpulse.ui.theme.avatarBgColors
 import hr.fer.carpulse.ui.theme.title
+import hr.fer.carpulse.util.avatarImageIds
+import hr.fer.carpulse.util.carImageIds
 import hr.fer.carpulse.viewmodel.OnboardingViewModel
 
 @Composable
@@ -51,13 +51,12 @@ fun OnboardingFinishedScreen(
         Spacer(modifier = Modifier.weight(1f))
 
         Box(contentAlignment = Alignment.Center) {
-            Icon(
+            Image(
                 modifier = Modifier
                     .height(164.dp)
                     .width(169.dp),
-                painter = painterResource(R.drawable.color_path),
-                contentDescription = null,
-                tint = avatarBgColors[viewModel.selectedColorIndex]
+                painter = painterResource(carImageIds[viewModel.selectedCarImageIndex]),
+                contentDescription = null
             )
         }
 
@@ -85,12 +84,7 @@ fun OnboardingFinishedScreen(
                 modifier = Modifier
                     .height(164.dp)
                     .width(169.dp),
-                painter = painterResource(R.drawable.color_path),
-                contentDescription = null
-            )
-
-            Image(
-                painter = painterResource(R.drawable.car_logo),
+                painter = painterResource(avatarImageIds[viewModel.selectedAvatarImageIndex]),
                 contentDescription = null
             )
         }

@@ -1,5 +1,6 @@
 package hr.fer.carpulse.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +33,7 @@ import hr.fer.carpulse.ui.theme.OrangeColor
 import hr.fer.carpulse.ui.theme.smallBoldText
 import hr.fer.carpulse.ui.theme.smallExtraLightText
 import hr.fer.carpulse.ui.theme.smallLightText
+import hr.fer.carpulse.util.carImageIds
 
 @Composable
 fun DriveComponent(
@@ -41,7 +43,8 @@ fun DriveComponent(
     startTime: String,
     duration: String,
     distance: String,
-    tripUploadState: TripUploadState
+    tripUploadState: TripUploadState,
+    carImageIndex: Int
 ) {
 
     Column(
@@ -54,12 +57,11 @@ fun DriveComponent(
 
 
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Icon(
+            Image(
                 modifier = Modifier
                     .height(68.dp),
-                painter = painterResource(R.drawable.color_path),
-                contentDescription = null,
-                tint = OrangeColor
+                painter = painterResource(carImageIds[carImageIndex]),
+                contentDescription = null
             )
 
             Spacer(modifier = Modifier.weight(0.3f))
@@ -157,7 +159,8 @@ private fun DriveComponentNotUploadedPreview() {
         startDate = "25.5.2025.",
         startTime = "15:30",
         duration = "15",
-        distance = "15"
+        distance = "15",
+        carImageIndex = 0
     )
 }
 
@@ -170,7 +173,8 @@ private fun DriveComponentUploadedPreview() {
         startDate = "25.5.2025.",
         startTime = "15:30",
         duration = "15",
-        distance = "15"
+        distance = "15",
+        carImageIndex = 0
     )
 }
 
@@ -183,6 +187,7 @@ private fun DriveComponentUploadingPreview() {
         startDate = "25.5.2025.",
         startTime = "15:30",
         duration = "15",
-        distance = "15"
+        distance = "15",
+        carImageIndex = 0
     )
 }

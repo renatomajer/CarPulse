@@ -22,7 +22,8 @@ class DataStoreRepositoryImpl(
         val onBoardingKey = booleanPreferencesKey(name = "on_boarding_complete")
         val localStorageKey = booleanPreferencesKey(name = "store_locally")
         val userNameKey = stringPreferencesKey(name = "user_name")
-        val avatarColorIndexKey = intPreferencesKey(name = "avatar_color_index")
+        val carImageIndex = intPreferencesKey(name = "car_image_index")
+        val avatarImageIndex = intPreferencesKey(name = "avatar_image_index")
     }
 
     override suspend fun saveOnBoardingState(completed: Boolean) {
@@ -87,13 +88,13 @@ class DataStoreRepositoryImpl(
             }
     }
 
-    override suspend fun storeAvatarColorIndex(index: Int) {
+    override suspend fun storeCarImageIndex(index: Int) {
         dataStore.edit { preferences ->
-            preferences[PreferencesKey.avatarColorIndexKey] = index
+            preferences[PreferencesKey.carImageIndex] = index
         }
     }
 
-    override fun retrieveAvatarColorIndex(): Flow<Int> {
+    override fun retrieveCarImageIndex(): Flow<Int> {
         return dataStore.data
             .catch { exception ->
                 if (exception is IOException) {
@@ -102,7 +103,26 @@ class DataStoreRepositoryImpl(
                     throw exception
                 }
             }.map { preferences ->
-                preferences[PreferencesKey.avatarColorIndexKey] ?: 0
+                preferences[PreferencesKey.carImageIndex] ?: 0
+            }
+    }
+
+    override suspend fun storeAvatarImageIndex(index: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.avatarImageIndex] = index
+        }
+    }
+
+    override fun retrieveAvatarImageIndex(): Flow<Int> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }.map { preferences ->
+                preferences[PreferencesKey.avatarImageIndex] ?: 0
             }
     }
 }

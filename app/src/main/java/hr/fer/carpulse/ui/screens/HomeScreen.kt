@@ -104,7 +104,8 @@ fun HomeScreen(
             DrawerContent(
                 driverName = viewModel.driverName ?: "",
                 vehicleType = viewModel.vehicleType ?: "",
-                avatarBgColorIndex = viewModel.avatarColorIndex ?: 0,
+                carImageIndex = viewModel.carImageIndex ?: 0,
+                avatarImageIndex = viewModel.avatarImageIndex ?: 0,
                 onCloseClick = { coroutineScope.launch { drawerState.close() } },
                 onEditProfileClick = navigateToEditProfileScreen,
                 onDrivingHistoryClick = navigateToDrivingHistoryScreen,

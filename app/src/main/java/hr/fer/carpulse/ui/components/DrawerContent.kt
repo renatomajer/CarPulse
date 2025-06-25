@@ -30,19 +30,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import hr.fer.carpulse.R
 import hr.fer.carpulse.ui.theme.AppBackgroundColor
-import hr.fer.carpulse.ui.theme.OrangeColor
 import hr.fer.carpulse.ui.theme.TealColor
-import hr.fer.carpulse.ui.theme.avatarBgColors
 import hr.fer.carpulse.ui.theme.extraLightText
 import hr.fer.carpulse.ui.theme.menuSubtitle
 import hr.fer.carpulse.ui.theme.title
+import hr.fer.carpulse.util.avatarImageIds
+import hr.fer.carpulse.util.carImageIds
 
 @Composable
 fun DrawerContent(
     modifier: Modifier = Modifier,
     driverName: String,
     vehicleType: String,
-    avatarBgColorIndex: Int,
+    carImageIndex: Int,
+    avatarImageIndex: Int,
     onCloseClick: () -> Unit,
     onEditProfileClick: () -> Unit,
     onDrivingHistoryClick: () -> Unit,
@@ -92,16 +93,13 @@ fun DrawerContent(
                             bottom = 10.dp
                         ), contentAlignment = Alignment.Center
                     ) {
-                        Icon(
+                        Image(
                             modifier = Modifier
                                 .height(30.dp)
                                 .width(32.dp),
-                            painter = painterResource(R.drawable.color_path),
-                            contentDescription = null,
-                            tint = avatarBgColors[avatarBgColorIndex]
+                            painter = painterResource(avatarImageIds[avatarImageIndex]),
+                            contentDescription = null
                         )
-
-                        //TODO: add avatar
                     }
                     Text(text = driverName, style = menuSubtitle)
                 }
@@ -118,20 +116,11 @@ fun DrawerContent(
                             bottom = 10.dp
                         ), contentAlignment = Alignment.Center
                     ) {
-                        Icon(
+                        Image(
                             modifier = Modifier
                                 .height(30.dp)
                                 .width(32.dp),
-                            painter = painterResource(R.drawable.color_path),
-                            contentDescription = null,
-                            tint = OrangeColor
-                        )
-
-                        Image(
-                            modifier = Modifier
-                                .height(24.dp)
-                                .width(26.dp),
-                            painter = painterResource(R.drawable.car_logo),
+                            painter = painterResource(carImageIds[carImageIndex]),
                             contentDescription = null
                         )
                     }
@@ -233,7 +222,10 @@ fun DrawerContent(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = stringResource(R.string.home_screen_drawer_upload_to_server_no), style = extraLightText)
+                    Text(
+                        text = stringResource(R.string.home_screen_drawer_upload_to_server_no),
+                        style = extraLightText
+                    )
 
                     Switch(
                         checked = uploadToServer,
@@ -247,7 +239,10 @@ fun DrawerContent(
                         )
                     )
 
-                    Text(text = stringResource(R.string.home_screen_drawer_upload_to_server_yes), style = extraLightText)
+                    Text(
+                        text = stringResource(R.string.home_screen_drawer_upload_to_server_yes),
+                        style = extraLightText
+                    )
                 }
             }
 
@@ -263,7 +258,8 @@ private fun DrawerContentPreview() {
     DrawerContent(
         driverName = "Renato",
         vehicleType = "Audi A3",
-        avatarBgColorIndex = 0,
+        carImageIndex = 0,
+        avatarImageIndex = 0,
         onScanAndConnectClick = {},
         onDrivingHistoryClick = {},
         onStatisticsClick = {},

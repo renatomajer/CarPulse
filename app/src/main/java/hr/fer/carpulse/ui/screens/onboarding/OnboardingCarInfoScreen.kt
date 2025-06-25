@@ -3,6 +3,7 @@ package hr.fer.carpulse.ui.screens.onboarding
 import android.graphics.Paint
 import android.graphics.Path
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -42,9 +42,9 @@ import hr.fer.carpulse.ui.components.CarPulseTextField
 import hr.fer.carpulse.ui.components.DropdownPicker
 import hr.fer.carpulse.ui.components.NavigationCarousel
 import hr.fer.carpulse.ui.theme.AppBackgroundColor
-import hr.fer.carpulse.ui.theme.avatarBgColors
 import hr.fer.carpulse.ui.theme.subtitle
 import hr.fer.carpulse.ui.theme.title
+import hr.fer.carpulse.util.carImageIds
 import hr.fer.carpulse.util.defaultKeyboardActions
 import hr.fer.carpulse.viewmodel.OnboardingViewModel
 
@@ -125,19 +125,18 @@ fun OnboardingCarInfoScreen(
             }
 
             IconButton(onClick = {
-                if (viewModel.selectedColorIndex == avatarBgColors.indices.last) {
-                    viewModel.updateSelectedColorIndex(0)
+                if (viewModel.selectedCarImageIndex == carImageIds.indices.last) {
+                    viewModel.updateSelectedCarImageIndex(0)
                 } else {
-                    viewModel.updateSelectedColorIndex(viewModel.selectedColorIndex + 1)
+                    viewModel.updateSelectedCarImageIndex(viewModel.selectedCarImageIndex + 1)
                 }
             }) {
-                Icon(
+                Image(
                     modifier = Modifier
                         .height(164.dp)
                         .width(169.dp),
-                    painter = painterResource(R.drawable.color_path),
-                    contentDescription = null,
-                    tint = avatarBgColors[viewModel.selectedColorIndex]
+                    painter = painterResource(carImageIds[viewModel.selectedCarImageIndex]),
+                    contentDescription = null
                 )
             }
         }

@@ -3,6 +3,7 @@ package hr.fer.carpulse.ui.screens.onboarding
 import android.graphics.Paint
 import android.graphics.Path
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -41,9 +42,9 @@ import hr.fer.carpulse.ui.components.CarPulseTextField
 import hr.fer.carpulse.ui.components.DropdownPicker
 import hr.fer.carpulse.ui.components.NavigationCarousel
 import hr.fer.carpulse.ui.theme.AppBackgroundColor
-import hr.fer.carpulse.ui.theme.avatarBgColors
 import hr.fer.carpulse.ui.theme.subtitle
 import hr.fer.carpulse.ui.theme.title
+import hr.fer.carpulse.util.avatarImageIds
 import hr.fer.carpulse.util.defaultKeyboardActions
 import hr.fer.carpulse.viewmodel.OnboardingViewModel
 
@@ -96,7 +97,6 @@ fun OnboardingDriverInfoScreen(
                 ),
             contentAlignment = Alignment.Center
         ) {
-            // TODO: add avatars
             val tapToChangeColorText =
                 stringResource(R.string.onboarding_screen_tap_to_change_avatar)
 
@@ -123,14 +123,22 @@ fun OnboardingDriverInfoScreen(
                 }
             }
 
-            Icon(
-                modifier = Modifier
-                    .height(164.dp)
-                    .width(169.dp),
-                painter = painterResource(R.drawable.color_path),
-                contentDescription = null,
-                tint = avatarBgColors[viewModel.selectedColorIndex]
-            )
+
+            IconButton(onClick = {
+                if (viewModel.selectedAvatarImageIndex == avatarImageIds.indices.last) {
+                    viewModel.updateSelectedAvatarImageIndex(0)
+                } else {
+                    viewModel.updateSelectedAvatarImageIndex(viewModel.selectedAvatarImageIndex + 1)
+                }
+            }) {
+                Image(
+                    modifier = Modifier
+                        .height(164.dp)
+                        .width(169.dp),
+                    painter = painterResource(avatarImageIds[viewModel.selectedAvatarImageIndex]),
+                    contentDescription = null
+                )
+            }
         }
 
         Column(
@@ -200,7 +208,7 @@ fun OnboardingDriverInfoScreen(
                         values = arrayOf("Male", "Female"), selectedItem =
                         if (driverData.gender == Gender.Male.value) {
                             "Male"
-                        } else if (driverData.gender == Gender.Female.value){
+                        } else if (driverData.gender == Gender.Female.value) {
                             "Female"
                         } else {
                             // Set default value if the user does not change the initial state

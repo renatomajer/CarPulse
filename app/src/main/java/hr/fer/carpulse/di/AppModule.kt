@@ -353,7 +353,8 @@ val appModule = module {
             sendTripReadingDataUseCase = get(),
             getDriverDataUseCase = get(),
             sendDriverDataUseCase = get(),
-            getTripDistanceUseCase = get()
+            getTripDistanceUseCase = get(),
+            dataStoreRepository = get()
         )
     }
 
@@ -373,6 +374,7 @@ val appModule = module {
 
     viewModel {
         OverallStatisticsViewModel(
+            dataStoreRepository = get(),
             getDriverStatisticsUseCase = get()
         )
     }

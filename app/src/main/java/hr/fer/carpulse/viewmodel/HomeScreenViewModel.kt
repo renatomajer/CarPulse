@@ -88,7 +88,10 @@ class HomeScreenViewModel(
     var vehicleType by mutableStateOf<String?>(null)
         private set
 
-    var avatarColorIndex by mutableStateOf<Int?>(null)
+    var carImageIndex by mutableStateOf<Int?>(null)
+        private set
+
+    var avatarImageIndex by mutableStateOf<Int?>(null)
         private set
 
     private var readOBDDataJob: Job? = null
@@ -424,7 +427,8 @@ class HomeScreenViewModel(
     fun retrieveDriverData() {
         viewModelScope.launch(Dispatchers.IO) {
             driverName = dataStoreRepository.retrieveUserName().first()
-            avatarColorIndex = dataStoreRepository.retrieveAvatarColorIndex().first()
+            carImageIndex = dataStoreRepository.retrieveCarImageIndex().first()
+            avatarImageIndex = dataStoreRepository.retrieveAvatarImageIndex().first()
             vehicleType = getDriverDataUseCase().first().vehicleType
         }
     }

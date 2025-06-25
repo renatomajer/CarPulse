@@ -36,7 +36,10 @@ class OnboardingViewModel(
     var isOnboarding by mutableStateOf(true)
         private set
 
-    var selectedColorIndex by mutableStateOf(0)
+    var selectedCarImageIndex by mutableStateOf(0)
+        private set
+
+    var selectedAvatarImageIndex by mutableStateOf(0)
         private set
 
     var driverName by mutableStateOf("")
@@ -262,7 +265,8 @@ class OnboardingViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             saveDriverDataUseCase(driverData.value)
             dataStoreRepository.storeUserName(driverName)
-            dataStoreRepository.storeAvatarColorIndex(selectedColorIndex)
+            dataStoreRepository.storeCarImageIndex(selectedCarImageIndex)
+            dataStoreRepository.storeAvatarImageIndex(selectedAvatarImageIndex)
         }
     }
 
@@ -279,7 +283,10 @@ class OnboardingViewModel(
                 getDriverData()
 
                 driverName = dataStoreRepository.retrieveUserName().first()
-                selectedColorIndex = dataStoreRepository.retrieveAvatarColorIndex().first()
+                selectedCarImageIndex =
+                    dataStoreRepository.retrieveCarImageIndex().first()
+                selectedAvatarImageIndex =
+                    dataStoreRepository.retrieveAvatarImageIndex().first()
             }
         }
     }
@@ -288,8 +295,12 @@ class OnboardingViewModel(
         sendDriverDataUseCase(_driverData.value)
     }
 
-    fun updateSelectedColorIndex(newValue: Int) {
-        selectedColorIndex = newValue
+    fun updateSelectedCarImageIndex(newValue: Int) {
+        selectedCarImageIndex = newValue
+    }
+
+    fun updateSelectedAvatarImageIndex(newValue: Int) {
+        selectedAvatarImageIndex = newValue
     }
 
     fun updateDriverName(newValue: String) {

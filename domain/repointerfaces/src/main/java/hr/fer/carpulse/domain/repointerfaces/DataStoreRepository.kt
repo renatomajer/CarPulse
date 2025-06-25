@@ -16,7 +16,11 @@ interface DataStoreRepository {
 
     fun retrieveUserName(): Flow<String>
 
-    suspend fun storeAvatarColorIndex(index: Int)
+    suspend fun storeCarImageIndex(index: Int)
 
-    fun retrieveAvatarColorIndex(): Flow<Int>
+    fun retrieveCarImageIndex(): Flow<Int>
+
+    suspend fun storeAvatarImageIndex(index: Int)
+
+    fun retrieveAvatarImageIndex(): Flow<Int>
 }

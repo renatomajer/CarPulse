@@ -179,7 +179,8 @@ fun DrivingHistoryScreen(
                             startTime = trip.startTime,
                             duration = trip.duration.toString(),
                             distance = trip.distance.toString(),
-                            tripUploadState = trip.uploadState
+                            tripUploadState = trip.uploadState,
+                            carImageIndex = viewModel.carImageIndex
                         )
                     }
 

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import hr.fer.carpulse.domain.common.contextual.data.TrafficData
 import hr.fer.carpulse.domain.common.obd.OBDReading
+import hr.fer.carpulse.domain.repointerfaces.DataStoreRepository
 import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendTripReviewUseCase
@@ -56,7 +57,8 @@ class DrivingHistoryViewModel(
     private val sendTripReadingDataUseCase: SendTripReadingDataUseCase,
     private val getDriverDataUseCase: GetDriverDataUseCase,
     private val sendDriverDataUseCase: SendDriverDataUseCase,
-    private val getTripDistanceUseCase: GetTripDistanceUseCase
+    private val getTripDistanceUseCase: GetTripDistanceUseCase,
+    private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
 
     var tripSummaries by mutableStateOf<List<TripSummaryUIModel>>(emptyList())
@@ -65,8 +67,15 @@ class DrivingHistoryViewModel(
     var isLoading by mutableStateOf(true)
         private set
 
+    var carImageIndex by mutableStateOf(0)
+        private set
+
     init {
         connectToBrokerUseCase()
+
+        viewModelScope.launch {
+            carImageIndex = dataStoreRepository.retrieveCarImageIndex().first()
+        }
 
         loadTripSummaries()
 
