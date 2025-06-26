@@ -113,6 +113,7 @@
     <string name="trip_details_screen_sudden_breaking">Sudden breaking</string>
     <string name="trip_details_screen_sudden_acceleration">Sudden acceleration</string>
     <string name="trip_details_screen_stop_and_go">Stop-and-go situation</string>
+    <string name="trip_details_screen_no_data_available">Trip details not available.</string>
 
     <string name="overall_statistics_screen_title">Overall statistics</string>
     <string name="overall_statistics_screen_listen_to_assistant">Listen to AI assistant</string>

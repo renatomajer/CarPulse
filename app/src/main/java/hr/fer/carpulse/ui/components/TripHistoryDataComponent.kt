@@ -31,6 +31,7 @@ import hr.fer.carpulse.ui.theme.boldText
 import hr.fer.carpulse.ui.theme.menuSubtitle
 import hr.fer.carpulse.util.calculateDurationInMinutes
 import hr.fer.carpulse.util.getHoursMinutesSeconds
+import hr.fer.carpulse.util.getMinutesOrSecondsFromMinutesDuration
 
 
 @Composable
@@ -39,12 +40,12 @@ fun TripHistoryDataComponent(
     tripDistance: Double,
     startAddress: String,
     endAddress: String,
-    weatherDescription: String,
-    temperature: Int,
+    weatherDescription: String?,
+    temperature: Int?,
     startTimestamp: Long,
     endTimestamp: Long,
-    idlingPercent: Int,
-    idlingTimeMinutes: Int,
+    idlingPercent: Double,
+    idlingTime: Double,
     averageSpeed: Int,
     maxSpeed: Int,
     averageRpm: Int,
@@ -151,33 +152,35 @@ fun TripHistoryDataComponent(
             }
         }
 
-        Spacer(modifier = Modifier.height(13.dp))
-
         // Weather
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = LightBlueColor, shape = RoundedCornerShape(15.dp))
-                .padding(top = 9.dp, bottom = 6.dp)
-                .padding(horizontal = 15.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(painter = painterResource(R.drawable.ic_weather), null)
-            Spacer(modifier = Modifier.width(13.dp))
-            Text(
-                text = stringResource(R.string.trip_details_screen_weather),
-                style = menuSubtitle
-            )
-            Spacer(modifier = Modifier.weight(0.5f))
-            Text(
-                text = weatherDescription,
-                style = boldText
-            )
-            Spacer(modifier = Modifier.weight(0.5f))
-            Text(
-                text = "$temperature°C",
-                style = boldText
-            )
+        if (weatherDescription != null && temperature != null) {
+            Spacer(modifier = Modifier.height(13.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = LightBlueColor, shape = RoundedCornerShape(15.dp))
+                    .padding(top = 9.dp, bottom = 6.dp)
+                    .padding(horizontal = 15.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(painter = painterResource(R.drawable.ic_weather), null)
+                Spacer(modifier = Modifier.width(13.dp))
+                Text(
+                    text = stringResource(R.string.trip_details_screen_weather),
+                    style = menuSubtitle
+                )
+                Spacer(modifier = Modifier.weight(0.5f))
+                Text(
+                    text = weatherDescription,
+                    style = boldText
+                )
+                Spacer(modifier = Modifier.weight(0.5f))
+                Text(
+                    text = "$temperature°C",
+                    style = boldText
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -252,14 +255,19 @@ fun TripHistoryDataComponent(
                     .weight(0.26f)
                     .background(color = Color.White, shape = RoundedCornerShape(15.dp))
                     .padding(start = 5.dp, top = 17.dp, end = 5.dp, bottom = 5.dp),
-                verticalArrangement = Arrangement.SpaceAround,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(painter = painterResource(R.drawable.ic_stopwatch), null)
+                Icon(
+                    painter = painterResource(R.drawable.ic_stopwatch),
+                    modifier = Modifier.height(48.dp),
+                    contentDescription = null
+                )
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = stringResource(R.string.trip_details_screen_duration),
                     style = menuSubtitle
                 )
+                Spacer(modifier = Modifier.weight(1f))
                 Text(
                     text = "${
                         calculateDurationInMinutes(
@@ -270,6 +278,7 @@ fun TripHistoryDataComponent(
                     style = boldText,
                     textAlign = TextAlign.Center
                 )
+                Spacer(modifier = Modifier.weight(1f))
             }
 
             Spacer(modifier = Modifier.width(11.dp))
@@ -281,22 +290,28 @@ fun TripHistoryDataComponent(
                     .weight(0.32f)
                     .background(color = Color.White, shape = RoundedCornerShape(15.dp))
                     .padding(start = 5.dp, top = 17.dp, end = 5.dp, bottom = 5.dp),
-                verticalArrangement = Arrangement.SpaceAround,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(painter = painterResource(R.drawable.ic_sand_clock), null)
+                Icon(
+                    painter = painterResource(R.drawable.ic_sand_clock),
+                    modifier = Modifier.height(48.dp),
+                    contentDescription = null
+                )
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = stringResource(R.string.trip_details_screen_time_idling),
                     style = menuSubtitle
                 )
+                Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = "${idlingPercent} %",
+                    text = "$idlingPercent%",
                     style = boldText
                 )
                 Text(
-                    text = "${idlingTimeMinutes} min",
+                    text = "${getMinutesOrSecondsFromMinutesDuration(idlingTime)} min",
                     style = boldText
                 )
+                Spacer(modifier = Modifier.weight(1f))
             }
         }
 
@@ -465,8 +480,8 @@ private fun TripHistoryDataComponentPreview() {
         temperature = 12,
         startTimestamp = 1750795702000,
         endTimestamp = 1750894602000,
-        idlingPercent = 30,
-        idlingTimeMinutes = 5,
+        idlingPercent = 30.0,
+        idlingTime = 5.2,
         averageSpeed = 25,
         averageRpm = 25,
         maxSpeed = 70,

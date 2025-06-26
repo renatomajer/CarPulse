@@ -53,7 +53,7 @@ import org.koin.androidx.compose.getViewModel
 fun DrivingHistoryScreen(
     modifier: Modifier = Modifier,
     onNavigateBack: () -> Unit,
-    navigateToTripDetails: (tripUUID: String) -> Unit,
+    navigateToTripDetails: (tripUUID: String, startDate: String, startTime: String) -> Unit,
     viewModel: DrivingHistoryViewModel = getViewModel()
 ) {
 
@@ -173,7 +173,7 @@ fun DrivingHistoryScreen(
                     trips.forEach { trip ->
                         DriveComponent(
                             onDriveClick = {
-                                navigateToTripDetails(trip.tripUUID)
+                                navigateToTripDetails(trip.tripUUID, trip.startDate, trip.startTime)
                             },
                             startDate = trip.startDate,
                             startTime = trip.startTime,

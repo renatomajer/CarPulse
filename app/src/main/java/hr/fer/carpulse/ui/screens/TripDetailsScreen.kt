@@ -17,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -35,6 +36,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.mapbox.geojson.Point
@@ -57,6 +59,7 @@ import hr.fer.carpulse.ui.theme.AppBackgroundColor
 import hr.fer.carpulse.ui.theme.LightGrayColor
 import hr.fer.carpulse.ui.theme.OrangeColor
 import hr.fer.carpulse.ui.theme.StrongRedColor
+import hr.fer.carpulse.ui.theme.menuSubtitle
 import hr.fer.carpulse.ui.theme.title
 import hr.fer.carpulse.viewmodel.TripDetailsViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -70,6 +73,8 @@ import org.koin.androidx.compose.getViewModel
 fun TripDetailsScreen(
     modifier: Modifier = Modifier,
     tripUUID: String,
+    startDate: String,
+    startTime: String,
     viewModel: TripDetailsViewModel = getViewModel(),
     onNavigateBack: () -> Unit = {}
 ) {
@@ -98,14 +103,13 @@ fun TripDetailsScreen(
 
     val scrollState = rememberScrollState()
 
-    val tripStartDate = "25.5.2025."
-    val tripStartTime = "15:30"
-    val onAssistantClick: () -> Unit = {}
-
     val maxBottomSheetHeight = getScreenHeight() - 125.dp
+
+    val tripDetails = viewModel.tripDetails
 
     LaunchedEffect(Unit) {
         viewModel.getTripCoordinates(tripUUID)
+        viewModel.getTripDetails(tripUUID)
     }
 
     BottomSheetScaffold(
@@ -137,54 +141,77 @@ fun TripDetailsScreen(
                         )
                 )
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 34.dp, end = 22.dp)
-                        .verticalScroll(scrollState)
-                ) {
-                    Row(
+                if (viewModel.isLoading) {
+                    Spacer(modifier = Modifier.height(30.dp))
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Text(
-                            text = stringResource(R.string.trip_details_screen_listen_to_assistant),
-                            style = title
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = LightGrayColor
                         )
-
-                        IconButton(
-                            modifier = Modifier.size(70.dp),
-                            onClick = onAssistantClick
-                        ) {
-                            Image(
-                                modifier = Modifier.size(70.dp),
-                                painter = painterResource(R.drawable.ic_ai_assistant),
-                                contentDescription = null
-                            )
-                        }
                     }
 
-                    TripHistoryDataComponent(
-                        tripDistance = 15.0,
-                        startAddress = "Jarun 5",
-                        endAddress = "Banjavčićeva 1A",
-                        weatherDescription = "Light rain",
-                        temperature = 12,
-                        startTimestamp = 1750795702000,
-                        endTimestamp = 1750894602000,
-                        idlingPercent = 30,
-                        idlingTimeMinutes = 5,
-                        averageSpeed = 25,
-                        averageRpm = 25,
-                        maxSpeed = 70,
-                        maxRpm = 70,
-                        drivingAboveSpeedLimitPercentage = 50,
-                        drivingWithinSpeedLimitPercentage = 60,
-                        suddenBreaking = 5,
-                        suddenAcceleration = 4,
-                        stopAndGoSituations = 10
+                } else if (tripDetails == null) {
+                    Spacer(modifier = Modifier.height(30.dp))
+                    Text(
+                        text = stringResource(R.string.trip_details_screen_no_data_available),
+                        style = menuSubtitle,
+                        textAlign = TextAlign.Center
                     )
+
+                } else {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 34.dp, end = 22.dp)
+                            .verticalScroll(scrollState)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = stringResource(R.string.trip_details_screen_listen_to_assistant),
+                                style = title
+                            )
+
+                            IconButton(
+                                modifier = Modifier.size(70.dp),
+                                onClick = { viewModel.getAssistantAnalysis(tripUUID) }
+                            ) {
+                                Image(
+                                    modifier = Modifier.size(70.dp),
+                                    painter = painterResource(R.drawable.ic_ai_assistant),
+                                    contentDescription = null
+                                )
+                            }
+                        }
+
+                        TripHistoryDataComponent(
+                            tripDistance = tripDetails.distance,
+                            startAddress = tripDetails.startAddress,
+                            endAddress = tripDetails.endAddress,
+                            weatherDescription = tripDetails.weatherDescription,
+                            temperature = tripDetails.weatherTemperature,
+                            startTimestamp = tripDetails.startTimestamp,
+                            endTimestamp = tripDetails.endTimestamp,
+                            idlingPercent = tripDetails.idlingPct,
+                            idlingTime = tripDetails.idlingTime,
+                            averageSpeed = tripDetails.avgSpeed,
+                            averageRpm = tripDetails.avgRpm,
+                            maxSpeed = tripDetails.maxSpeed,
+                            maxRpm = tripDetails.maxRpm,
+                            drivingAboveSpeedLimitPercentage = tripDetails.drivingAboveSpeedLimit,
+                            drivingWithinSpeedLimitPercentage = tripDetails.drivingWithinSpeedLimit,
+                            suddenBreaking = tripDetails.suddenBreaking,
+                            suddenAcceleration = tripDetails.suddenAcceleration,
+                            stopAndGoSituations = tripDetails.stopAndGoSituations
+                        )
+                    }
                 }
             }
         }
@@ -214,7 +241,7 @@ fun TripDetailsScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                Text(text = tripStartDate, style = title)
+                Text(text = startDate, style = title)
 
                 Spacer(modifier = Modifier.width(10.dp))
 
@@ -227,7 +254,7 @@ fun TripDetailsScreen(
 
                 Spacer(modifier = Modifier.width(10.dp))
 
-                Text(text = tripStartTime, style = title)
+                Text(text = startTime, style = title)
 
                 Spacer(modifier = Modifier.weight(1f))
             }

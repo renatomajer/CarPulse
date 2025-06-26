@@ -83,21 +83,31 @@ fun Navigation(
         composable(route = Screens.DrivingHistoryScreen.route) {
             DrivingHistoryScreen(
                 onNavigateBack = { navController.popBackStack() },
-                navigateToTripDetails = { tripUUID: String ->
-                    navController.navigate(Screens.TripDetailsScreen.route + "/$tripUUID")
+                navigateToTripDetails = { tripUUID: String, startDate: String, startTime: String ->
+                    navController.navigate(
+                        Screens.TripDetailsScreen.route + "/$tripUUID/$startDate/$startTime"
+                    )
                 }
             )
         }
 
         composable(
-            route = Screens.TripDetailsScreen.route + "/{tripUUID}",
-            arguments = listOf(navArgument(name = "tripUUID") { type = NavType.StringType })
+            route = Screens.TripDetailsScreen.route + "/{tripUUID}/{startDate}/{startTime}",
+            arguments = listOf(
+                navArgument(name = "tripUUID") { type = NavType.StringType },
+                navArgument(name = "startDate") { type = NavType.StringType },
+                navArgument(name = "startTime") { type = NavType.StringType })
         ) { entry ->
             entry.arguments?.let {
                 val tripUUID = it.getString("tripUUID")
-                tripUUID?.let {
+                val startDate = it.getString("startDate")
+                val startTime = it.getString("startTime")
+
+                if(tripUUID != null && startDate != null && startTime != null) {
                     TripDetailsScreen(
                         tripUUID = tripUUID,
+                        startDate = startDate,
+                        startTime = startTime,
                         onNavigateBack = { navController.popBackStack() }
                     )
                 }

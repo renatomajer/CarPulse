@@ -27,6 +27,7 @@ import hr.fer.carpulse.domain.usecase.mqtt.DisconnectFromBrokerUseCase
 import hr.fer.carpulse.domain.usecase.preferences.ReadLocalStorageStateUseCase
 import hr.fer.carpulse.domain.usecase.preferences.SaveLocalStorageStateUseCase
 import hr.fer.carpulse.domain.usecase.trip.GetAllTripSummariesUseCase
+import hr.fer.carpulse.domain.usecase.trip.GetTripDetailsUseCase
 import hr.fer.carpulse.domain.usecase.trip.GetTripDistanceUseCase
 import hr.fer.carpulse.domain.usecase.trip.SaveTripSummaryUseCase
 import hr.fer.carpulse.domain.usecase.trip.SendTripStartInfoUseCase
@@ -265,6 +266,10 @@ val appModule = module {
     }
 
     single {
+        GetTripDetailsUseCase(carPulseRepository = get())
+    }
+
+    single {
         GetDriverStatisticsUseCase(
             getDriverDataUseCase = get(),
             carPulseRepository = get()
@@ -368,7 +373,8 @@ val appModule = module {
 
     viewModel {
         TripDetailsViewModel(
-            getTripRouteUseCase = get()
+            getTripRouteUseCase = get(),
+            getTripDetailsUseCase = get()
         )
     }
 

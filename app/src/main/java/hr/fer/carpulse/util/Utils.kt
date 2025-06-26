@@ -56,9 +56,15 @@ fun calculateDurationInMinutes(startTimestamp: Long, endTimestamp: Long): Int {
 }
 
 fun getHoursMinutesFromMinutesDuration(minutesDuration: Int): String {
-    if(minutesDuration < 60) return "$minutesDuration min"
+    if (minutesDuration < 60) return "$minutesDuration min"
 
     val hours: Int = minutesDuration / 60
     val remainingMinutes: Int = minutesDuration % 60
     return "${hours}h ${remainingMinutes}min"
+}
+
+fun getMinutesOrSecondsFromMinutesDuration(minutesDuration: Double): Int {
+    if (minutesDuration < 1) return (minutesDuration * 60.0).toInt()
+
+    return minutesDuration.toInt()
 }

@@ -4,6 +4,7 @@ import hr.fer.carpulse.data.api.CarPulseApi
 import hr.fer.carpulse.domain.common.contextual.data.Coordinate
 import hr.fer.carpulse.domain.common.contextual.data.LocationData
 import hr.fer.carpulse.domain.common.driver.DriverStatistics
+import hr.fer.carpulse.domain.common.trip.TripDetails
 import hr.fer.carpulse.domain.repointerfaces.CarPulseRepository
 
 class CarPulseRepositoryImpl(
@@ -39,6 +40,37 @@ class CarPulseRepositoryImpl(
                 drivingAboveSpeedLimit = driverStatisticsDto.drivingAboveSpeedLimit.toInt(),
                 maxSpeed = driverStatisticsDto.maxSpeed,
                 maxRpm = driverStatisticsDto.maxRpm
+            )
+        } else {
+            null
+        }
+    }
+
+    override suspend fun getTripDetails(tripUUID: String): TripDetails? {
+        val tripDetailsDto = carPulseApi.getTripDetailsDto(tripUUID)
+
+        return if(tripDetailsDto != null) {
+            TripDetails(
+                tripId = tripDetailsDto.tripId,
+                distance = tripDetailsDto.distance,
+                startAddress = tripDetailsDto.startAddress,
+                endAddress = tripDetailsDto.endAddress,
+                weatherDescription = tripDetailsDto.weather.description,
+                weatherTemperature = tripDetailsDto.weather.temperature?.toInt(),
+                startTimestamp = tripDetailsDto.startTimestamp,
+                endTimestamp = tripDetailsDto.endTimestamp,
+                duration = tripDetailsDto.duration.toInt(),
+                idlingPct = tripDetailsDto.idlingPct,
+                idlingTime = tripDetailsDto.idlingTime,
+                avgSpeed = tripDetailsDto.avgSpeed.toInt(),
+                maxSpeed = tripDetailsDto.maxSpeed,
+                avgRpm = tripDetailsDto.avgRpm.toInt(),
+                maxRpm = tripDetailsDto.maxRpm,
+                drivingAboveSpeedLimit = tripDetailsDto.drivingAboveSpeedLimit.toInt(),
+                drivingWithinSpeedLimit = tripDetailsDto.drivingWithinSpeedLimit.toInt(),
+                suddenBreaking = tripDetailsDto.suddenBreaking,
+                suddenAcceleration = tripDetailsDto.suddenAcceleration,
+                stopAndGoSituations = tripDetailsDto.stopAndGo
             )
         } else {
             null
