@@ -37,6 +37,8 @@ class CarPulseRepositoryImpl(
                 averageRpm = driverStatisticsDto.averageRpm.toInt(),
                 drivingWithinSpeedLimit = driverStatisticsDto.drivingWithinSpeedLimit.toInt(),
                 drivingAboveSpeedLimit = driverStatisticsDto.drivingAboveSpeedLimit.toInt(),
+                maxSpeed = driverStatisticsDto.maxSpeed,
+                maxRpm = driverStatisticsDto.maxRpm
             )
         } else {
             null

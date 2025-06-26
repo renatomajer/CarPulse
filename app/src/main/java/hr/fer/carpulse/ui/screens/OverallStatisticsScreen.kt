@@ -50,8 +50,6 @@ fun OverallStatisticsScreen(
 ) {
 
     val driverStatistics = viewModel.driverStatistics
-    val maxSpeed = null
-    val maxRpm = null
 
     Column(
         modifier = modifier
@@ -217,8 +215,8 @@ fun OverallStatisticsScreen(
                     backgroundColor = Color.White,
                     averageSpeed = driverStatistics.averageSpeed,
                     averageRpm = driverStatistics.averageRpm,
-                    maxSpeed = maxSpeed,
-                    maxRpm = maxRpm
+                    maxSpeed = driverStatistics.maxSpeed,
+                    maxRpm = driverStatistics.maxRpm
                 )
 
                 Spacer(modifier = Modifier.height(19.dp))

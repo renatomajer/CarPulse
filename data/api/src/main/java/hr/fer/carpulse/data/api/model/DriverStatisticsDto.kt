@@ -10,6 +10,8 @@ data class DriverStatisticsDto(
     val totalDuration: Double,
     val averageSpeed: Double,
     val averageRpm: Double,
+    val maxSpeed: Int,
+    val maxRpm: Int,
     val drivingWithinSpeedLimit: Double,
     val drivingAboveSpeedLimit: Double
 )

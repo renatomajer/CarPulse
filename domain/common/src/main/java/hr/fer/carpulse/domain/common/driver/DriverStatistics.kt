@@ -6,6 +6,8 @@ data class DriverStatistics(
     val totalDuration: Int,
     val averageSpeed: Int,
     val averageRpm: Int,
+    val maxSpeed: Int,
+    val maxRpm: Int,
     val drivingWithinSpeedLimit: Int,
     val drivingAboveSpeedLimit: Int
 )
