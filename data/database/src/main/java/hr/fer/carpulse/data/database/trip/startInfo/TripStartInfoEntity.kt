@@ -15,6 +15,6 @@ data class TripStartInfoEntity(
     val fingerprint: String,
     val androidId: String,
     val tripUUID: String,
-    val tripStartTimestamp: String
-) {
-}
+    val tripStartTimestamp: String,
+    val driverEmail: String
+)

@@ -290,7 +290,8 @@ class HomeScreenViewModel(
                 vehicleInfo = vehicleInfo,
                 mobileDeviceInfo = mobileDeviceInfo,
                 tripId = tripUUID.toString(),
-                tripStartTimestamp = tripStartTimestamp.toString()
+                tripStartTimestamp = tripStartTimestamp.toString(),
+                driverEmail = driverData.email
             )
 
             if (storeDataLocally) {

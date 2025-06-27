@@ -9,7 +9,8 @@ data class TripStartInfoPublishData(
     val vehicleInfo: VehicleInfo,
     val mobileDeviceInfo: MobileDeviceInfo,
     val tripId: String,
-    val tripStartTimestamp: Long
+    val tripStartTimestamp: Long,
+    val driverEmail: String
 ) {
     companion object {
         fun createPublishData(tripStartInfo: TripStartInfo): List<TripStartInfoPublishData> {
@@ -18,7 +19,8 @@ data class TripStartInfoPublishData(
                     vehicleInfo = tripStartInfo.vehicleInfo,
                     mobileDeviceInfo = tripStartInfo.mobileDeviceInfo,
                     tripId = tripStartInfo.tripId,
-                    tripStartTimestamp = tripStartInfo.tripStartTimestamp.toLong()
+                    tripStartTimestamp = tripStartInfo.tripStartTimestamp.toLong(),
+                    driverEmail = tripStartInfo.driverEmail
                 )
             )
         }

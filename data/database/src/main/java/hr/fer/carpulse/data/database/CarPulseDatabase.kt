@@ -34,7 +34,7 @@ import hr.fer.carpulse.data.database.trip.startInfo.TripStartInfoEntity
         WeatherDataEntity::class,
         TrafficDataEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(WeatherConverters::class, CoordinateConverters::class)

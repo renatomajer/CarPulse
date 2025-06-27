@@ -11,6 +11,7 @@ import hr.fer.carpulse.data.database.mapper.contextual.data.WeatherDataMapper
 import hr.fer.carpulse.data.database.mapper.trip.TripReviewMapper
 import hr.fer.carpulse.data.database.mapper.trip.TripStartInfoMapper
 import hr.fer.carpulse.data.database.mapper.trip.TripSummaryMapper
+import hr.fer.carpulse.data.database.migration.MIGRATION_1_2
 import hr.fer.carpulse.data.database.trip.ITripSummaryDao
 import hr.fer.carpulse.data.database.trip.contextual.data.ILocationDataDao
 import hr.fer.carpulse.data.database.trip.contextual.data.ITrafficDataDao
@@ -26,8 +27,9 @@ val databaseModule = module {
     single<CarPulseDatabase> {
         Room.databaseBuilder(
             androidApplication(),
-            CarPulseDatabase::class.java, "carpulse_database"
-        ).build()
+            CarPulseDatabase::class.java,
+            "carpulse_database"
+        ).addMigrations(MIGRATION_1_2).build()
     }
 
     single<IDriverDataDao> {

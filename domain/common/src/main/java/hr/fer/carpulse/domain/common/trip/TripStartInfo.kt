@@ -7,5 +7,6 @@ data class TripStartInfo(
     val vehicleInfo: VehicleInfo = VehicleInfo(),
     val mobileDeviceInfo: MobileDeviceInfo = MobileDeviceInfo(),
     val tripId: String = "",
-    val tripStartTimestamp: String = ""
+    val tripStartTimestamp: String = "",
+    val driverEmail: String
 )

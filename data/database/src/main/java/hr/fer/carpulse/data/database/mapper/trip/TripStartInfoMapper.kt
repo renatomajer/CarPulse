@@ -20,7 +20,8 @@ class TripStartInfoMapper : EntityMapper<TripStartInfo, TripStartInfoEntity> {
             fingerprint = data.mobileDeviceInfo.fingerprint,
             androidId = data.mobileDeviceInfo.androidId,
             tripUUID = data.tripId,
-            tripStartTimestamp = data.tripStartTimestamp
+            tripStartTimestamp = data.tripStartTimestamp,
+            driverEmail = data.driverEmail
         )
     }
 
@@ -46,7 +47,8 @@ class TripStartInfoMapper : EntityMapper<TripStartInfo, TripStartInfoEntity> {
             vehicleInfo = vehicleInfo,
             mobileDeviceInfo = mobileDeviceInfo,
             tripId = entity.tripUUID,
-            tripStartTimestamp = entity.tripStartTimestamp
+            tripStartTimestamp = entity.tripStartTimestamp,
+            driverEmail = entity.driverEmail
         )
     }
 }
