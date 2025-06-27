@@ -56,7 +56,6 @@ import org.koin.androidx.compose.getViewModel
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeScreenViewModel = getViewModel(),
-    navigateToTripReviewScreen: (tripUUID: String) -> Unit,
     navigateToConnectScreen: () -> Unit,
     navigateToDrivingHistoryScreen: () -> Unit,
     navigateToEditProfileScreen: () -> Unit,
@@ -220,7 +219,6 @@ fun HomeScreen(
                         else R.drawable.ic_stop_disabled,
                         onClick = {
                             viewModel.stopMeasuring()
-                            navigateToTripReviewScreen(viewModel.tripUUID.toString())
                         }
                     )
                 }

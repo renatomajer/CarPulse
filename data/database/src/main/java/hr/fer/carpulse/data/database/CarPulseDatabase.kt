@@ -18,8 +18,6 @@ import hr.fer.carpulse.data.database.trip.contextual.data.WeatherDataDao
 import hr.fer.carpulse.data.database.trip.contextual.data.WeatherDataEntity
 import hr.fer.carpulse.data.database.trip.obd.OBDReadingEntity
 import hr.fer.carpulse.data.database.trip.obd.OBDReadingsDao
-import hr.fer.carpulse.data.database.trip.review.TripReviewDao
-import hr.fer.carpulse.data.database.trip.review.TripReviewEntity
 import hr.fer.carpulse.data.database.trip.startInfo.TripStartInfoDao
 import hr.fer.carpulse.data.database.trip.startInfo.TripStartInfoEntity
 
@@ -29,12 +27,11 @@ import hr.fer.carpulse.data.database.trip.startInfo.TripStartInfoEntity
         TripSummaryEntity::class,
         OBDReadingEntity::class,
         TripStartInfoEntity::class,
-        TripReviewEntity::class,
         LocationDataEntity::class,
         WeatherDataEntity::class,
         TrafficDataEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(WeatherConverters::class, CoordinateConverters::class)
@@ -46,8 +43,6 @@ abstract class CarPulseDatabase : RoomDatabase() {
     abstract fun obdReadingsDao(): OBDReadingsDao
 
     abstract fun tripStartInfoDao(): TripStartInfoDao
-
-    abstract fun tripReviewDao(): TripReviewDao
 
     abstract fun locationDataDao(): LocationDataDao
 

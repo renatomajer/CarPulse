@@ -13,7 +13,6 @@ import hr.fer.carpulse.ui.screens.HomeScreen
 import hr.fer.carpulse.ui.screens.OverallStatisticsScreen
 import hr.fer.carpulse.ui.screens.TalkWithAssistantScreen
 import hr.fer.carpulse.ui.screens.TripDetailsScreen
-import hr.fer.carpulse.ui.screens.TripReviewScreen
 import hr.fer.carpulse.ui.screens.onboarding.OnboardingNavigatorScreen
 
 @Composable
@@ -52,9 +51,6 @@ fun Navigation(
 
         composable(route = Screens.HomeScreen.route) {
             HomeScreen(
-                navigateToTripReviewScreen = { tripUUID ->
-                    navController.navigate(Screens.TripReviewScreen.route + "/$tripUUID")
-                },
                 navigateToConnectScreen = {
                     navController.navigate(Screens.ConnectDeviceScreen.route)
                 },
@@ -111,17 +107,6 @@ fun Navigation(
                         onNavigateBack = { navController.popBackStack() }
                     )
                 }
-            }
-        }
-
-        composable(
-            route = Screens.TripReviewScreen.route + "/{tripUUID}",
-            arguments = listOf(navArgument(name = "tripUUID") { type = NavType.StringType })
-        ) { entry ->
-            entry.arguments?.let {
-                val tripUUID = it.getString("tripUUID")
-                TripReviewScreen(navController = navController, tripUUID = tripUUID)
-
             }
         }
 

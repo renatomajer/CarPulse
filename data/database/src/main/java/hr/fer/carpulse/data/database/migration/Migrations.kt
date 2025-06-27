@@ -9,3 +9,9 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
         database.execSQL("ALTER TABLE trip_start_info ADD COLUMN driverEmail TEXT NOT NULL DEFAULT ''")
     }
 }
+
+val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL("DROP TABLE IF EXISTS trip_review")
+    }
+}

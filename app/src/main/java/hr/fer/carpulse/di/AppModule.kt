@@ -21,7 +21,6 @@ import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.GetDriverStatisticsUseCase
 import hr.fer.carpulse.domain.usecase.driver.SaveDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendDriverDataUseCase
-import hr.fer.carpulse.domain.usecase.driver.SendTripReviewUseCase
 import hr.fer.carpulse.domain.usecase.mqtt.ConnectToBrokerUseCase
 import hr.fer.carpulse.domain.usecase.mqtt.DisconnectFromBrokerUseCase
 import hr.fer.carpulse.domain.usecase.preferences.ReadLocalStorageStateUseCase
@@ -49,9 +48,6 @@ import hr.fer.carpulse.domain.usecase.trip.obd.GetAllUnsentUUIDsUseCase
 import hr.fer.carpulse.domain.usecase.trip.obd.GetOBDReadingsUseCase
 import hr.fer.carpulse.domain.usecase.trip.obd.SaveOBDReadingUseCase
 import hr.fer.carpulse.domain.usecase.trip.obd.UpdateSummarySentStatusUseCase
-import hr.fer.carpulse.domain.usecase.trip.review.DeleteTripReviewUseCase
-import hr.fer.carpulse.domain.usecase.trip.review.GetTripReviewUseCase
-import hr.fer.carpulse.domain.usecase.trip.review.SaveTripReviewUseCase
 import hr.fer.carpulse.domain.usecase.trip.startInfo.DeleteTripStartInfoUseCase
 import hr.fer.carpulse.domain.usecase.trip.startInfo.GetTripStartInfoUseCase
 import hr.fer.carpulse.domain.usecase.trip.startInfo.SaveTripStartInfoUseCase
@@ -64,7 +60,6 @@ import hr.fer.carpulse.viewmodel.OverallStatisticsViewModel
 import hr.fer.carpulse.viewmodel.SplashScreenViewModel
 import hr.fer.carpulse.viewmodel.TalkWithAssistantViewModel
 import hr.fer.carpulse.viewmodel.TripDetailsViewModel
-import hr.fer.carpulse.viewmodel.TripReviewScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -82,9 +77,7 @@ val appModule = module {
         DriverDataRepositoryImpl(
             driverDataDao = get(),
             driverDataMapper = get(),
-            dataApi = get(),
-            tripReviewDao = get(),
-            tripReviewMapper = get()
+            dataApi = get()
         )
     }
 
@@ -131,22 +124,6 @@ val appModule = module {
 
     single {
         SendDriverDataUseCase(driverDataRepository = get())
-    }
-
-    single {
-        SendTripReviewUseCase(driverDataRepository = get())
-    }
-
-    single {
-        GetTripReviewUseCase(driverDataRepository = get())
-    }
-
-    single {
-        SaveTripReviewUseCase(driverDataRepository = get())
-    }
-
-    single {
-        DeleteTripReviewUseCase(driverDataRepository = get())
     }
 
     single {
@@ -328,17 +305,6 @@ val appModule = module {
     }
 
     viewModel {
-        TripReviewScreenViewModel(
-            sendTripReviewUseCase = get(),
-            getDriverDataUseCase = get(),
-            readLocalStorageStateUseCase = get(),
-            saveTripReviewUseCase = get(),
-            connectToBrokerUseCase = get(),
-            disconnectFromBrokerUseCase = get()
-        )
-    }
-
-    viewModel {
         DrivingHistoryViewModel(
             getAllTripSummariesUseCase = get(),
             getAllUnsentUUIDsUseCase = get(),
@@ -347,9 +313,6 @@ val appModule = module {
             getTripStartInfoUseCase = get(),
             deleteTripStartInfoUseCase = get(),
             sendTripStartInfoUseCase = get(),
-            deleteTripReviewUseCase = get(),
-            getTripReviewUseCase = get(),
-            sendTripReviewUseCase = get(),
             getSavedLocationDataUseCase = get(),
             getSavedWeatherDataUseCase = get(),
             getSavedTrafficDataUseCase = get(),

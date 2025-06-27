@@ -4,14 +4,12 @@ import android.util.Log
 import hr.fer.carpulse.data.api.mqtt.MQTTClient
 import hr.fer.carpulse.data.api.mqtt.publish.Timestamp
 import hr.fer.carpulse.data.api.mqtt.publish.TripReadingPublishData
-import hr.fer.carpulse.data.api.mqtt.publish.TripReviewPublishData
 import hr.fer.carpulse.data.api.mqtt.publish.TripStartInfoPublishData
 import hr.fer.carpulse.domain.common.contextual.data.LocationData
 import hr.fer.carpulse.domain.common.contextual.data.TrafficData
 import hr.fer.carpulse.domain.common.contextual.data.WeatherData
 import hr.fer.carpulse.domain.common.driver.DriverData
 import hr.fer.carpulse.domain.common.obd.OBDReading
-import hr.fer.carpulse.domain.common.trip.TripReview
 import hr.fer.carpulse.domain.common.trip.TripStartInfo
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -33,13 +31,6 @@ class DataApiImpl(
     override fun sendDriverData(driverData: DriverData) {
         val jsonString = format.encodeToString(listOf(driverData))
         mqttClient.publish(topic = DRIVER_TOPIC, msg = jsonString, qos = 0, retained = false)
-//        Log.d("debug_log", jsonString)
-    }
-
-    override fun sendTripReview(tripReview: TripReview) {
-        val tripReviewPublishData = TripReviewPublishData.createPublishData(tripReview)
-        val jsonString = format.encodeToString(tripReviewPublishData)
-        mqttClient.publish(topic = REVIEW_TOPIC, msg = jsonString, qos = 0, retained = false)
 //        Log.d("debug_log", jsonString)
     }
 
@@ -81,6 +72,5 @@ class DataApiImpl(
         private const val DRIVER_TOPIC = "Auto/Drivers"
         private const val TRIP_TOPIC = "Auto/Trips"
         private const val DRIVE_DATA_TOPIC = "Auto/OdbData"
-        private const val REVIEW_TOPIC = "Auto/DriversReviewTrip"
     }
 }

@@ -8,16 +8,15 @@ import hr.fer.carpulse.data.database.mapper.OBDReadingMapper
 import hr.fer.carpulse.data.database.mapper.contextual.data.LocationDataMapper
 import hr.fer.carpulse.data.database.mapper.contextual.data.TrafficDataMapper
 import hr.fer.carpulse.data.database.mapper.contextual.data.WeatherDataMapper
-import hr.fer.carpulse.data.database.mapper.trip.TripReviewMapper
 import hr.fer.carpulse.data.database.mapper.trip.TripStartInfoMapper
 import hr.fer.carpulse.data.database.mapper.trip.TripSummaryMapper
 import hr.fer.carpulse.data.database.migration.MIGRATION_1_2
+import hr.fer.carpulse.data.database.migration.MIGRATION_2_3
 import hr.fer.carpulse.data.database.trip.ITripSummaryDao
 import hr.fer.carpulse.data.database.trip.contextual.data.ILocationDataDao
 import hr.fer.carpulse.data.database.trip.contextual.data.ITrafficDataDao
 import hr.fer.carpulse.data.database.trip.contextual.data.IWeatherDataDao
 import hr.fer.carpulse.data.database.trip.obd.IOBDReadingsDao
-import hr.fer.carpulse.data.database.trip.review.ITripReviewDao
 import hr.fer.carpulse.data.database.trip.startInfo.ITripStartInfoDao
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
@@ -29,7 +28,7 @@ val databaseModule = module {
             androidApplication(),
             CarPulseDatabase::class.java,
             "carpulse_database"
-        ).addMigrations(MIGRATION_1_2).build()
+        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build()
     }
 
     single<IDriverDataDao> {
@@ -66,15 +65,6 @@ val databaseModule = module {
 
     single {
         TripStartInfoMapper()
-    }
-
-    single<ITripReviewDao> {
-        val database: CarPulseDatabase = get()
-        database.tripReviewDao()
-    }
-
-    single {
-        TripReviewMapper()
     }
 
     single<ILocationDataDao> {

@@ -10,7 +10,6 @@ import hr.fer.carpulse.domain.common.obd.OBDReading
 import hr.fer.carpulse.domain.repointerfaces.DataStoreRepository
 import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
 import hr.fer.carpulse.domain.usecase.driver.SendDriverDataUseCase
-import hr.fer.carpulse.domain.usecase.driver.SendTripReviewUseCase
 import hr.fer.carpulse.domain.usecase.mqtt.ConnectToBrokerUseCase
 import hr.fer.carpulse.domain.usecase.mqtt.DisconnectFromBrokerUseCase
 import hr.fer.carpulse.domain.usecase.trip.GetAllTripSummariesUseCase
@@ -23,8 +22,6 @@ import hr.fer.carpulse.domain.usecase.trip.contextual.data.SendTripReadingDataUs
 import hr.fer.carpulse.domain.usecase.trip.obd.GetAllUnsentUUIDsUseCase
 import hr.fer.carpulse.domain.usecase.trip.obd.GetOBDReadingsUseCase
 import hr.fer.carpulse.domain.usecase.trip.obd.UpdateSummarySentStatusUseCase
-import hr.fer.carpulse.domain.usecase.trip.review.DeleteTripReviewUseCase
-import hr.fer.carpulse.domain.usecase.trip.review.GetTripReviewUseCase
 import hr.fer.carpulse.domain.usecase.trip.startInfo.DeleteTripStartInfoUseCase
 import hr.fer.carpulse.domain.usecase.trip.startInfo.GetTripStartInfoUseCase
 import hr.fer.carpulse.ui.model.TripSummaryUIModel
@@ -45,9 +42,6 @@ class DrivingHistoryViewModel(
     private val sendTripStartInfoUseCase: SendTripStartInfoUseCase,
     private val getTripStartInfoUseCase: GetTripStartInfoUseCase,
     private val deleteTripStartInfoUseCase: DeleteTripStartInfoUseCase,
-    private val getTripReviewUseCase: GetTripReviewUseCase,
-    private val sendTripReviewUseCase: SendTripReviewUseCase,
-    private val deleteTripReviewUseCase: DeleteTripReviewUseCase,
     private val getSavedLocationDataUseCase: GetSavedLocationDataUseCase,
     private val updateSummarySentStatusUseCase: UpdateSummarySentStatusUseCase,
     private val getSavedWeatherDataUseCase: GetSavedWeatherDataUseCase,
@@ -170,13 +164,10 @@ class DrivingHistoryViewModel(
                     delay(800L) // simulate the time gap between sending the data
                 }
 
-                // send trip review and remove it from database
-                val tripReview = getTripReviewUseCase(uuid).first()
-                sendTripReviewUseCase(tripReview)
-                deleteTripReviewUseCase(tripReview)
-
                 // all the data is sent to the server - mark trip summary as sent
                 updateSummarySentStatusUseCase(uuid, true)
+
+                //TODO: make assistant api request for generating overview
             }
         }
     }
