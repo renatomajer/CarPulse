@@ -21,4 +21,14 @@ class AssistantApiImpl(private val httpClient: HttpClient) : AssistantApi {
             null
         }
     }
+
+    override suspend fun processTrip(tripUUID: String): Boolean {
+        return try {
+            httpClient.post<Unit>("${BuildConfig.ASSISTANT_BASE_URL}/process-trip/$tripUUID")
+            true
+        } catch (exc: Exception) {
+            Log.d("debug_log", exc.message ?: "Exception occurred wile contacting Assistant.")
+            false
+        }
+    }
 }

@@ -14,6 +14,7 @@ import hr.fer.carpulse.domain.usecase.mqtt.ConnectToBrokerUseCase
 import hr.fer.carpulse.domain.usecase.mqtt.DisconnectFromBrokerUseCase
 import hr.fer.carpulse.domain.usecase.trip.GetAllTripSummariesUseCase
 import hr.fer.carpulse.domain.usecase.trip.GetTripDistanceUseCase
+import hr.fer.carpulse.domain.usecase.trip.ProcessTripUseCase
 import hr.fer.carpulse.domain.usecase.trip.SendTripStartInfoUseCase
 import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetSavedLocationDataUseCase
 import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetSavedTrafficDataUseCase
@@ -52,6 +53,7 @@ class DrivingHistoryViewModel(
     private val getDriverDataUseCase: GetDriverDataUseCase,
     private val sendDriverDataUseCase: SendDriverDataUseCase,
     private val getTripDistanceUseCase: GetTripDistanceUseCase,
+    private val processTripUseCase: ProcessTripUseCase,
     private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
 
@@ -161,13 +163,15 @@ class DrivingHistoryViewModel(
                         currentTrafficData
                     )
 
-                    delay(800L) // simulate the time gap between sending the data
+//                    delay(800L) // simulate the time gap between sending the data
                 }
 
                 // all the data is sent to the server - mark trip summary as sent
                 updateSummarySentStatusUseCase(uuid, true)
 
-                //TODO: make assistant api request for generating overview
+                // Delay trip processing to ensure all the data is sent
+                delay(1000L)
+                processTripUseCase(uuid)
             }
         }
     }

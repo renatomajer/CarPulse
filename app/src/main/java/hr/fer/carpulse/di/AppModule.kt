@@ -28,6 +28,7 @@ import hr.fer.carpulse.domain.usecase.preferences.SaveLocalStorageStateUseCase
 import hr.fer.carpulse.domain.usecase.trip.GetAllTripSummariesUseCase
 import hr.fer.carpulse.domain.usecase.trip.GetTripDetailsUseCase
 import hr.fer.carpulse.domain.usecase.trip.GetTripDistanceUseCase
+import hr.fer.carpulse.domain.usecase.trip.ProcessTripUseCase
 import hr.fer.carpulse.domain.usecase.trip.SaveTripSummaryUseCase
 import hr.fer.carpulse.domain.usecase.trip.SendTripStartInfoUseCase
 import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetLocationDataUseCase
@@ -254,6 +255,12 @@ val appModule = module {
     }
 
     single {
+        ProcessTripUseCase(
+            assistantRepository = get()
+        )
+    }
+
+    single {
         PhoneUtils(context = androidApplication())
     }
 
@@ -285,7 +292,8 @@ val appModule = module {
             sendTripReadingDataUseCase = get(),
             sendDriverDataUseCase = get(),
             getTrafficDataUseCase = get(),
-            dataStoreRepository = get()
+            dataStoreRepository = get(),
+            processTripUseCase = get()
         )
     }
 
@@ -322,7 +330,8 @@ val appModule = module {
             getDriverDataUseCase = get(),
             sendDriverDataUseCase = get(),
             getTripDistanceUseCase = get(),
-            dataStoreRepository = get()
+            dataStoreRepository = get(),
+            processTripUseCase = get()
         )
     }
 

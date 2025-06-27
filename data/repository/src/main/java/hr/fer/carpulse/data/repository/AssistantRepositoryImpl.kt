@@ -10,4 +10,7 @@ class AssistantRepositoryImpl(
 ) : AssistantRepository {
     override suspend fun askAssistant(assistantRequest: AssistantRequest): AssistantResponse? =
         assistantApi.askAssistant(assistantRequest)
+
+    override suspend fun processTrip(tripUUID: String): Boolean =
+        assistantApi.processTrip(tripUUID)
 }

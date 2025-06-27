@@ -23,6 +23,7 @@ import hr.fer.carpulse.domain.usecase.mqtt.ConnectToBrokerUseCase
 import hr.fer.carpulse.domain.usecase.mqtt.DisconnectFromBrokerUseCase
 import hr.fer.carpulse.domain.usecase.preferences.ReadLocalStorageStateUseCase
 import hr.fer.carpulse.domain.usecase.preferences.SaveLocalStorageStateUseCase
+import hr.fer.carpulse.domain.usecase.trip.ProcessTripUseCase
 import hr.fer.carpulse.domain.usecase.trip.SaveTripSummaryUseCase
 import hr.fer.carpulse.domain.usecase.trip.SendTripStartInfoUseCase
 import hr.fer.carpulse.domain.usecase.trip.contextual.data.GetLocationDataUseCase
@@ -75,6 +76,7 @@ class HomeScreenViewModel(
     private val disconnectFromBrokerUseCase: DisconnectFromBrokerUseCase,
     private val sendTripReadingDataUseCase: SendTripReadingDataUseCase,
     private val sendDriverDataUseCase: SendDriverDataUseCase,
+    private val processTripUseCase: ProcessTripUseCase,
     private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
 
@@ -204,6 +206,10 @@ class HomeScreenViewModel(
                 )
 
                 saveTripSummaryUseCase(tripSummary)
+
+                // Delay trip processing to ensure all the data is sent
+                delay(1000L)
+                processTripUseCase(tripUUID.toString())
             }
         }
 
