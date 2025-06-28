@@ -308,7 +308,7 @@ fun TripHistoryDataComponent(
                     style = boldText
                 )
                 Text(
-                    text = "${getMinutesOrSecondsFromMinutesDuration(idlingTime)} min",
+                    text = getMinutesOrSecondsFromMinutesDuration(idlingTime),
                     style = boldText
                 )
                 Spacer(modifier = Modifier.weight(1f))

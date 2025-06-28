@@ -28,10 +28,7 @@ class OBDCommunication(
     private val socket: BluetoothSocket
 ) {
 
-    fun readData(): OBDReading {
-
-        var obdReading: OBDReading
-
+    fun executeProtocolCommands() {
         try {
             // execute protocol commands
             EchoOffCommand().run(socket.inputStream, socket.outputStream)
@@ -41,7 +38,16 @@ class OBDCommunication(
                 socket.inputStream,
                 socket.outputStream
             )
+        } catch (exc: IOException) {
+            Log.d("PID", "An exception occurred while communicating with device: " + exc.message)
+        }
+    }
 
+    fun readData(): OBDReading {
+
+        var obdReading: OBDReading
+
+        try {
             // Engine RPM
             val rpmCommand = RPMCommand()
             val rpmData = getDataFromCommand(rpmCommand)

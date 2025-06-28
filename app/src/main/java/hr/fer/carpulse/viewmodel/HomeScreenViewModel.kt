@@ -42,13 +42,16 @@ import hr.fer.carpulse.util.getAppVersion
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.UUID
 
 
@@ -159,10 +162,10 @@ class HomeScreenViewModel(
                 updateLocationDataUseCase()
                 locationDataFlow = getLocationDataUseCase()
 
-                delay(1000L)
+//                delay(1000L)
                 generateAndSendTripStartInfo()
 
-                delay(2000L)
+                delay(1000L)
                 readOBDDataJob = readOBDData()
                 collectTrafficDataJob = collectTrafficData()
                 sendOrStoreDataJob = sendOrStoreData()
@@ -181,43 +184,47 @@ class HomeScreenViewModel(
     }
 
     fun stopMeasuring() {
-        stopLocationDataUpdateUseCase()
+        viewModelScope.launch {
+            stopLocationDataUpdateUseCase()
 
-        readOBDDataJob?.cancel()
-        readOBDDataJob = null
+            readOBDDataJob?.cancelAndJoin()
+            readOBDDataJob = null
 
-        sendOrStoreDataJob?.cancel()
-        sendOrStoreDataJob = null
+            sendOrStoreDataJob?.cancelAndJoin()
+            sendOrStoreDataJob = null
 
-        collectTrafficDataJob?.cancel()
-        collectTrafficDataJob = null
+            collectTrafficDataJob?.cancelAndJoin()
+            collectTrafficDataJob = null
 
 
-        // save summary only if the trip was previously started
-        if (tripStartTimestamp != 0L && tripUUID != null) {
-            viewModelScope.launch(Dispatchers.IO) {
-                val tripSummary = TripSummary(
-                    tripUUID = tripUUID.toString(),
-                    startTimestamp = tripStartTimestamp,
-                    endTimestamp = System.currentTimeMillis(),
-                    maxRPM = maxTripRPM,
-                    maxSpeed = maxTripSpeed,
-                    sent = !storeDataLocally
-                )
+            // save summary only if the trip was previously started
+            if (tripStartTimestamp != 0L && tripUUID != null) {
+                withContext(Dispatchers.IO) {
+                    val tripSummary = TripSummary(
+                        tripUUID = tripUUID.toString(),
+                        startTimestamp = tripStartTimestamp,
+                        endTimestamp = System.currentTimeMillis(),
+                        maxRPM = maxTripRPM,
+                        maxSpeed = maxTripSpeed,
+                        sent = !storeDataLocally
+                    )
 
-                saveTripSummaryUseCase(tripSummary)
+                    saveTripSummaryUseCase(tripSummary)
 
-                // Delay trip processing to ensure all the data is sent
-                delay(1000L)
-                processTripUseCase(tripUUID.toString())
+                    if (!storeDataLocally) {
+                        // Delay trip processing to ensure all the data is sent
+                        delay(1000L)
+                        processTripUseCase(tripUUID.toString())
+                    }
+                }
             }
-        }
 
 //        if (!storeDataLocally) {
 //            disconnectFromBrokerUseCase()
 //        }
 
-        isMeasuring.update { false }
+            isMeasuring.update { false }
+        }
     }
 
 
@@ -226,17 +233,17 @@ class HomeScreenViewModel(
 
         return if (socket != null) {
             val obd = OBDCommunication(socket)
-            // TODO: launch the coroutine with viewModelScope.launch(Dispatchers.IO) {}
+
+            obd.executeProtocolCommands()
+
             CoroutineScope(Dispatchers.IO).launch {
-                while (true) {
+                while (isActive) {
 
                     val reading = obd.readData()
 
                     checkAndUpdateMaxValues(reading)
 
                     obdReadingData.update { reading }
-
-                    delay(2000L)
                 }
             }
         } else {
@@ -246,7 +253,7 @@ class HomeScreenViewModel(
 
     private fun sendOrStoreData(): Job {
         return CoroutineScope(Dispatchers.IO).launch {
-            while (true) {
+            while (isActive) {
                 val reading = obdReadingData.value
 
                 sendOrStoreTripReadingData(reading)
@@ -315,45 +322,51 @@ class HomeScreenViewModel(
      * Checks whether the local storage is turned on, and sends the data to server via API, or stores the data locally,
      * depending on the value stored in DataStore.
      */
-    private fun sendOrStoreTripReadingData(obdReading: OBDReading) {
+    private suspend fun sendOrStoreTripReadingData(obdReading: OBDReading) {
 
-        viewModelScope.launch(Dispatchers.IO) {
+        if (
+            obdReading.speed == OBDReading.NO_DATA || obdReading.rpm == OBDReading.NO_DATA ||
+            trafficData == null || locationDataFlow.value.longitude == 0.0
+        ) {
+            // Do not send/store data if some of the data is not available
+            return
+        }
 
-            val latestTimestamp = locationDataFlow.value.timestamp
+        val latestTimestamp = locationDataFlow.value.timestamp
 
-            if (storeDataLocally) {
-                // store to DB
+        if (storeDataLocally) {
+            // store to DB
 
-                Log.d("debug_log", "Saving OBD reading and location...")
-                saveOBDReadingUseCase.invoke(
-                    obdReading = obdReading.copy(timestamp = latestTimestamp),
+            Log.d("debug_log", "Saving OBD reading and location...")
+
+            saveOBDReadingUseCase.invoke(
+                obdReading = obdReading.copy(timestamp = latestTimestamp),
+                tripUUID = tripUUID.toString()
+            )
+            saveLocationDataUseCase.invoke(
+                locationData = locationDataFlow.value,
+                tripUUID = tripUUID.toString()
+            )
+
+            trafficData?.let {
+                saveTrafficDataUseCase.invoke(
+                    trafficData = it.copy(timestamp = latestTimestamp),
                     tripUUID = tripUUID.toString()
-                )
-                saveLocationDataUseCase.invoke(
-                    locationData = locationDataFlow.value,
-                    tripUUID = tripUUID.toString()
-                )
-
-                trafficData?.let {
-                    saveTrafficDataUseCase.invoke(
-                        trafficData = it.copy(timestamp = latestTimestamp),
-                        tripUUID = tripUUID.toString()
-                    )
-                }
-
-            } else {
-                // send data to server
-
-                Log.d("debug_log", "Sending data...")
-
-                sendTripReadingDataUseCase(
-                    locationDataFlow.value,
-                    weatherData,
-                    tripUUID.toString(),
-                    obdReading.copy(timestamp = latestTimestamp),
-                    trafficData?.copy(timestamp = latestTimestamp)
                 )
             }
+
+        } else {
+            // send data to server
+
+            Log.d("debug_log", "Sending data...")
+
+            sendTripReadingDataUseCase(
+                locationDataFlow.value,
+                weatherData,
+                tripUUID.toString(),
+                obdReading.copy(timestamp = latestTimestamp),
+                trafficData?.copy(timestamp = latestTimestamp)
+            )
         }
     }
 
@@ -412,7 +425,7 @@ class HomeScreenViewModel(
 
     private fun collectTrafficData(): Job {
         return viewModelScope.launch {
-            while (true) {
+            while (isActive) {
                 trafficData = getTrafficDataUseCase.invoke(
                     latitude = locationDataFlow.value.latitude,
                     longitude = locationDataFlow.value.longitude
@@ -458,15 +471,17 @@ class HomeScreenViewModel(
     override fun onCleared() {
         stopLocationDataUpdateUseCase()
 
-        readOBDDataJob?.cancel()
-        readOBDDataJob = null
-        bluetoothController.release()
+        viewModelScope.launch {
+            readOBDDataJob?.cancelAndJoin()
+            readOBDDataJob = null
+            bluetoothController.release()
 
-        sendOrStoreDataJob?.cancel()
-        sendOrStoreDataJob = null
+            sendOrStoreDataJob?.cancelAndJoin()
+            sendOrStoreDataJob = null
 
-        collectTrafficDataJob?.cancel()
-        collectTrafficDataJob = null
+            collectTrafficDataJob?.cancelAndJoin()
+            collectTrafficDataJob = null
+        }
 
         Log.d("debug_log", "HomeScreenViewModel::onCleared")
         super.onCleared()

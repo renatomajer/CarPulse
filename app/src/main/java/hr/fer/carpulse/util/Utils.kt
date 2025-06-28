@@ -63,8 +63,8 @@ fun getHoursMinutesFromMinutesDuration(minutesDuration: Int): String {
     return "${hours}h ${remainingMinutes}min"
 }
 
-fun getMinutesOrSecondsFromMinutesDuration(minutesDuration: Double): Int {
-    if (minutesDuration < 1) return (minutesDuration * 60.0).toInt()
+fun getMinutesOrSecondsFromMinutesDuration(minutesDuration: Double): String {
+    if (minutesDuration < 1) return (minutesDuration * 60.0).toInt().toString() + " sec"
 
-    return minutesDuration.toInt()
+    return minutesDuration.toInt().toString() + " min"
 }
