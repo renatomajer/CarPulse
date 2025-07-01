@@ -86,8 +86,6 @@ fun OverallStatisticsScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(48.dp))
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -95,6 +93,8 @@ fun OverallStatisticsScreen(
                 .padding(start = 38.dp, end = 19.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.height(33.dp))
+
             Image(
                 modifier = Modifier
                     .width(228.dp),
@@ -102,7 +102,18 @@ fun OverallStatisticsScreen(
                 contentDescription = null
             )
 
-            Spacer(modifier = Modifier.height(15.dp))
+            if (viewModel.isSpeaking) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_speaker),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                    tint = Color.Black
+                )
+            } else if (viewModel.isFetchingAssistantResponse) {
+                CircularProgressIndicator(modifier = Modifier.size(24.dp), color = LightGrayColor)
+            } else {
+                Spacer(modifier = Modifier.height(24.dp))
+            }
 
             if (viewModel.isLoading) {
                 Column(
@@ -135,7 +146,8 @@ fun OverallStatisticsScreen(
 
                     IconButton(
                         modifier = Modifier.size(70.dp),
-                        onClick = { viewModel.getAssistantAnalysis() }
+                        onClick = { viewModel.getAssistantAnalysis() },
+                        enabled = !viewModel.isSpeaking && !viewModel.isFetchingAssistantResponse
                     ) {
                         Image(
                             modifier = Modifier.size(70.dp),

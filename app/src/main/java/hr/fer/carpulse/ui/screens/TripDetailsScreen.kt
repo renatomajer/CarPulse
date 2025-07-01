@@ -181,7 +181,8 @@ fun TripDetailsScreen(
 
                             IconButton(
                                 modifier = Modifier.size(70.dp),
-                                onClick = { viewModel.getAssistantAnalysis(tripUUID) }
+                                onClick = { viewModel.getAssistantAnalysis(tripUUID) },
+                                enabled = !viewModel.isSpeaking && !viewModel.isFetchingAssistantResponse
                             ) {
                                 Image(
                                     modifier = Modifier.size(70.dp),
@@ -189,6 +190,32 @@ fun TripDetailsScreen(
                                     contentDescription = null
                                 )
                             }
+                        }
+
+                        if (viewModel.isSpeaking) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_speaker),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = Color.Black
+                                )
+                            }
+                        } else if (viewModel.isFetchingAssistantResponse) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(24.dp),
+                                    color = LightGrayColor
+                                )
+                            }
+                        } else {
+                            Spacer(modifier = Modifier.height(24.dp))
                         }
 
                         TripHistoryDataComponent(

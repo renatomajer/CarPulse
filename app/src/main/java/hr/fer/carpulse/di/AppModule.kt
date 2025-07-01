@@ -346,14 +346,20 @@ val appModule = module {
     viewModel {
         TripDetailsViewModel(
             getTripRouteUseCase = get(),
-            getTripDetailsUseCase = get()
+            getTripDetailsUseCase = get(),
+            getDriverDataUseCase = get(),
+            assistantRepository = get(),
+            application = androidApplication()
         )
     }
 
     viewModel {
         OverallStatisticsViewModel(
             dataStoreRepository = get(),
-            getDriverStatisticsUseCase = get()
+            getDriverStatisticsUseCase = get(),
+            getDriverDataUseCase = get(),
+            assistantRepository = get(),
+            application = androidApplication()
         )
     }
 }

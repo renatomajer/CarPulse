@@ -15,7 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import hr.fer.carpulse.domain.common.assistant.AssistantRequest
+import hr.fer.carpulse.domain.common.assistant.AssistantQuestionRequest
 import hr.fer.carpulse.domain.repointerfaces.AssistantRepository
 import hr.fer.carpulse.domain.usecase.driver.GetDriverDataUseCase
 import kotlinx.coroutines.Dispatchers
@@ -84,15 +84,15 @@ class TalkWithAssistantViewModel(
                 return@launch
             }
 
-            val assistantRequest = AssistantRequest(
+            val assistantQuestionRequest = AssistantQuestionRequest(
                 question = question,
                 userId = driverId!!
             )
 
-            conversation = conversation + assistantRequest
+            conversation = conversation + assistantQuestionRequest
 
             isFetchingAssistantResponse = true
-            val assistantResponse = assistantRepository.askAssistant(assistantRequest)
+            val assistantResponse = assistantRepository.askAssistant(assistantQuestionRequest)
             isFetchingAssistantResponse = false
 
             assistantResponse?.let {

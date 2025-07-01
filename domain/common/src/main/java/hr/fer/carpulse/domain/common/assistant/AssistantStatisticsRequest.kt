@@ -4,8 +4,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AssistantRequest(
-    val question: String,
+data class AssistantStatisticsRequest(
     @SerialName("user_id")
-    val userId: String
+    val userId: String,
+    val user: Boolean
 )

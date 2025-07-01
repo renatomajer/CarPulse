@@ -1,18 +1,22 @@
 package hr.fer.carpulse.data.api
 
 import android.util.Log
-import hr.fer.carpulse.domain.common.assistant.AssistantRequest
-import hr.fer.carpulse.domain.common.assistant.AssistantResponse
+import hr.fer.carpulse.domain.common.assistant.AssistantQuestionRequest
+import hr.fer.carpulse.domain.common.assistant.AssistantQuestionResponse
+import hr.fer.carpulse.domain.common.assistant.AssistantStatisticsRequest
+import hr.fer.carpulse.domain.common.assistant.AssistantStatisticsResponse
+import hr.fer.carpulse.domain.common.assistant.AssistantTripRequest
+import hr.fer.carpulse.domain.common.assistant.AssistantTripResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
 
 class AssistantApiImpl(private val httpClient: HttpClient) : AssistantApi {
 
-    override suspend fun askAssistant(assistantRequest: AssistantRequest): AssistantResponse? {
+    override suspend fun askAssistant(assistantQuestionRequest: AssistantQuestionRequest): AssistantQuestionResponse? {
         return try {
             val response =
-                httpClient.post<AssistantResponse>("${BuildConfig.ASSISTANT_BASE_URL}/ask") {
-                    body = assistantRequest
+                httpClient.post<AssistantQuestionResponse>("${BuildConfig.ASSISTANT_BASE_URL}/ask") {
+                    body = assistantQuestionRequest
                 }
             Log.d("debug_log", response.toString())
             response
@@ -29,6 +33,34 @@ class AssistantApiImpl(private val httpClient: HttpClient) : AssistantApi {
         } catch (exc: Exception) {
             Log.d("debug_log", exc.message ?: "Exception occurred wile contacting Assistant.")
             false
+        }
+    }
+
+    override suspend fun getTripOverview(assistantTripRequest: AssistantTripRequest): AssistantTripResponse? {
+        return try {
+            val response =
+                httpClient.post<AssistantTripResponse>("${BuildConfig.ASSISTANT_BASE_URL}/ask") {
+                    body = assistantTripRequest
+                }
+            Log.d("debug_log", response.toString())
+            response
+        } catch (exc: Exception) {
+            Log.d("debug_log", exc.message ?: "Exception occurred wile contacting Assistant.")
+            null
+        }
+    }
+
+    override suspend fun getOverallStatisticsOverview(assistantStatisticsRequest: AssistantStatisticsRequest): AssistantStatisticsResponse? {
+        return try {
+            val response =
+                httpClient.post<AssistantStatisticsResponse>("${BuildConfig.ASSISTANT_BASE_URL}/ask") {
+                    body = assistantStatisticsRequest
+                }
+            Log.d("debug_log", response.toString())
+            response
+        } catch (exc: Exception) {
+            Log.d("debug_log", exc.message ?: "Exception occurred wile contacting Assistant.")
+            null
         }
     }
 }

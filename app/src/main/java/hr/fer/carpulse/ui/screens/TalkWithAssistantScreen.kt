@@ -27,8 +27,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import hr.fer.carpulse.R
-import hr.fer.carpulse.domain.common.assistant.AssistantRequest
-import hr.fer.carpulse.domain.common.assistant.AssistantResponse
+import hr.fer.carpulse.domain.common.assistant.AssistantQuestionRequest
+import hr.fer.carpulse.domain.common.assistant.AssistantQuestionResponse
 import hr.fer.carpulse.ui.theme.AppBackgroundColor
 import hr.fer.carpulse.ui.theme.LightGrayColor
 import hr.fer.carpulse.ui.theme.smallLightText
@@ -137,11 +137,11 @@ fun TalkWithAssistantScreen(
                 viewModel.conversation.forEach {
                     Row(modifier = modifier.fillMaxWidth()) {
                         Text(
-                            text = "${if (it is AssistantRequest) "Q" else "A"}: ",
+                            text = "${if (it is AssistantQuestionRequest) "Q" else "A"}: ",
                             style = smallLightText
                         )
                         Text(
-                            text = if (it is AssistantRequest) it.question else if (it is AssistantResponse) it.response else "",
+                            text = if (it is AssistantQuestionRequest) it.question else if (it is AssistantQuestionResponse) it.response else "",
                             style = smallThinText
                         )
                     }
