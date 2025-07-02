@@ -17,7 +17,10 @@ A mobile application for collecting contextually enriched driving data via OBD-I
 
 ## Screenshots
 
-<p align="center">
-  <kbd> <img src="https://github.com/renatomajer/CarPulse/assets/46069535/9b4509dd-37eb-47bd-b36c-693759f2db66" width="300" height="700" /> </kbd>
-  <kbd> <img src="https://github.com/renatomajer/CarPulse/assets/46069535/34be5a33-8329-4088-806a-9dd49e505e8f" width="300" height="700" /> </kbd>
-  </p>
+<p float="left">
+  <img src="docs/screenshots/home_screen.jpg" alt="Home Screen" width="250" style="margin-right: 10px; margin-bottom: 10px;">
+  <img src="docs/screenshots/asistant_screen1.jpg" alt="Assistant Screen" width="250" style="margin-right: 10px; margin-bottom: 10px;">
+  <img src="docs/screenshots/driving_history.jpg" alt="Driving History" width="250" style="margin-right: 10px; margin-bottom: 10px;">
+  <img src="docs/screenshots/trip_details.jpg" alt="Trip Details" width="250" style="margin-right: 10px; margin-bottom: 10px;">
+  <img src="docs/screenshots/overall_statistics.jpg" alt="Overall Statistics" width="250" style="margin-right: 10px; margin-bottom: 10px;">
+</p>
